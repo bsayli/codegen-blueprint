@@ -84,25 +84,7 @@ mvn spring-boot:run -Dspring-boot.run.profiles=cli \
 
 ---
 
-## 🧑‍💻 Minimal Programmatic Usage
-
-The generator can also be used inside your own automation:
-
-```java
-ProjectMetadata metadata = new ProjectMetadata.ProjectMetadataBuilder()
-        .name("demo-project")
-        .packageName("com.example.demo")
-        .build();
-
-Path zip = service.generateProject(type, metadata);
-System.out.
-
-println("Archive generated at: "+zip.toAbsolutePath());
-```
-
----
-
-## 🧑‍💻 Full Programmatic Example
+## 🧑‍💻 Programmatic Usage
 
 ```java
 import java.io.File;

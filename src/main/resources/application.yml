@@ -1,6 +1,6 @@
 spring:
   application:
-    name: codegen-initializr-core
+    name: codegen-springboot-initializr
 
 freemarker:
   encoding: UTF-8

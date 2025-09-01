@@ -2,9 +2,7 @@ package io.github.bsayli.codegen.initializr.projectgeneration.adapters.framework
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.when;
 
-import io.github.bsayli.codegen.initializr.projectgeneration.configuration.properties.MavenJavaSourceFolderProperties;
 import io.github.bsayli.codegen.initializr.projectgeneration.model.ProjectMetadata;
 import java.io.File;
 import java.io.IOException;
@@ -12,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -20,8 +17,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 class SpringBootJavaMainClassGeneratorTest {
 
   @Autowired private SpringBootJavaMainClassGenerator generator;
-
-  @Mock private MavenJavaSourceFolderProperties mockSourceFolder;
 
   @TempDir private Path tempFolder;
 
@@ -33,18 +28,16 @@ class SpringBootJavaMainClassGeneratorTest {
             .packageName("com.codegen.core")
             .build();
 
-    when(mockSourceFolder.srcMainJava()).thenReturn("src/main/java");
-
     generator.generateProjectStarterClass(tempFolder.toFile(), projectMetadata);
 
     File expectedMainClassFile =
-        new File(tempFolder.toFile(), "src/main/java/com/codegen/core/CodegendemoApplication.java");
+        new File(tempFolder.toFile(), "src/main/java/com/codegen/core/CodegenDemoApplication.java");
 
     assertTrue(expectedMainClassFile.exists(), "Main class file should be created");
     assertEquals(
-        "CodegendemoApplication.java",
+        "CodegenDemoApplication.java",
         expectedMainClassFile.getName(),
-        "Main class file name should be CodegendemoApplication.java");
+        "Main class file name should be CodegenDemoApplication.java");
   }
 
   @Test
@@ -55,35 +48,32 @@ class SpringBootJavaMainClassGeneratorTest {
             .packageName("com.codegen.core")
             .build();
 
-    when(mockSourceFolder.srcMainJava()).thenReturn("src/main/java");
-
     generator.generateProjectStarterClass(tempFolder.toFile(), projectMetadata);
 
     String generatedContent =
         Files.readString(
             new File(
                     tempFolder.toString(),
-                    "src/main/java/com/codegen/core/CodegendemoApplication.java")
+                    "src/main/java/com/codegen/core/CodegenDemoApplication.java")
                 .toPath());
 
-    String expectedSpringBootAnnotation = "@SpringBootApplication";
     assertTrue(
-        generatedContent.contains(expectedSpringBootAnnotation),
+        generatedContent.contains("@SpringBootApplication"),
         "Generated content should contain @SpringBootApplication");
 
-    String expectedMainClassName = "CodegendemoApplication";
+    String expectedMainClassName = "CodegenDemoApplication";
     assertTrue(
         generatedContent.contains(expectedMainClassName),
-        "Generated content should contain CodegendemoApplication");
+        "Generated content should contain CodegenDemoApplication");
 
-    String expectedRunClassDefinition = "SpringApplication.run(CodegendemoApplication.class, args)";
+    String expectedRunClassDefinition = "SpringApplication.run(CodegenDemoApplication.class, args)";
     assertTrue(
         generatedContent.contains(expectedRunClassDefinition),
         "Generated content should contain this line " + expectedRunClassDefinition);
   }
 
   @Test
-  void testGenerateMainClass_CreatesMainClassWithSpecilCharsAndVerifiesContent()
+  void testGenerateMainClass_CreatesMainClassWithSpecialCharsAndVerifiesContent()
       throws IOException {
     ProjectMetadata projectMetadata =
         new ProjectMetadata.ProjectMetadataBuilder()
@@ -91,28 +81,25 @@ class SpringBootJavaMainClassGeneratorTest {
             .packageName("com.codegen.core")
             .build();
 
-    when(mockSourceFolder.srcMainJava()).thenReturn("src/main/java");
-
     generator.generateProjectStarterClass(tempFolder.toFile(), projectMetadata);
 
     String generatedContent =
         Files.readString(
             new File(
                     tempFolder.toString(),
-                    "src/main/java/com/codegen/core/CodegendemoApplication.java")
+                    "src/main/java/com/codegen/core/CodegenDemoApplication.java")
                 .toPath());
 
-    String expectedSpringBootAnnotation = "@SpringBootApplication";
     assertTrue(
-        generatedContent.contains(expectedSpringBootAnnotation),
+        generatedContent.contains("@SpringBootApplication"),
         "Generated content should contain @SpringBootApplication");
 
-    String expectedMainClassName = "CodegendemoApplication";
+    String expectedMainClassName = "CodegenDemoApplication";
     assertTrue(
         generatedContent.contains(expectedMainClassName),
-        "Generated content should contain CodegendemoApplication");
+        "Generated content should contain CodegenDemoApplication");
 
-    String expectedRunClassDefinition = "SpringApplication.run(CodegendemoApplication.class, args)";
+    String expectedRunClassDefinition = "SpringApplication.run(CodegenDemoApplication.class, args)";
     assertTrue(
         generatedContent.contains(expectedRunClassDefinition),
         "Generated content should contain this line " + expectedRunClassDefinition);

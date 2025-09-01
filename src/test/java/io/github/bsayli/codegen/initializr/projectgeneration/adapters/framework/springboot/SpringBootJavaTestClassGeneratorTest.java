@@ -2,9 +2,7 @@ package io.github.bsayli.codegen.initializr.projectgeneration.adapters.framework
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.when;
 
-import io.github.bsayli.codegen.initializr.projectgeneration.configuration.properties.MavenJavaSourceFolderProperties;
 import io.github.bsayli.codegen.initializr.projectgeneration.model.ProjectMetadata;
 import java.io.File;
 import java.io.IOException;
@@ -12,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -20,8 +17,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 class SpringBootJavaTestClassGeneratorTest {
 
   @Autowired private SpringBootJavaTestClassGenerator generator;
-
-  @Mock private MavenJavaSourceFolderProperties mockSourceFolder;
 
   @TempDir private Path tempFolder;
 
@@ -33,19 +28,17 @@ class SpringBootJavaTestClassGeneratorTest {
             .packageName("com.codegen.core")
             .build();
 
-    when(mockSourceFolder.srcTestJava()).thenReturn("src/test/java");
-
     generator.generateTestClass(tempFolder.toFile(), projectMetadata);
 
     File expectedTestClassFile =
         new File(
-            tempFolder.toFile(), "src/test/java/com/codegen/core/CodegendemoApplicationTests.java");
+            tempFolder.toFile(), "src/test/java/com/codegen/core/CodegenDemoApplicationTests.java");
 
     assertTrue(expectedTestClassFile.exists(), "Test class file should be created");
     assertEquals(
-        "CodegendemoApplicationTests.java",
+        "CodegenDemoApplicationTests.java",
         expectedTestClassFile.getName(),
-        "Test class file name should be CodegendemoApplicationTests.java");
+        "Test class file name should be CodegenDemoApplicationTests.java");
   }
 
   @Test
@@ -56,8 +49,6 @@ class SpringBootJavaTestClassGeneratorTest {
             .packageName("com.codegen.core")
             .build();
 
-    when(mockSourceFolder.srcTestJava()).thenReturn("src/test/java");
-
     generator.generateTestClass(tempFolder.toFile(), projectMetadata);
 
     String generatedContent =
@@ -67,14 +58,13 @@ class SpringBootJavaTestClassGeneratorTest {
                     "src/test/java/com/codegen/core/CodegenDemoApplicationTests.java")
                 .toPath());
 
-    String expectedSpringBootTestAnnotation = "@SpringBootTest";
     assertTrue(
-        generatedContent.contains(expectedSpringBootTestAnnotation),
+        generatedContent.contains("@SpringBootTest"),
         "Generated content should contain @SpringBootTest");
 
-    String expectedTestClassName = "CodegendemoApplicationTests";
+    String expectedTestClassName = "CodegenDemoApplicationTests";
     assertTrue(
         generatedContent.contains(expectedTestClassName),
-        "Generated content should contain CodegendemoApplicationTests");
+        "Generated content should contain CodegenDemoApplicationTests");
   }
 }

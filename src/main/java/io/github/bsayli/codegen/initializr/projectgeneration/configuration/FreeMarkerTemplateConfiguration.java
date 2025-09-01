@@ -1,7 +1,7 @@
 package io.github.bsayli.codegen.initializr.projectgeneration.configuration;
 
-import io.github.bsayli.codegen.initializr.projectgeneration.configuration.properties.FreeMarkerTemplateProperties;
 import freemarker.template.TemplateExceptionHandler;
+import io.github.bsayli.codegen.initializr.projectgeneration.configuration.properties.FreeMarkerTemplateProperties;
 import java.io.Serial;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;

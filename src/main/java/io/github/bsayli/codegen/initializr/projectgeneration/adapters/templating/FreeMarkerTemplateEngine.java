@@ -1,10 +1,10 @@
 package io.github.bsayli.codegen.initializr.projectgeneration.adapters.templating;
 
-import io.github.bsayli.codegen.initializr.projectgeneration.model.templating.TemplateType;
-import io.github.bsayli.codegen.initializr.projectgeneration.ports.TemplateEngine;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import io.github.bsayli.codegen.initializr.projectgeneration.model.templating.TemplateType;
+import io.github.bsayli.codegen.initializr.projectgeneration.ports.TemplateEngine;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;

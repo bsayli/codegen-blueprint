@@ -154,7 +154,7 @@ demo-app/
 ## 🛠 Tech Stack & Features
 
 * 🚀 **Java 21** — modern baseline
-* 🍃 **Spring Boot 3.5** — microservice foundation
+* 🍃 **Spring Boot 3.5**
 * 📦 **Maven 3.9+** — build and dependency management
 * 🧩 **FreeMarker templates** — for generator extensibility
 * 📂 **Automatic directory structure** — `src/main/java`, `src/test/java`, etc.

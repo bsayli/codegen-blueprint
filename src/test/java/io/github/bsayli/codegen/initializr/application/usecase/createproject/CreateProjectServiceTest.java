@@ -31,8 +31,8 @@ class CreateProjectServiceTest {
   @TempDir Path tempDir;
 
   @Test
-  @DisplayName("execute() prepares project root and returns blueprint")
-  void creates_project_root_and_returns_blueprint() {
+  @DisplayName("execute() prepares project root and writes pom.xml and .gitignore")
+  void creates_project_root_and_writes_artifacts() {
     var mapper = new ProjectBlueprintMapper();
     var fakeRootPort = new FakeRootPort();
     var fakeArtifacts = new FakeArtifactsPort();
@@ -41,17 +41,17 @@ class CreateProjectServiceTest {
     var service = new CreateProjectService(mapper, fakeRootPort, fakeArtifacts, fakeWriter);
 
     var cmd =
-        new CreateProjectCommand(
-            "com.acme",
-            "demo-app",
-            "Demo App",
-            "desc",
-            "com.acme.demo",
-            new BuildOptions(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA),
-            JavaVersion.JAVA_21,
-            SpringBootVersion.V3_5_6,
-            List.of(),
-            tempDir);
+            new CreateProjectCommand(
+                    "com.acme",
+                    "demo-app",
+                    "Demo App",
+                    "desc",
+                    "com.acme.demo",
+                    new BuildOptions(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA),
+                    JavaVersion.JAVA_21,
+                    SpringBootVersion.V3_5_6,
+                    List.of(),
+                    tempDir);
 
     var result = service.execute(cmd);
 
@@ -63,7 +63,7 @@ class CreateProjectServiceTest {
     assertThat(fakeRootPort.lastPreparedRoot).isEqualTo(result.projectRoot());
     assertThat(fakeRootPort.lastPolicy).isEqualTo(FAIL_IF_EXISTS);
 
-    assertThat(fakeWriter.writtenTextCount).isEqualTo(1);
+    assertThat(fakeWriter.writtenFiles).containsExactlyInAnyOrder("pom.xml", ".gitignore");
   }
 
   static class FakeRootPort implements ProjectRootPort {
@@ -82,12 +82,13 @@ class CreateProjectServiceTest {
     @Override
     public Iterable<? extends GeneratedFile> generate(ProjectBlueprint blueprint) {
       return List.of(
-          new GeneratedFile.Text(Path.of("pom.xml"), "<project/>", StandardCharsets.UTF_8));
+              new GeneratedFile.Text(Path.of("pom.xml"), "<project/>", StandardCharsets.UTF_8),
+              new GeneratedFile.Text(Path.of(".gitignore"), "*.class", StandardCharsets.UTF_8));
     }
   }
 
   static class FakeWriterPort implements ProjectWriterPort {
-    int writtenTextCount = 0;
+    final List<String> writtenFiles = new java.util.ArrayList<>();
 
     @Override
     public void writeBytes(Path projectRoot, Path relativePath, byte[] content) {
@@ -96,9 +97,8 @@ class CreateProjectServiceTest {
 
     @Override
     public void writeText(
-        Path projectRoot, Path relativePath, String content, java.nio.charset.Charset charset) {
-      writtenTextCount++;
-      assertThat(relativePath).hasToString("pom.xml");
+            Path projectRoot, Path relativePath, String content, java.nio.charset.Charset charset) {
+      writtenFiles.add(relativePath.toString());
     }
   }
 }

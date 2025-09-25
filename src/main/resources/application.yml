@@ -2,6 +2,30 @@ spring:
   application:
     name: codegen-springboot-initializr
 
+
+codegen:
+  artifacts:
+    gitignore:
+      enabled: true
+      template: gitignore.ftl
+      output-path: .gitignore
+    maven-pom:
+      enabled: true
+      template: pom.ftl
+      output-path: pom.xml
+    readme:
+      enabled: true
+      template: readme.ftl
+      output-path: README.md
+
+templating:
+  encoding: UTF-8
+  handler: RETHROW
+  template-path: /templates
+  cache-enabled: true
+  cache-update-delay-ms: 60000
+
+
 freemarker:
   encoding: UTF-8
   template-exception-handler: RETHROW_HANDLER

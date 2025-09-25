@@ -31,5 +31,4 @@ public interface ProjectWriterPort {
   default void write(Path projectRoot, java.util.stream.Stream<? extends GeneratedFile> files) {
     files.forEach(f -> write(projectRoot, f));
   }
-
 }

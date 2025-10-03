@@ -4,19 +4,30 @@ spring:
 
 
 codegen:
-  artifacts:
-    gitignore:
-      enabled: true
-      template: gitignore.ftl
-      output-path: .gitignore
-    maven-pom:
-      enabled: true
-      template: pom.ftl
-      output-path: pom.xml
-    readme:
-      enabled: true
-      template: readme.ftl
-      output-path: README.md
+  profiles:
+    springboot-maven-java:
+      template-base-path: springboot/maven/java
+      artifacts:
+        gitignore:
+          enabled: true
+          template: .gitignore.ftl
+          output-path: .gitignore
+
+        pom:
+          enabled: true
+          template: pom.xml.ftl
+          output-path: pom.xml
+
+        application-yaml:
+          enabled: true
+          template: application.yml.ftl
+          output-path: src/main/resources/application.yml
+
+        readme:
+          enabled: true
+          template: README.md.ftl
+          output-path: README.md
+
 
 templating:
   encoding: UTF-8

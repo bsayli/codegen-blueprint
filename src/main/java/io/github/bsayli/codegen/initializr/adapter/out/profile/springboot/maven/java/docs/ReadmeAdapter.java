@@ -1,12 +1,12 @@
-package io.github.bsayli.codegen.initializr.adapter.out.generator.docs;
+package io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven.java.docs;
 
 import static java.util.Map.entry;
 
-import io.github.bsayli.codegen.initializr.adapter.out.generator.ArtifactGenerator;
+import io.github.bsayli.codegen.initializr.adapter.out.spi.ArtifactGenerator;
 import io.github.bsayli.codegen.initializr.adapter.out.templating.TemplateRenderer;
 import io.github.bsayli.codegen.initializr.application.port.out.artifacts.ReadmePort;
 import io.github.bsayli.codegen.initializr.bootstrap.config.ArtifactProperties;
-import io.github.bsayli.codegen.initializr.bootstrap.config.CodegenArtifactsProperties;
+import io.github.bsayli.codegen.initializr.bootstrap.config.CodegenProfilesProperties;
 import io.github.bsayli.codegen.initializr.domain.model.ProjectBlueprint;
 import io.github.bsayli.codegen.initializr.domain.model.value.dependency.Dependencies;
 import io.github.bsayli.codegen.initializr.domain.model.value.identity.ProjectIdentity;
@@ -20,9 +20,9 @@ import java.util.Map;
 
 public final class ReadmeAdapter implements ReadmePort, ArtifactGenerator {
 
+  public static final String PROFILE_KEY = "springboot-maven-java";
   private static final int ORDER = 90;
   private static final String NAME = "readme";
-
   // Model keys
   private static final String KEY_PROJECT_NAME = "projectName";
   private static final String KEY_PROJECT_DESCRIPTION = "projectDescription";
@@ -37,20 +37,23 @@ public final class ReadmeAdapter implements ReadmePort, ArtifactGenerator {
   private static final String KEY_DEPENDENCIES = "dependencies";
 
   private final TemplateRenderer renderer;
-  private final ArtifactProperties cfg;
+  private final CodegenProfilesProperties profiles;
+  private final String profileKey;
 
-  public ReadmeAdapter(TemplateRenderer renderer, CodegenArtifactsProperties props) {
-    this.renderer = renderer;
-    this.cfg = props.readme();
+  public ReadmeAdapter(TemplateRenderer renderer, CodegenProfilesProperties profiles) {
+    this(renderer, profiles, PROFILE_KEY);
   }
 
-  @Override
-  public boolean supports(ProjectBlueprint bp) {
-    return cfg.enabled();
+  public ReadmeAdapter(
+      TemplateRenderer renderer, CodegenProfilesProperties profiles, String profileKey) {
+    this.renderer = renderer;
+    this.profiles = profiles;
+    this.profileKey = profileKey;
   }
 
   @Override
   public GeneratedFile generate(ProjectBlueprint blueprint) {
+    ArtifactProperties cfg = cfg();
     Path outPath = Path.of(cfg.outputPath());
     String template = cfg.template();
     Map<String, Object> model = buildModel(blueprint);
@@ -63,6 +66,12 @@ public final class ReadmeAdapter implements ReadmePort, ArtifactGenerator {
   }
 
   @Override
+  public boolean supports(ProjectBlueprint bp) {
+    ArtifactProperties cfg = cfg();
+    return cfg.enabled();
+  }
+
+  @Override
   public int order() {
     return ORDER;
   }
@@ -70,6 +79,10 @@ public final class ReadmeAdapter implements ReadmePort, ArtifactGenerator {
   @Override
   public String name() {
     return NAME;
+  }
+
+  private ArtifactProperties cfg() {
+    return profiles.artifact(profileKey, NAME);
   }
 
   private Map<String, Object> buildModel(ProjectBlueprint bp) {

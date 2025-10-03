@@ -10,18 +10,13 @@ import io.github.bsayli.codegen.initializr.domain.error.exception.DomainViolatio
 import io.github.bsayli.codegen.initializr.domain.model.ProjectBlueprint;
 import io.github.bsayli.codegen.initializr.domain.model.value.dependency.Dependencies;
 import io.github.bsayli.codegen.initializr.domain.model.value.dependency.Dependency;
-import io.github.bsayli.codegen.initializr.domain.model.value.identity.ArtifactId;
-import io.github.bsayli.codegen.initializr.domain.model.value.identity.GroupId;
 import io.github.bsayli.codegen.initializr.domain.model.value.identity.ProjectIdentity;
 import io.github.bsayli.codegen.initializr.domain.model.value.naming.ProjectDescription;
 import io.github.bsayli.codegen.initializr.domain.model.value.naming.ProjectName;
 import io.github.bsayli.codegen.initializr.domain.model.value.pkg.PackageName;
-import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.JavaVersion;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.PlatformTarget;
-import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.SpringBootVersion;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.BuildOptions;
 import io.github.bsayli.codegen.initializr.domain.policy.tech.CompatibilityPolicy;
-import io.github.bsayli.codegen.initializr.domain.policy.tech.PlatformTargetSelector;
 import java.util.Arrays;
 import java.util.List;
 
@@ -90,27 +85,6 @@ public final class ProjectBlueprintFactory {
         buildOptions,
         platformTarget,
         Dependencies.of(Arrays.asList(deps)));
-  }
-
-  public static ProjectBlueprint fromPrimitives(
-      String groupId,
-      String artifactId,
-      String projectName,
-      String projectDescription,
-      String packageName,
-      BuildOptions buildOptions,
-      JavaVersion preferredJava,
-      SpringBootVersion preferredBoot,
-      Dependencies dependencies) {
-
-    var identity = new ProjectIdentity(new GroupId(groupId), new ArtifactId(artifactId));
-    var name = new ProjectName(projectName);
-    var description = new ProjectDescription(projectDescription);
-    var pkg = new PackageName(packageName);
-
-    var target = PlatformTargetSelector.select(buildOptions, preferredJava, preferredBoot);
-
-    return of(identity, name, description, pkg, buildOptions, target, dependencies);
   }
 
   private static void ensureNotNull(Object value, ErrorCode code) {

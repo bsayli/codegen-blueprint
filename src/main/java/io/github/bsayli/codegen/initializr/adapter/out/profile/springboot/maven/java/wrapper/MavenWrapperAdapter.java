@@ -1,6 +1,6 @@
-package io.github.bsayli.codegen.initializr.adapter.out.generator.wrapper;
+package io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven.java.wrapper;
 
-import io.github.bsayli.codegen.initializr.adapter.out.generator.ArtifactGenerator;
+import io.github.bsayli.codegen.initializr.adapter.out.spi.ArtifactGenerator;
 import io.github.bsayli.codegen.initializr.application.port.out.artifacts.MavenWrapperPort;
 import io.github.bsayli.codegen.initializr.domain.model.ProjectBlueprint;
 import io.github.bsayli.codegen.initializr.domain.port.out.artifact.GeneratedFile;

@@ -9,7 +9,7 @@ import io.github.bsayli.codegen.initializr.domain.model.ProjectBlueprint;
 import java.util.List;
 import java.util.Map;
 
-public final class GitIgnoreAdapter extends AbstractSingleTemplateArtifactAdapter
+public class GitIgnoreAdapter extends AbstractSingleTemplateArtifactAdapter
     implements GitIgnorePort {
 
   private static final String KEY_IGNORE_LIST = "ignoreList";

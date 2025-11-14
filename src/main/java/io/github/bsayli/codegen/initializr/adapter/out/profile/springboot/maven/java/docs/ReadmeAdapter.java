@@ -18,8 +18,7 @@ import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.BuildOp
 import java.util.List;
 import java.util.Map;
 
-public final class ReadmeAdapter extends AbstractSingleTemplateArtifactAdapter
-    implements ReadmePort {
+public class ReadmeAdapter extends AbstractSingleTemplateArtifactAdapter implements ReadmePort {
 
   private static final String KEY_PROJECT_NAME = "projectName";
   private static final String KEY_PROJECT_DESCRIPTION = "projectDescription";

@@ -1,19 +1,37 @@
 package io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven.java.wrapper;
 
+import static java.util.Map.entry;
+
+import io.github.bsayli.codegen.initializr.adapter.out.artifact.AbstractSingleTemplateArtifactAdapter;
+import io.github.bsayli.codegen.initializr.adapter.out.templating.TemplateRenderer;
 import io.github.bsayli.codegen.initializr.application.port.out.artifacts.ArtifactKey;
 import io.github.bsayli.codegen.initializr.application.port.out.artifacts.MavenWrapperPort;
+import io.github.bsayli.codegen.initializr.bootstrap.config.ArtifactDefinition;
 import io.github.bsayli.codegen.initializr.domain.model.ProjectBlueprint;
-import io.github.bsayli.codegen.initializr.domain.port.out.artifact.GeneratedFile;
+import java.util.Map;
 
-public final class MavenWrapperAdapter implements MavenWrapperPort {
+public class MavenWrapperAdapter extends AbstractSingleTemplateArtifactAdapter
+    implements MavenWrapperPort {
 
-  @Override
-  public Iterable<? extends GeneratedFile> generate(ProjectBlueprint blueprint) {
-    throw new UnsupportedOperationException("MavenWrapperAdapter.generate not implemented yet");
+  private static final String KEY_WRAPPER_VERSION = "wrapperVersion";
+  private static final String KEY_MAVEN_VERSION = "mavenVersion";
+
+  private static final String DEFAULT_WRAPPER_VERSION = "3.3.3";
+  private static final String DEFAULT_MAVEN_VERSION = "3.9.11";
+
+  public MavenWrapperAdapter(TemplateRenderer renderer, ArtifactDefinition artifactDefinition) {
+    super(renderer, artifactDefinition);
   }
 
   @Override
   public ArtifactKey artifactKey() {
-    return null;
+    return ArtifactKey.MAVEN_WRAPPER;
+  }
+
+  @Override
+  protected Map<String, Object> buildModel(ProjectBlueprint blueprint) {
+    return Map.ofEntries(
+        entry(KEY_WRAPPER_VERSION, DEFAULT_WRAPPER_VERSION),
+        entry(KEY_MAVEN_VERSION, DEFAULT_MAVEN_VERSION));
   }
 }

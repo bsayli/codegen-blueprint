@@ -2,7 +2,6 @@ spring:
   application:
     name: codegen-springboot-initializr
 
-
 codegen:
   profiles:
     springboot-maven-java:
@@ -10,6 +9,7 @@ codegen:
 
       ordered-artifact-keys:
         - pom
+        - maven-wrapper
         - gitignore
         - application-yaml
         - source-scaffolder
@@ -17,11 +17,15 @@ codegen:
         - readme
 
       artifacts:
-
         pom:
           templates:
             - template: pom.xml.ftl
               output-path: pom.xml
+
+        maven-wrapper:
+          templates:
+            - template: maven-wrapper.properties.ftl
+              output-path: .mvn/wrapper/maven-wrapper.properties
 
         gitignore:
           templates:
@@ -47,7 +51,6 @@ codegen:
           templates:
             - template: README.md.ftl
               output-path: README.md
-
 
 templating:
   encoding: UTF-8

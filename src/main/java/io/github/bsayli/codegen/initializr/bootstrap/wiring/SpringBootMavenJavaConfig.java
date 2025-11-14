@@ -9,6 +9,7 @@ import io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven.
 import io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven.java.source.SourceScaffolderAdapter;
 import io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven.java.test.TestScaffolderAdapter;
 import io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven.java.vcs.GitIgnoreAdapter;
+import io.github.bsayli.codegen.initializr.adapter.out.profile.springboot.maven.java.wrapper.MavenWrapperAdapter;
 import io.github.bsayli.codegen.initializr.adapter.out.templating.TemplateRenderer;
 import io.github.bsayli.codegen.initializr.adapter.profile.ProfileType;
 import io.github.bsayli.codegen.initializr.adapter.shared.naming.StringCaseFormatter;
@@ -27,6 +28,40 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class SpringBootMavenJavaConfig {
+
+  @Bean
+  MavenPomAdapter springBootMavenJavaPomAdapter(
+      TemplateRenderer renderer,
+      CodegenProfilesProperties profiles,
+      PomDependencyMapper pomDependencyMapper) {
+    ArtifactDefinition props =
+        profiles.artifact(ProfileType.SPRINGBOOT_MAVEN_JAVA, ArtifactKey.POM);
+    return new MavenPomAdapter(renderer, props, pomDependencyMapper);
+  }
+
+  @Bean
+  MavenWrapperAdapter springBootMavenJavaWrapperAdapter(
+      TemplateRenderer renderer, CodegenProfilesProperties profiles) {
+    ArtifactDefinition props =
+        profiles.artifact(ProfileType.SPRINGBOOT_MAVEN_JAVA, ArtifactKey.MAVEN_WRAPPER);
+    return new MavenWrapperAdapter(renderer, props);
+  }
+
+  @Bean
+  GitIgnoreAdapter springBootMavenJavaGitIgnoreAdapter(
+      TemplateRenderer renderer, CodegenProfilesProperties profiles) {
+    ArtifactDefinition props =
+        profiles.artifact(ProfileType.SPRINGBOOT_MAVEN_JAVA, ArtifactKey.GITIGNORE);
+    return new GitIgnoreAdapter(renderer, props);
+  }
+
+  @Bean
+  ApplicationYamlAdapter springBootMavenJavaApplicationYamlAdapter(
+      TemplateRenderer renderer, CodegenProfilesProperties profiles) {
+    ArtifactDefinition props =
+        profiles.artifact(ProfileType.SPRINGBOOT_MAVEN_JAVA, ArtifactKey.APPLICATION_YAML);
+    return new ApplicationYamlAdapter(renderer, props);
+  }
 
   @Bean
   SourceScaffolderAdapter springBootMavenJavaSourceScaffolderAdapter(
@@ -49,32 +84,6 @@ public class SpringBootMavenJavaConfig {
   }
 
   @Bean
-  MavenPomAdapter springBootMavenJavaPomAdapter(
-      TemplateRenderer renderer,
-      CodegenProfilesProperties profiles,
-      PomDependencyMapper pomDependencyMapper) {
-    ArtifactDefinition props =
-        profiles.artifact(ProfileType.SPRINGBOOT_MAVEN_JAVA, ArtifactKey.POM);
-    return new MavenPomAdapter(renderer, props, pomDependencyMapper);
-  }
-
-  @Bean
-  GitIgnoreAdapter springBootMavenJavaGitIgnoreAdapter(
-      TemplateRenderer renderer, CodegenProfilesProperties profiles) {
-    ArtifactDefinition props =
-        profiles.artifact(ProfileType.SPRINGBOOT_MAVEN_JAVA, ArtifactKey.GITIGNORE);
-    return new GitIgnoreAdapter(renderer, props);
-  }
-
-  @Bean
-  ApplicationYamlAdapter springBootMavenJavaApplicationYamlAdapter(
-      TemplateRenderer renderer, CodegenProfilesProperties profiles) {
-    ArtifactDefinition props =
-        profiles.artifact(ProfileType.SPRINGBOOT_MAVEN_JAVA, ArtifactKey.APPLICATION_YAML);
-    return new ApplicationYamlAdapter(renderer, props);
-  }
-
-  @Bean
   ReadmeAdapter springBootMavenJavaReadmeAdapter(
       TemplateRenderer renderer,
       CodegenProfilesProperties profiles,
@@ -87,6 +96,7 @@ public class SpringBootMavenJavaConfig {
   @Bean
   Map<ArtifactKey, ArtifactPort> springBootMavenJavaArtifactRegistry(
       MavenPomAdapter springBootMavenJavaPomAdapter,
+      MavenWrapperAdapter springBootMavenJavaWrapperAdapter,
       GitIgnoreAdapter springBootMavenJavaGitIgnoreAdapter,
       ApplicationYamlAdapter springBootMavenJavaApplicationYamlAdapter,
       SourceScaffolderAdapter springBootMavenJavaSourceScaffolderAdapter,
@@ -95,6 +105,7 @@ public class SpringBootMavenJavaConfig {
 
     Map<ArtifactKey, ArtifactPort> registry = new EnumMap<>(ArtifactKey.class);
     registry.put(ArtifactKey.POM, springBootMavenJavaPomAdapter);
+    registry.put(ArtifactKey.MAVEN_WRAPPER, springBootMavenJavaWrapperAdapter);
     registry.put(ArtifactKey.GITIGNORE, springBootMavenJavaGitIgnoreAdapter);
     registry.put(ArtifactKey.APPLICATION_YAML, springBootMavenJavaApplicationYamlAdapter);
     registry.put(ArtifactKey.SOURCE_SCAFFOLDER, springBootMavenJavaSourceScaffolderAdapter);

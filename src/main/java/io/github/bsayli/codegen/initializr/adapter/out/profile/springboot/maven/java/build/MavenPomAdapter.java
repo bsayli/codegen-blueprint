@@ -16,8 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public final class MavenPomAdapter extends AbstractSingleTemplateArtifactAdapter
-    implements MavenPomPort {
+public class MavenPomAdapter extends AbstractSingleTemplateArtifactAdapter implements MavenPomPort {
 
   private static final String KEY_GROUP_ID = "groupId";
   private static final String KEY_ARTIFACT_ID = "artifactId";

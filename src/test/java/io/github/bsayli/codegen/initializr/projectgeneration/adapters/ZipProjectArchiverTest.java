@@ -11,11 +11,9 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import org.apache.commons.compress.archivers.ArchiveEntry;
-import org.apache.commons.compress.archivers.ArchiveInputStream;
-import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -172,10 +170,9 @@ class ZipProjectArchiverTest {
     boolean mkExtracted = extractedDir.mkdirs();
     assertTrue(mkExtracted || extractedDir.exists(), "unarchived directory could not be created");
 
-    try (ArchiveInputStream<?> inputStream =
-        new ZipArchiveInputStream(new FileInputStream(archivedFile))) {
-      ArchiveEntry entry;
-      while ((entry = inputStream.getNextEntry()) != null) {
+    try (ZipInputStream zis = new ZipInputStream(new FileInputStream(archivedFile))) {
+      ZipEntry entry;
+      while ((entry = zis.getNextEntry()) != null) {
         if (entry.isDirectory()) {
           File directory = new File(extractedDir, entry.getName());
           boolean mk = directory.mkdirs();
@@ -185,10 +182,12 @@ class ZipProjectArchiverTest {
           File parent = file.getParentFile();
           boolean mk = parent.mkdirs();
           assertTrue(mk || parent.exists(), "Failed to create parent directory: " + parent);
+
           try (OutputStream outputStream = new FileOutputStream(file)) {
-            IOUtils.copy(inputStream, outputStream);
+            zis.transferTo(outputStream);
           }
         }
+        zis.closeEntry();
       }
     }
 

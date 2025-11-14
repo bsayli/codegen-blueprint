@@ -5,6 +5,7 @@ import java.util.Arrays;
 
 public enum ArtifactKey {
   POM("pom"),
+  MAVEN_WRAPPER("maven-wrapper"),
   GITIGNORE("gitignore"),
   APPLICATION_YAML("application-yaml"),
   SOURCE_SCAFFOLDER("source-scaffolder"),

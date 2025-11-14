@@ -19,11 +19,9 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import org.apache.commons.compress.archivers.ArchiveEntry;
-import org.apache.commons.compress.archivers.ArchiveInputStream;
-import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,10 +118,11 @@ class ProjectGenerationServiceImplTest {
     File extractedDir = new File(archivedProjectFile.getParentFile(), DIRECTORY_NAME_UNARCHIVED);
     ensureDir(extractedDir, "Failed to create extracted dir: " + extractedDir);
 
-    try (ArchiveInputStream<?> inputStream =
-        new ZipArchiveInputStream(new FileInputStream(archivedProjectFile))) {
-      ArchiveEntry entry;
-      while ((entry = inputStream.getNextEntry()) != null) {
+    try (ZipInputStream zis = new ZipInputStream(new FileInputStream(archivedProjectFile))) {
+      ZipEntry entry;
+      byte[] buffer = new byte[8192];
+
+      while ((entry = zis.getNextEntry()) != null) {
         if (entry.isDirectory()) {
           File directory = new File(extractedDir, entry.getName());
           ensureDir(directory, "Failed to create directory: " + directory);
@@ -131,10 +130,15 @@ class ProjectGenerationServiceImplTest {
           File file = new File(extractedDir, entry.getName());
           File parent = file.getParentFile();
           ensureDir(parent, "Failed to create parent directory: " + parent);
+
           try (OutputStream outputStream = new FileOutputStream(file)) {
-            IOUtils.copy(inputStream, outputStream);
+            int len;
+            while ((len = zis.read(buffer)) != -1) {
+              outputStream.write(buffer, 0, len);
+            }
           }
         }
+        zis.closeEntry();
       }
     }
 

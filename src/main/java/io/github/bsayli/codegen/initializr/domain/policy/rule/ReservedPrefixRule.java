@@ -1,4 +1,3 @@
-// src/main/java/io/github/bsayli/codegen/initializr/domain/policy/rule/ReservedPrefixRule.java
 package io.github.bsayli.codegen.initializr.domain.policy.rule;
 
 import static io.github.bsayli.codegen.initializr.domain.error.code.ErrorKeys.compose;

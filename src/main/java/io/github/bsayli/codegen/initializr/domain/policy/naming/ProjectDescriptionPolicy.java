@@ -1,7 +1,7 @@
 package io.github.bsayli.codegen.initializr.domain.policy.naming;
 
 import static io.github.bsayli.codegen.initializr.domain.error.code.Field.PROJECT_DESCRIPTION;
-import static io.github.bsayli.codegen.initializr.domain.error.code.Violation.INVALID_CHARS;
+import static io.github.bsayli.codegen.initializr.domain.error.code.Violation.CONTROL_CHARS;
 
 import io.github.bsayli.codegen.initializr.domain.policy.rule.LengthBetweenRule;
 import io.github.bsayli.codegen.initializr.domain.policy.rule.RegexMatchRule;
@@ -34,7 +34,7 @@ public final class ProjectDescriptionPolicy {
     Rule<String> rule =
         CompositeRule.of(
             new LengthBetweenRule(MIN, MAX, PROJECT_DESCRIPTION),
-            new RegexMatchRule(NO_CONTROL_CHARS, PROJECT_DESCRIPTION, INVALID_CHARS));
+            new RegexMatchRule(NO_CONTROL_CHARS, PROJECT_DESCRIPTION, CONTROL_CHARS));
     rule.check(value);
   }
 }

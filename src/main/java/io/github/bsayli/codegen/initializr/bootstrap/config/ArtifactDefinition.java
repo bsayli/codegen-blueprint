@@ -4,4 +4,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
-public record ArtifactDefinition(@Valid @NotNull List<TemplateDefinition> templates) {}
+public record ArtifactDefinition(
+        String basePath,
+        @Valid @NotNull List<TemplateDefinition> templates
+) {}

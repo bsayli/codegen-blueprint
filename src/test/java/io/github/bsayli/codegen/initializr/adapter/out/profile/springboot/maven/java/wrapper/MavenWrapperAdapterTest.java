@@ -22,6 +22,8 @@ import org.junit.jupiter.api.Test;
 @DisplayName("Unit Test: MavenWrapperAdapter")
 class MavenWrapperAdapterTest {
 
+  private static final String BASE_PATH = "springboot/maven/java/";
+
   @Test
   @DisplayName("artifactKey() should return MAVEN_WRAPPER")
   void artifactKey_shouldReturnMavenWrapper() {
@@ -29,6 +31,7 @@ class MavenWrapperAdapterTest {
         new MavenWrapperAdapter(
             new NoopTemplateRenderer(),
             new ArtifactDefinition(
+                BASE_PATH,
                 List.of(
                     new TemplateDefinition(
                         "maven-wrapper.ftl", ".mvn/wrapper/maven-wrapper.properties"))));
@@ -43,7 +46,8 @@ class MavenWrapperAdapterTest {
 
     TemplateDefinition templateDefinition =
         new TemplateDefinition("maven-wrapper.ftl", ".mvn/wrapper/maven-wrapper.properties");
-    ArtifactDefinition artifactDefinition = new ArtifactDefinition(List.of(templateDefinition));
+    ArtifactDefinition artifactDefinition =
+        new ArtifactDefinition(BASE_PATH, List.of(templateDefinition));
 
     MavenWrapperAdapter adapter = new MavenWrapperAdapter(renderer, artifactDefinition);
 
@@ -59,7 +63,7 @@ class MavenWrapperAdapterTest {
     assertThat(result).singleElement().isSameAs(expectedFile);
 
     assertThat(renderer.capturedOutPath).isEqualTo(relativePath);
-    assertThat(renderer.capturedTemplateName).isEqualTo("maven-wrapper.ftl");
+    assertThat(renderer.capturedTemplateName).isEqualTo(BASE_PATH + "maven-wrapper.ftl");
 
     Map<String, Object> model = renderer.capturedModel;
     assertThat(model)

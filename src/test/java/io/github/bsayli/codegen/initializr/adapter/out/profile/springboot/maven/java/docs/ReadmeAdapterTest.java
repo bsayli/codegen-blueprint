@@ -43,6 +43,8 @@ import org.junit.jupiter.api.Test;
 @DisplayName("Unit Test: ReadmeAdapter")
 class ReadmeAdapterTest {
 
+  private static final String BASE_PATH = "springboot/maven/java/";
+
   private static ProjectBlueprint blueprintWithDependencies() {
     ProjectIdentity identity =
         new ProjectIdentity(new GroupId("com.acme"), new ArtifactId("demo-app"));
@@ -74,7 +76,8 @@ class ReadmeAdapterTest {
     ReadmeAdapter adapter =
         new ReadmeAdapter(
             new NoopTemplateRenderer(),
-            new ArtifactDefinition(List.of(new TemplateDefinition("README.ftl", "README.md"))),
+            new ArtifactDefinition(
+                BASE_PATH, List.of(new TemplateDefinition("README.ftl", "README.md"))),
             new PomDependencyMapper());
 
     assertThat(adapter.artifactKey()).isEqualTo(ArtifactKey.README);
@@ -90,7 +93,8 @@ class ReadmeAdapterTest {
     RecordingPomDependencyMapper mapper = new RecordingPomDependencyMapper(mappedDeps);
 
     TemplateDefinition templateDefinition = new TemplateDefinition("README.ftl", "README.md");
-    ArtifactDefinition artifactDefinition = new ArtifactDefinition(List.of(templateDefinition));
+    ArtifactDefinition artifactDefinition =
+        new ArtifactDefinition(BASE_PATH, List.of(templateDefinition));
 
     ReadmeAdapter adapter = new ReadmeAdapter(renderer, artifactDefinition, mapper);
 
@@ -106,7 +110,7 @@ class ReadmeAdapterTest {
     assertThat(result).singleElement().isSameAs(dummyFile);
 
     assertThat(renderer.capturedOutPath).isEqualTo(relativePath);
-    assertThat(renderer.capturedTemplateName).isEqualTo("README.ftl");
+    assertThat(renderer.capturedTemplateName).isEqualTo(BASE_PATH + "README.ftl");
     assertThat(renderer.capturedModel).isNotNull();
 
     Map<String, Object> model = renderer.capturedModel;

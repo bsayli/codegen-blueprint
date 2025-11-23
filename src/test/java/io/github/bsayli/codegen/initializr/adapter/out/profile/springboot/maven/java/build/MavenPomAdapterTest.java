@@ -42,6 +42,8 @@ import org.junit.jupiter.api.Test;
 @DisplayName("Unit Test: MavenPomAdapter")
 class MavenPomAdapterTest {
 
+  private static final String BASE_PATH = "springboot/maven/java/";
+
   private static ProjectBlueprint blueprintWithDependencies() {
     ProjectIdentity identity =
         new ProjectIdentity(new GroupId("com.acme"), new ArtifactId("demo-app"));
@@ -73,7 +75,8 @@ class MavenPomAdapterTest {
     MavenPomAdapter adapter =
         new MavenPomAdapter(
             new NoopTemplateRenderer(),
-            new ArtifactDefinition(List.of(new TemplateDefinition("pom.ftl", "pom.xml"))),
+            new ArtifactDefinition(
+                BASE_PATH, List.of(new TemplateDefinition("pom.ftl", "pom.xml"))),
             new RecordingPomDependencyMapper(List.of()));
 
     assertThat(adapter.artifactKey()).isEqualTo(ArtifactKey.POM);
@@ -88,7 +91,8 @@ class MavenPomAdapterTest {
             List.of(PomDependency.of("org.acme", "custom-dep", "1.0.0", "runtime")));
 
     TemplateDefinition templateDefinition = new TemplateDefinition("pom.ftl", "pom.xml");
-    ArtifactDefinition artifactDefinition = new ArtifactDefinition(List.of(templateDefinition));
+    ArtifactDefinition artifactDefinition =
+        new ArtifactDefinition(BASE_PATH, List.of(templateDefinition));
 
     MavenPomAdapter adapter = new MavenPomAdapter(renderer, artifactDefinition, mapper);
 
@@ -104,7 +108,7 @@ class MavenPomAdapterTest {
     assertThat(result).singleElement().isSameAs(dummyFile);
 
     assertThat(renderer.capturedOutPath).isEqualTo(relativePath);
-    assertThat(renderer.capturedTemplateName).isEqualTo("pom.ftl");
+    assertThat(renderer.capturedTemplateName).isEqualTo(BASE_PATH + "pom.ftl");
     assertThat(renderer.capturedModel).isNotNull();
 
     Map<String, Object> model = renderer.capturedModel;

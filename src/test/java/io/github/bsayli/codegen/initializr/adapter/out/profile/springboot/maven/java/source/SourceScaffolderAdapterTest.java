@@ -29,6 +29,8 @@ import org.junit.jupiter.api.Test;
 @DisplayName("Unit Test: SourceScaffolderAdapter")
 class SourceScaffolderAdapterTest {
 
+  private static final String BASE_PATH = "springboot/maven/java/";
+
   private static ProjectBlueprint blueprint() {
     ProjectIdentity identity =
         new ProjectIdentity(new GroupId("com.acme"), new ArtifactId("demo-app"));
@@ -46,7 +48,8 @@ class SourceScaffolderAdapterTest {
     SourceScaffolderAdapter adapter =
         new SourceScaffolderAdapter(
             new NoopTemplateRenderer(),
-            new ArtifactDefinition(List.of(new TemplateDefinition("source.ftl", "src/main/java"))),
+            new ArtifactDefinition(
+                BASE_PATH, List.of(new TemplateDefinition("source.ftl", "src/main/java"))),
             new StringCaseFormatter());
 
     assertThat(adapter.artifactKey()).isEqualTo(ArtifactKey.SOURCE_SCAFFOLDER);
@@ -59,7 +62,8 @@ class SourceScaffolderAdapterTest {
     CapturingTemplateRenderer renderer = new CapturingTemplateRenderer();
 
     TemplateDefinition templateDefinition = new TemplateDefinition("source.ftl", "src/main/java");
-    ArtifactDefinition artifactDefinition = new ArtifactDefinition(List.of(templateDefinition));
+    ArtifactDefinition artifactDefinition =
+        new ArtifactDefinition(BASE_PATH, List.of(templateDefinition));
 
     SourceScaffolderAdapter adapter =
         new SourceScaffolderAdapter(renderer, artifactDefinition, new StringCaseFormatter());
@@ -77,7 +81,7 @@ class SourceScaffolderAdapterTest {
     assertThat(result).singleElement().isSameAs(expectedFile);
 
     assertThat(renderer.capturedOutPath).isEqualTo(expectedPath);
-    assertThat(renderer.capturedTemplateName).isEqualTo("source.ftl");
+    assertThat(renderer.capturedTemplateName).isEqualTo(BASE_PATH + "source.ftl");
 
     Map<String, Object> model = renderer.capturedModel;
     assertThat(model)

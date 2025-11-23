@@ -16,7 +16,7 @@ public abstract class AbstractSingleTemplateArtifactAdapter implements ArtifactP
   private final ArtifactDefinition artifactDefinition;
 
   protected AbstractSingleTemplateArtifactAdapter(
-      TemplateRenderer renderer, ArtifactDefinition artifactDefinition) {
+          TemplateRenderer renderer, ArtifactDefinition artifactDefinition) {
     this.renderer = renderer;
     this.artifactDefinition = artifactDefinition;
   }
@@ -24,10 +24,13 @@ public abstract class AbstractSingleTemplateArtifactAdapter implements ArtifactP
   @Override
   public final Iterable<? extends GeneratedFile> generate(ProjectBlueprint blueprint) {
     TemplateDefinition templateDefinition = artifactDefinition.templates().getFirst();
+
     Path outPath = Path.of(templateDefinition.outputPath());
-    String template = templateDefinition.template();
+    String templateName = artifactDefinition.basePath() + templateDefinition.template();
+
     Map<String, Object> model = buildModel(blueprint);
-    GeneratedFile file = renderer.renderUtf8(outPath, template, model);
+    GeneratedFile file = renderer.renderUtf8(outPath, templateName, model);
+
     return List.of(file);
   }
 

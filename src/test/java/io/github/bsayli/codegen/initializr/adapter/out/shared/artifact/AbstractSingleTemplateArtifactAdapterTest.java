@@ -22,6 +22,8 @@ import org.junit.jupiter.api.Test;
 @DisplayName("Unit Test: AbstractSingleTemplateArtifactAdapter")
 class AbstractSingleTemplateArtifactAdapterTest {
 
+  private static final String BASE_PATH = "springboot/maven/java/";
+
   @Test
   @DisplayName("generate() should use first template, render with model, and return single file")
   void generate_shouldRenderSingleTemplateAndReturnFile() {
@@ -30,7 +32,8 @@ class AbstractSingleTemplateArtifactAdapterTest {
     TemplateDefinition templateDefinition =
         new TemplateDefinition("test-template.ftl", "output/test.txt");
 
-    ArtifactDefinition artifactDefinition = new ArtifactDefinition(List.of(templateDefinition));
+    ArtifactDefinition artifactDefinition =
+        new ArtifactDefinition(BASE_PATH, List.of(templateDefinition));
 
     TestSingleTemplateAdapter adapter = new TestSingleTemplateAdapter(renderer, artifactDefinition);
 
@@ -44,7 +47,7 @@ class AbstractSingleTemplateArtifactAdapterTest {
     Iterable<? extends GeneratedFile> result = adapter.generate(blueprint);
 
     assertThat(renderer.capturedOutPath).isEqualTo(relativePath);
-    assertThat(renderer.capturedTemplateName).isEqualTo("test-template.ftl");
+    assertThat(renderer.capturedTemplateName).isEqualTo(BASE_PATH + "test-template.ftl");
     assertThat(renderer.capturedModel).isEqualTo(Map.of("key", "value"));
 
     assertThat(result).singleElement().isSameAs(expectedFile);

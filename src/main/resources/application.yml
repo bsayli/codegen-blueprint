@@ -5,7 +5,7 @@ spring:
 codegen:
   profiles:
     springboot-maven-java:
-      template-base-path: springboot/maven/java
+      template-base-path: springboot/maven/java/
 
       ordered-artifact-keys:
         - pom

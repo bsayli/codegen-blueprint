@@ -22,13 +22,16 @@ import org.junit.jupiter.api.Test;
 @DisplayName("Unit Test: GitIgnoreAdapter")
 class GitIgnoreAdapterTest {
 
+  private static final String BASE_PATH = "springboot/maven/java/";
+
   @Test
   @DisplayName("artifactKey() should return GITIGNORE")
   void artifactKey_shouldReturnGitignore() {
     GitIgnoreAdapter adapter =
         new GitIgnoreAdapter(
             new NoopTemplateRenderer(),
-            new ArtifactDefinition(List.of(new TemplateDefinition("gitignore.ftl", ".gitignore"))));
+            new ArtifactDefinition(
+                BASE_PATH, List.of(new TemplateDefinition("gitignore.ftl", ".gitignore"))));
 
     assertThat(adapter.artifactKey()).isEqualTo(ArtifactKey.GITIGNORE);
   }
@@ -39,7 +42,8 @@ class GitIgnoreAdapterTest {
     CapturingTemplateRenderer renderer = new CapturingTemplateRenderer();
 
     TemplateDefinition templateDefinition = new TemplateDefinition("gitignore.ftl", ".gitignore");
-    ArtifactDefinition artifactDefinition = new ArtifactDefinition(List.of(templateDefinition));
+    ArtifactDefinition artifactDefinition =
+        new ArtifactDefinition(BASE_PATH, List.of(templateDefinition));
 
     GitIgnoreAdapter adapter = new GitIgnoreAdapter(renderer, artifactDefinition);
 
@@ -55,7 +59,7 @@ class GitIgnoreAdapterTest {
     assertThat(result).singleElement().isSameAs(expectedFile);
 
     assertThat(renderer.capturedOutPath).isEqualTo(relativePath);
-    assertThat(renderer.capturedTemplateName).isEqualTo("gitignore.ftl");
+    assertThat(renderer.capturedTemplateName).isEqualTo(BASE_PATH + "gitignore.ftl");
 
     Map<String, Object> model = renderer.capturedModel;
     assertThat(model).isNotNull().containsEntry("ignoreList", List.of());

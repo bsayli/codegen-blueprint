@@ -23,6 +23,8 @@ import org.junit.jupiter.api.Test;
 @DisplayName("Unit Test: ApplicationYamlAdapter")
 class ApplicationYamlAdapterTest {
 
+  private static final String BASE_PATH = "springboot/maven/java/";
+
   @Test
   @DisplayName("artifactKey() should return APPLICATION_YAML")
   void artifactKey_shouldReturnApplicationYaml() {
@@ -30,6 +32,7 @@ class ApplicationYamlAdapterTest {
         new ApplicationYamlAdapter(
             new NoopTemplateRenderer(),
             new ArtifactDefinition(
+                BASE_PATH,
                 List.of(new TemplateDefinition("application-yaml.ftl", "application.yml"))));
 
     assertThat(adapter.artifactKey()).isEqualTo(ArtifactKey.APPLICATION_YAML);
@@ -42,7 +45,8 @@ class ApplicationYamlAdapterTest {
 
     TemplateDefinition templateDefinition =
         new TemplateDefinition("application-yaml.ftl", "src/main/resources/application.yml");
-    ArtifactDefinition artifactDefinition = new ArtifactDefinition(List.of(templateDefinition));
+    ArtifactDefinition artifactDefinition =
+        new ArtifactDefinition(BASE_PATH, List.of(templateDefinition));
 
     ApplicationYamlAdapter adapter = new ApplicationYamlAdapter(renderer, artifactDefinition);
 
@@ -67,7 +71,7 @@ class ApplicationYamlAdapterTest {
     assertThat(result).singleElement().isSameAs(expectedFile);
 
     assertThat(renderer.capturedOutPath).isEqualTo(relativePath);
-    assertThat(renderer.capturedTemplateName).isEqualTo("application-yaml.ftl");
+    assertThat(renderer.capturedTemplateName).isEqualTo(BASE_PATH + "application-yaml.ftl");
     assertThat(renderer.capturedModel).isNotNull().containsEntry("projectName", "demo-app");
   }
 }

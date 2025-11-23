@@ -23,6 +23,8 @@ import org.junit.jupiter.api.Test;
 @DisplayName("Unit Test: AbstractJavaClassScaffolderAdapter")
 class AbstractJavaClassScaffolderAdapterTest {
 
+  private static final String BASE_PATH = "springboot/maven/java/";
+
   @Test
   @DisplayName("generate() should build correct path, model and return single file")
   void generate_shouldBuildOutPathAndModelAndReturnFile() {
@@ -31,7 +33,8 @@ class AbstractJavaClassScaffolderAdapterTest {
     TemplateDefinition templateDefinition =
         new TemplateDefinition("java-class.ftl", "src/main/java");
 
-    ArtifactDefinition artifactDefinition = new ArtifactDefinition(List.of(templateDefinition));
+    ArtifactDefinition artifactDefinition =
+        new ArtifactDefinition(BASE_PATH, List.of(templateDefinition));
 
     StringCaseFormatter formatter = new StringCaseFormatter();
 
@@ -52,7 +55,7 @@ class AbstractJavaClassScaffolderAdapterTest {
     assertThat(result).singleElement().isSameAs(expectedFile);
 
     assertThat(renderer.capturedOutPath).isEqualTo(expectedPath);
-    assertThat(renderer.capturedTemplateName).isEqualTo("java-class.ftl");
+    assertThat(renderer.capturedTemplateName).isEqualTo(BASE_PATH + "java-class.ftl");
 
     assertThat(renderer.capturedModel)
         .isNotNull()
@@ -77,7 +80,7 @@ class AbstractJavaClassScaffolderAdapterTest {
 
     @Override
     public ArtifactKey artifactKey() {
-      return null;
+      return ArtifactKey.SOURCE_SCAFFOLDER;
     }
   }
 }

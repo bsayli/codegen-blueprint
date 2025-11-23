@@ -29,12 +29,21 @@ public record CodegenProfilesProperties(@Valid @NotNull Map<String, ProfilePrope
   }
 
   ArtifactDefinition requireArtifact(
-      ProfileType profile, ProfileProperties profileProps, ArtifactKey artifactKey) {
-    var artifact = profileProps.artifacts().get(artifactKey.key());
+          ProfileType profile, ProfileProperties profileProps, ArtifactKey artifactKey) {
+
+    ArtifactDefinition artifact = profileProps.artifacts().get(artifactKey.key());
     if (artifact == null) {
       throw new ProfileConfigurationException(
-          ProfileConfigurationException.KEY_ARTIFACT_NOT_FOUND, artifactKey.key(), profile.key());
+              ProfileConfigurationException.KEY_ARTIFACT_NOT_FOUND, artifactKey.key(), profile.key());
     }
-    return artifact;
+
+    String basePath = profileProps.templateBasePath();
+
+    if (basePath == null || basePath.isBlank()) {
+      throw new ProfileConfigurationException(
+              ProfileConfigurationException.KEY_TEMPLATE_BASE_MISSING, profile.key());
+    }
+
+    return new ArtifactDefinition(basePath, artifact.templates());
   }
 }

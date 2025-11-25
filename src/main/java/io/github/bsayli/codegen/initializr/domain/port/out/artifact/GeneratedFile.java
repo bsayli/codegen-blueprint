@@ -18,10 +18,12 @@ public sealed interface GeneratedFile permits GeneratedFile.Text, GeneratedFile.
   }
 
   record Binary(Path relativePath, byte[] bytes) implements GeneratedFile {
-    public Binary {
+
+    public Binary(Path relativePath, byte[] bytes) {
       requireRelativePath(relativePath);
       requireBinaryContent(bytes);
-      bytes = Arrays.copyOf(bytes, bytes.length);
+      this.relativePath = relativePath;
+      this.bytes = Arrays.copyOf(bytes, bytes.length);
     }
 
     @Override

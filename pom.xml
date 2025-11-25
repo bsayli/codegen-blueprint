@@ -13,7 +13,7 @@
 
     <groupId>io.github.bsayli</groupId>
     <artifactId>codegen-springboot-initializr</artifactId>
-    <version>0.2.0</version>
+    <version>1.0.0</version>
     <name>codegen-springboot-initializr</name>
     <description>Spring Boot project generator (CLI &amp; programmatic)</description>
     <url>https://github.com/bsayli/codegen-springboot-initializr</url>

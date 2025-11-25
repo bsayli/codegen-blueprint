@@ -31,5 +31,30 @@ public sealed interface GeneratedFile permits GeneratedFile.Text, GeneratedFile.
     public byte[] bytes() {
       return Arrays.copyOf(bytes, bytes.length);
     }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (!(o instanceof Binary(Path path, byte[] bytes1))) {
+        return false;
+      }
+      return relativePath.equals(path) && Arrays.equals(bytes, bytes1);
+    }
+
+    @Override
+    public int hashCode() {
+      int result = relativePath.hashCode();
+      result = 31 * result + Arrays.hashCode(bytes);
+      return result;
+    }
+
+    @SuppressWarnings("NullableProblems")
+    @Override
+    public String toString() {
+      return "GeneratedFile.Binary[" + relativePath + ", size=" + bytes.length + "]";
+    }
   }
 }
+

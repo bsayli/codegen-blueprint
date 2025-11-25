@@ -8,7 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 @Tag("integration")
 @DisplayName("Integration Test: Spring Context Bootstrapping")
-class CodegenSpringbootInitializrApplicationIT {
+class CodegenBlueprintApplicationIT {
 
   @Test
   @DisplayName("Spring context should load successfully")

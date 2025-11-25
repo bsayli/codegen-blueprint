@@ -6,9 +6,9 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
 @SpringBootApplication
 @ConfigurationPropertiesScan(basePackages = "io.github.bsayli.codegen.initializr")
-public class CodegenSpringbootInitializrApplication {
+public class CodegenBlueprintApplication {
 
   public static void main(String[] args) {
-    SpringApplication.run(CodegenSpringbootInitializrApplication.class, args);
+    SpringApplication.run(CodegenBlueprintApplication.class, args);
   }
 }

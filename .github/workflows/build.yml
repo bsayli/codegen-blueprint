@@ -33,6 +33,6 @@ jobs:
           files: |
             target/site/jacoco/jacoco.xml
             target/site/jacoco-it/jacoco.xml
-          flags: codegen-springboot-initializr
-          name: codegen-springboot-initializr
+          flags: codegen-blueprint
+          name: codegen-blueprint
           fail_ci_if_error: false

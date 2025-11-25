@@ -35,7 +35,7 @@ jobs:
           languages: java
           queries: +security-and-quality
 
-      - name: Build (codegen-springboot-initializr)
+      - name: Build (codegen-blueprint)
         run: mvn -q -ntp -DskipTests=true clean package
 
       - name: Perform CodeQL Analysis

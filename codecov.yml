@@ -19,7 +19,7 @@ ignore:
   - "**/generated-sources/**"
 
 flags:
-  codegen-springboot-initializr:
+  codegen-blueprint:
     paths:
       - "src/main/java/"
       - "src/test/java/"

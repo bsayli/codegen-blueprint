@@ -1,9 +1,9 @@
-# Codegen Spring Boot Initializr — Hexagonal, Template‑Driven, Zero‑Boilerplate Project Generator
+# Codegen Blueprint — Hexagonal, Template‑Driven, Zero‑Boilerplate Project Generator
 
-[![Build](https://github.com/bsayli/codegen-springboot-initializr/actions/workflows/build.yml/badge.svg)](https://github.com/bsayli/codegen-springboot-initializr/actions/workflows/build.yml)
-[![Release](https://img.shields.io/github/v/release/bsayli/codegen-springboot-initializr?logo=github\&label=release)](https://github.com/bsayli/codegen-springboot-initializr/releases/latest)
-[![CodeQL](https://github.com/bsayli/codegen-springboot-initializr/actions/workflows/codeql.yml/badge.svg)](https://github.com/bsayli/codegen-springboot-initializr/actions/workflows/codeql.yml)
-[![codecov](https://codecov.io/gh/bsayli/codegen-springboot-initializr/branch/refactor/hexagonal-architecture/graph/badge.svg)](https://codecov.io/gh/bsayli/codegen-springboot-initializr/tree/refactor/hexagonal-architecture)
+[![Build](https://github.com/bsayli/codegen-blueprint/actions/workflows/build.yml/badge.svg)](https://github.com/bsayli/codegen-blueprint/actions/workflows/build.yml)
+[![Release](https://img.shields.io/github/v/release/bsayli/codegen-blueprint?logo=github\&label=release)](https://github.com/bsayli/codegen-blueprint/releases/latest)
+[![CodeQL](https://github.com/bsayli/codegen-blueprint/actions/workflows/codeql.yml/badge.svg)](https://github.com/bsayli/codegen-blueprint/actions/workflows/codeql.yml)
+[![codecov](https://codecov.io/gh/bsayli/codegen-blueprint/branch/main/graph/badge.svg)](https://codecov.io/gh/bsayli/codegen-blueprint)
 [![Java](https://img.shields.io/badge/Java-21-red?logo=openjdk)](https://openjdk.org/projects/jdk/21/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.7-green?logo=springboot)](https://spring.io/projects/spring-boot)
 [![Maven](https://img.shields.io/badge/Maven-3.9-blue?logo=apachemaven)](https://maven.apache.org/)
@@ -23,28 +23,54 @@ The core domain, application layer, artifact pipeline, FreeMarker templating, CI
 
 ## 🚀 Overview
 
-**Codegen Spring Boot Initializr** is a **hexagonal, template‑driven generator** that produces production‑ready Spring Boot project skeletons with:
+**Codegen Blueprint** is a **hexagonal, template‑driven generator** designed to act as a flexible **blueprint engine**.
+
+Rather than focusing on a single tech stack, it defines a stable, framework‑agnostic core that can generate project structures for *any* combination of:
+
+* Framework (e.g., Spring Boot today, others later)
+* Build tool (Maven, Gradle, …)
+* Language (Java today, Kotlin later)
+* Generation profile (customizable via configuration)
+
+The first shipped profile is:
+
+```
+springboot-maven-java
+```
+
+This profile produces production‑ready Spring Boot project skeletons featuring:
 
 * Strongly validated domain blueprint
-* Profile‑based artifact pipelines (e.g., `springboot-maven-java`)
+* Profile‑based artifact pipelines
 * FreeMarker template rendering
 * Fully isolated and tested ports/adapters
 * Zero boilerplate, consistent project layouts
 
-It aims to eliminate repetitive setup steps (pom.xml, `.gitignore`, `application.yml`, test scaffolding, package structure) by generating them automatically.
+Hexagonal architecture ensures new profiles can be added **without changing core logic**, simply by supplying new templates + profile configuration.
 
 ---
 
 ## 💡 Problem Statement
 
-Bootstrapping a new Spring Boot project often means:
+Teams often repeat the same setup steps when starting a new service or application:
 
-* Creating folder structures by hand
-* Copy‑pasting `pom.xml`, `.gitignore`, config files
-* Writing the same starter and test classes repeatedly
-* Maintaining consistency across multiple services
+* Creating the initial folder layout
+* Writing or copying build files (`pom.xml`, `build.gradle`, etc.)
+* Adding `.gitignore`, configuration files, starter classes, tests
+* Maintaining consistency across dozens of projects and multiple stacks
 
-This leads to **time loss**, **inconsistencies**, and **onboarding friction**.
+Most internal tooling solves this per stack — for example:
+
+* "Spring Boot + Maven + Java"
+* "Kotlin + Gradle"
+
+But the structural problem is always the same:
+
+> Given a **blueprint** (name, identity, tech stack, dependencies),
+> how can we generate a consistent, production‑grade project skeleton
+> **without hard‑wiring ourselves to a single framework, build tool, or language?**
+
+`codegen-blueprint` addresses this by acting as a **hexagonal, profile‑driven blueprint engine**.
 
 ---
 
@@ -52,17 +78,32 @@ This leads to **time loss**, **inconsistencies**, and **onboarding friction**.
 
 This project provides:
 
-* **Hexagonal core** — domain‑first, framework‑agnostic
-* **Template‑driven artifact generation** via FreeMarker
-* **Strictly validated domain blueprint** (name, groupId, artifactId, package, dependencies)
-* **Profile‑based pipelines** — e.g. Spring Boot + Maven + Java 21
-* **Full test coverage:** unit + integration
-* **GitHub Actions** with CodeQL, JaCoCo, Codecov
+* **Hexagonal core** — stable, framework‑agnostic, domain‑first design
+* **Template‑driven artifact generation** powered by FreeMarker
+* **Strict domain validation** for names, groupId/artifactId, package, dependencies
+* **Profile‑based pipelines** that define:
 
-Planned for 1.0.0:
+  * Template base paths
+  * Ordered artifact keys
+  * Artifact→template mappings
+* **Fully replaceable adapters** (templating, filesystem, archiving)
+* **Full test coverage** — unit + integration
+* **CI/CD ready** — CodeQL, JaCoCo, Codecov, GitHub Actions
 
-* **CLI inbound adapter** — generate projects via command line
-* **REST inbound adapter** — generate via HTTP POST
+**1.0.0 planned inbound adapters:**
+
+* CLI (command‑line project generation)
+* REST (HTTP‑based project generation)
+
+By separating *domain*, *application*, *ports*, and *adapters*, the engine can evolve to support:
+
+* Kotlin
+* Gradle
+* Multi‑module project generation
+* Alternative frameworks
+* Organization‑specific generation profiles
+
+…with no changes to core logic.
 
 ---
 
@@ -89,6 +130,7 @@ This generator follows a clean **ports & adapters** architecture.
   * FreeMarker templating
   * Artifact adapters (`pom`, `.gitignore`, `application.yml`, scaffolder, README)
   * Profile selection: `springboot-maven-java`
+
 * **Inbound:**
 
   * CLI (coming soon)
@@ -167,7 +209,7 @@ my-app/
 
 Contributions and discussions are welcome.
 Open issues or PRs at:
-[https://github.com/bsayli/codegen-springboot-initializr](https://github.com/bsayli/codegen-springboot-initializr)
+[https://github.com/bsayli/codegen-blueprint](https://github.com/bsayli/codegen-blueprint)
 
 ---
 

@@ -12,11 +12,11 @@
     </parent>
 
     <groupId>io.github.bsayli</groupId>
-    <artifactId>codegen-springboot-initializr</artifactId>
+    <artifactId>codegen-blueprint</artifactId>
     <version>1.0.0</version>
-    <name>codegen-springboot-initializr</name>
-    <description>Spring Boot project generator (CLI &amp; programmatic)</description>
-    <url>https://github.com/bsayli/codegen-springboot-initializr</url>
+    <name>codegen-blueprint</name>
+    <description>Hexagonal, template-driven Spring Boot project blueprint engine</description>
+    <url>codegen-blueprint</url>
 
     <licenses>
         <license>
@@ -26,9 +26,9 @@
         </license>
     </licenses>
     <scm>
-        <url>https://github.com/bsayli/codegen-springboot-initializr</url>
-        <connection>scm:git:https://github.com/bsayli/codegen-springboot-initializr.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/bsayli/codegen-springboot-initializr.git</developerConnection>
+        <url>https://github.com/bsayli/codegen-blueprint</url>
+        <connection>scm:git:https://github.com/bsayli/codegen-blueprint.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/bsayli/codegen-blueprint.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
     <developers>

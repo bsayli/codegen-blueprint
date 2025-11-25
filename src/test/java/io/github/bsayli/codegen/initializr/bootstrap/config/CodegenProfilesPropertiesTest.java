@@ -17,94 +17,97 @@ import org.junit.jupiter.api.Test;
 @DisplayName("Unit Test: CodegenProfilesProperties")
 class CodegenProfilesPropertiesTest {
 
-    private static final ProfileType PROFILE = ProfileType.SPRINGBOOT_MAVEN_JAVA;
-    private static final ArtifactKey ARTIFACT_KEY = ArtifactKey.POM;
-    private static final String PROFILE_KEY = PROFILE.key();
-    private static final String ARTIFACT_MAP_KEY = ARTIFACT_KEY.key();
-    private static final String TEMPLATE_BASE_PATH = "springboot/maven/java/";
+  private static final ProfileType PROFILE = ProfileType.SPRINGBOOT_MAVEN_JAVA;
+  private static final ArtifactKey ARTIFACT_KEY = ArtifactKey.POM;
+  private static final String PROFILE_KEY = PROFILE.key();
+  private static final String ARTIFACT_MAP_KEY = ARTIFACT_KEY.key();
+  private static final String TEMPLATE_BASE_PATH = "springboot/maven/java/";
 
-    @Test
-    @DisplayName("artifact() should return ArtifactDefinition with profile basePath and artifact templates")
-    void artifact_shouldReturnDefinitionWithProfileBasePathAndArtifactTemplates() {
-        TemplateDefinition templateDefinition = new TemplateDefinition("pom.ftl", "pom.xml");
+  private static CodegenProfilesProperties getCodegenProfilesProperties() {
+    TemplateDefinition templateDefinition = new TemplateDefinition("pom.ftl", "pom.xml");
 
-        ArtifactDefinition artifactDefinition =
-                new ArtifactDefinition("artifact-specific/", List.of(templateDefinition));
+    ArtifactDefinition artifactDefinition =
+        new ArtifactDefinition(null, List.of(templateDefinition));
 
-        ProfileProperties profileProperties =
-                new ProfileProperties(
-                        TEMPLATE_BASE_PATH,
-                        List.of(ARTIFACT_KEY),
-                        Map.of(ARTIFACT_MAP_KEY, artifactDefinition));
+    ProfileProperties profileProperties =
+        new ProfileProperties(
+            "  ", List.of(ARTIFACT_KEY), Map.of(ARTIFACT_MAP_KEY, artifactDefinition));
 
-        CodegenProfilesProperties properties =
-                new CodegenProfilesProperties(Map.of(PROFILE_KEY, profileProperties));
+    return new CodegenProfilesProperties(Map.of(PROFILE_KEY, profileProperties));
+  }
 
-        ArtifactDefinition result = properties.artifact(PROFILE, ARTIFACT_KEY);
+  @Test
+  @DisplayName(
+      "artifact() should return ArtifactDefinition with profile basePath and artifact templates")
+  void artifact_shouldReturnDefinitionWithProfileBasePathAndArtifactTemplates() {
+    TemplateDefinition templateDefinition = new TemplateDefinition("pom.ftl", "pom.xml");
 
-        assertThat(result.basePath()).isEqualTo(TEMPLATE_BASE_PATH);
-        assertThat(result.templates()).isSameAs(artifactDefinition.templates());
-    }
+    ArtifactDefinition artifactDefinition =
+        new ArtifactDefinition("artifact-specific/", List.of(templateDefinition));
 
-    @Test
-    @DisplayName("requireProfile() should throw ProfileConfigurationException when profile is missing")
-    void requireProfile_shouldThrowWhenProfileMissing() {
-        CodegenProfilesProperties properties = new CodegenProfilesProperties(Map.of());
+    ProfileProperties profileProperties =
+        new ProfileProperties(
+            TEMPLATE_BASE_PATH,
+            List.of(ARTIFACT_KEY),
+            Map.of(ARTIFACT_MAP_KEY, artifactDefinition));
 
-        assertThatThrownBy(() -> properties.requireProfile(PROFILE))
-                .isInstanceOfSatisfying(
-                        ProfileConfigurationException.class,
-                        ex -> {
-                            assertThat(ex.getMessageKey())
-                                    .isEqualTo(ProfileConfigurationException.KEY_PROFILE_NOT_FOUND);
-                            assertThat(ex.getArgs()).containsExactly(PROFILE_KEY);
-                        });
-    }
+    CodegenProfilesProperties properties =
+        new CodegenProfilesProperties(Map.of(PROFILE_KEY, profileProperties));
 
-    @Test
-    @DisplayName("artifact() should throw ProfileConfigurationException when artifact is missing")
-    void artifact_shouldThrowWhenArtifactMissing() {
-        ProfileProperties profileProperties =
-                new ProfileProperties(TEMPLATE_BASE_PATH, List.of(ARTIFACT_KEY), Map.of());
+    ArtifactDefinition result = properties.artifact(PROFILE, ARTIFACT_KEY);
 
-        CodegenProfilesProperties properties =
-                new CodegenProfilesProperties(Map.of(PROFILE_KEY, profileProperties));
+    assertThat(result.basePath()).isEqualTo(TEMPLATE_BASE_PATH);
+    assertThat(result.templates()).isSameAs(artifactDefinition.templates());
+  }
 
-        assertThatThrownBy(() -> properties.artifact(PROFILE, ARTIFACT_KEY))
-                .isInstanceOfSatisfying(
-                        ProfileConfigurationException.class,
-                        ex -> {
-                            assertThat(ex.getMessageKey())
-                                    .isEqualTo(ProfileConfigurationException.KEY_ARTIFACT_NOT_FOUND);
-                            assertThat(ex.getArgs()).containsExactly(ARTIFACT_MAP_KEY, PROFILE_KEY);
-                        });
-    }
+  @Test
+  @DisplayName(
+      "requireProfile() should throw ProfileConfigurationException when profile is missing")
+  void requireProfile_shouldThrowWhenProfileMissing() {
+    CodegenProfilesProperties properties = new CodegenProfilesProperties(Map.of());
 
-    @Test
-    @DisplayName("artifact() should throw ProfileConfigurationException when templateBasePath is blank")
-    void artifact_shouldThrowWhenTemplateBasePathBlank() {
-        CodegenProfilesProperties properties = getCodegenProfilesProperties();
+    assertThatThrownBy(() -> properties.requireProfile(PROFILE))
+        .isInstanceOfSatisfying(
+            ProfileConfigurationException.class,
+            ex -> {
+              assertThat(ex.getMessageKey())
+                  .isEqualTo(ProfileConfigurationException.KEY_PROFILE_NOT_FOUND);
+              assertThat(ex.getArgs()).containsExactly(PROFILE_KEY);
+            });
+  }
 
-        assertThatThrownBy(() -> properties.artifact(PROFILE, ARTIFACT_KEY))
-                .isInstanceOfSatisfying(
-                        ProfileConfigurationException.class,
-                        ex -> {
-                            assertThat(ex.getMessageKey())
-                                    .isEqualTo(ProfileConfigurationException.KEY_TEMPLATE_BASE_MISSING);
-                            assertThat(ex.getArgs()).containsExactly(PROFILE_KEY);
-                        });
-    }
+  @Test
+  @DisplayName("artifact() should throw ProfileConfigurationException when artifact is missing")
+  void artifact_shouldThrowWhenArtifactMissing() {
+    ProfileProperties profileProperties =
+        new ProfileProperties(TEMPLATE_BASE_PATH, List.of(ARTIFACT_KEY), Map.of());
 
-    private static CodegenProfilesProperties getCodegenProfilesProperties() {
-        TemplateDefinition templateDefinition = new TemplateDefinition("pom.ftl", "pom.xml");
+    CodegenProfilesProperties properties =
+        new CodegenProfilesProperties(Map.of(PROFILE_KEY, profileProperties));
 
-        ArtifactDefinition artifactDefinition =
-                new ArtifactDefinition(null, List.of(templateDefinition));
+    assertThatThrownBy(() -> properties.artifact(PROFILE, ARTIFACT_KEY))
+        .isInstanceOfSatisfying(
+            ProfileConfigurationException.class,
+            ex -> {
+              assertThat(ex.getMessageKey())
+                  .isEqualTo(ProfileConfigurationException.KEY_ARTIFACT_NOT_FOUND);
+              assertThat(ex.getArgs()).containsExactly(ARTIFACT_MAP_KEY, PROFILE_KEY);
+            });
+  }
 
-        ProfileProperties profileProperties =
-                new ProfileProperties(
-                        "  ", List.of(ARTIFACT_KEY), Map.of(ARTIFACT_MAP_KEY, artifactDefinition));
+  @Test
+  @DisplayName(
+      "artifact() should throw ProfileConfigurationException when templateBasePath is blank")
+  void artifact_shouldThrowWhenTemplateBasePathBlank() {
+    CodegenProfilesProperties properties = getCodegenProfilesProperties();
 
-        return new CodegenProfilesProperties(Map.of(PROFILE_KEY, profileProperties));
-    }
+    assertThatThrownBy(() -> properties.artifact(PROFILE, ARTIFACT_KEY))
+        .isInstanceOfSatisfying(
+            ProfileConfigurationException.class,
+            ex -> {
+              assertThat(ex.getMessageKey())
+                  .isEqualTo(ProfileConfigurationException.KEY_TEMPLATE_BASE_MISSING);
+              assertThat(ex.getArgs()).containsExactly(PROFILE_KEY);
+            });
+  }
 }

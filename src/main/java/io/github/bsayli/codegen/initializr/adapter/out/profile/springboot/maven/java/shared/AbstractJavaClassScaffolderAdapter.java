@@ -28,9 +28,9 @@ public abstract class AbstractJavaClassScaffolderAdapter implements ArtifactPort
   private final StringCaseFormatter stringCaseFormatter;
 
   protected AbstractJavaClassScaffolderAdapter(
-          TemplateRenderer renderer,
-          ArtifactDefinition artifactDefinition,
-          StringCaseFormatter stringCaseFormatter) {
+      TemplateRenderer renderer,
+      ArtifactDefinition artifactDefinition,
+      StringCaseFormatter stringCaseFormatter) {
     this.renderer = renderer;
     this.artifactDefinition = artifactDefinition;
     this.stringCaseFormatter = stringCaseFormatter;
@@ -42,9 +42,8 @@ public abstract class AbstractJavaClassScaffolderAdapter implements ArtifactPort
     PackageName packageName = blueprint.getPackageName();
 
     Map<String, Object> model =
-            Map.ofEntries(
-                    entry(KEY_PROJECT_PACKAGE, packageName.value()),
-                    entry(KEY_CLASS_NAME, className));
+        Map.ofEntries(
+            entry(KEY_PROJECT_PACKAGE, packageName.value()), entry(KEY_CLASS_NAME, className));
 
     TemplateDefinition templateDefinition = artifactDefinition.templates().getFirst();
     Path baseDir = Path.of(templateDefinition.outputPath());

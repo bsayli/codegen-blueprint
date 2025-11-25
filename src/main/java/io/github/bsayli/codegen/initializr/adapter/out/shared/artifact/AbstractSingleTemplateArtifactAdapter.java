@@ -16,7 +16,7 @@ public abstract class AbstractSingleTemplateArtifactAdapter implements ArtifactP
   private final ArtifactDefinition artifactDefinition;
 
   protected AbstractSingleTemplateArtifactAdapter(
-          TemplateRenderer renderer, ArtifactDefinition artifactDefinition) {
+      TemplateRenderer renderer, ArtifactDefinition artifactDefinition) {
     this.renderer = renderer;
     this.artifactDefinition = artifactDefinition;
   }

@@ -15,7 +15,7 @@
 
 This README reflects the ongoing **hexagonal architecture rewrite** for version **1.0.0**.
 
-The core domain, application layer, artifact pipeline, FreeMarker templating, CI/CD, and test suite are complete.
+The core **domain**, **application layer**, **artifact pipeline**, **FreeMarker templating**, **CI/CD**, and **test suite** are complete.
 
 🔄 **Inbound adapters (CLI & REST)** are under active development and will land before the **1.0.0 GA release**.
 
@@ -23,170 +23,167 @@ The core domain, application layer, artifact pipeline, FreeMarker templating, CI
 
 ## 🚀 Overview
 
-**Codegen Blueprint** is a **hexagonal, template‑driven generator** designed to act as a flexible **blueprint engine**.
+**Codegen Blueprint** is a **hexagonal, template‑driven generator** designed as a flexible **blueprint engine**.
 
-Rather than focusing on a single tech stack, it defines a stable, framework‑agnostic core that can generate project structures for *any* combination of:
+Instead of supporting only one stack, it enables generating project structures for different combinations of:
 
-* Framework (e.g., Spring Boot today, others later)
-* Build tool (Maven, Gradle, …)
-* Language (Java today, Kotlin later)
-* Generation profile (customizable via configuration)
+* Frameworks (Spring Boot first, others later)
+* Build tools (Maven now, Gradle later)
+* Languages (Java now, Kotlin later)
+* Profiles (fully configurable)
 
-The first shipped profile is:
+The first supported profile is:
 
 ```
 springboot-maven-java
 ```
 
-This profile produces production‑ready Spring Boot project skeletons featuring:
+It produces production‑ready Spring Boot project skeletons featuring:
 
-* Strongly validated domain blueprint
-* Profile‑based artifact pipelines
-* FreeMarker template rendering
-* Fully isolated and tested ports/adapters
-* Zero boilerplate, consistent project layouts
+* Strictly validated domain blueprint
+* **Profile‑defined artifact pipelines** (see ArtifactKeys)
+* Fully isolated and tested **ports/adapters**
+* Zero‑boilerplate, consistent project structures
 
-Hexagonal architecture ensures new profiles can be added **without changing core logic**, simply by supplying new templates + profile configuration.
+Hexagonal architecture ensures new tech stacks can be added **without core changes**, only by supplying new
+**templates + profile configuration + adapters**.
 
 ---
 
 ## 💡 Problem Statement
 
-Teams often repeat the same setup steps when starting a new service or application:
+Engineering teams repeatedly perform the same manual setup when starting a new project:
 
-* Creating the initial folder layout
-* Writing or copying build files (`pom.xml`, `build.gradle`, etc.)
-* Adding `.gitignore`, configuration files, starter classes, tests
-* Maintaining consistency across dozens of projects and multiple stacks
+* Create base structure
+* Write/copy build files (`pom.xml`, `build.gradle`, ...)
+* Configure `.gitignore`, `application.yml`, starter classes, test bootstrapping
+* Ensure consistency across multiple services and teams
 
-Most internal tooling solves this per stack — for example:
+Most internal tools are limited to a **specific stack**, such as:
 
-* "Spring Boot + Maven + Java"
-* "Kotlin + Gradle"
+* Spring Boot + Maven + Java
+* Kotlin + Gradle
 
-But the structural problem is always the same:
+But the real problem is universal:
 
-> Given a **blueprint** (name, identity, tech stack, dependencies),
-> how can we generate a consistent, production‑grade project skeleton
-> **without hard‑wiring ourselves to a single framework, build tool, or language?**
+> Given a **blueprint** (name, identity, tech stack, dependencies) —
+> how do we generate a high‑quality, consistent skeleton **without coupling** to technology choices?
 
-`codegen-blueprint` addresses this by acting as a **hexagonal, profile‑driven blueprint engine**.
+**Codegen Blueprint** solves this by acting as a **hexagonal, profile‑driven engine**.
 
 ---
 
 ## 💡 Solution
 
-This project provides:
+**Key architectural guarantees:**
 
-* **Hexagonal core** — stable, framework‑agnostic, domain‑first design
-* **Template‑driven artifact generation** powered by FreeMarker
-* **Strict domain validation** for names, groupId/artifactId, package, dependencies
-* **Profile‑based pipelines** that define:
+* **Hexagonal core** — no framework/build‑tool dependencies
+* **ArtifactPorts** defining generation behavior
+* **Outbound adapters** per profile
+* FreeMarker‑powered template rendering
+* Profile‑based configuration determining:
 
   * Template base paths
-  * Ordered artifact keys
-  * Artifact→template mappings
-* **Fully replaceable adapters** (templating, filesystem, archiving)
-* **Full test coverage** — unit + integration
-* **CI/CD ready** — CodeQL, JaCoCo, Codecov, GitHub Actions
+  * Ordered **ArtifactKeys**
+  * Template → generated file mapping
+* Full coverage — unit + integration
+* CI/CD automation — CodeQL, JaCoCo, Codecov, GitHub Actions
 
-**1.0.0 planned inbound adapters:**
+Planned inbound adapters for **1.0.0 GA**:
 
-* CLI (command‑line project generation)
-* REST (HTTP‑based project generation)
+* **CLI** (command‑line invocation)
+* **REST API** (service‑driven generation)
 
-By separating *domain*, *application*, *ports*, and *adapters*, the engine can evolve to support:
+The engine is ready for future profiles:
 
-* Kotlin
-* Gradle
-* Multi‑module project generation
-* Alternative frameworks
-* Organization‑specific generation profiles
+* Kotlin, Gradle
+* Multi‑module
+* Other frameworks
+* Organization‑specific stacks
 
-…with no changes to core logic.
-
-Each generation profile ships with its own outbound adapters and its own template set  
-(e.g. `adapter.out.profile.springboot.maven.java` + `templates/springboot/maven/java/**`).  
-The core engine never depends on any specific framework, build tool, or language.
+The core never needs to change — profiles live entirely in adapters + template sets.
 
 ---
 
 ## 🧩 Current Architecture (Hexagonal)
 
-This generator follows a clean **ports & adapters** architecture.
+The system follows pure **ports & adapters** design.
 
-**Domain Layer**
+### Domain
 
 * `ProjectBlueprint` (aggregate root)
-* Value Objects (`ProjectName`, `PackageName`, `GroupId`, etc.)
-* Policies (naming, reserved words, dependency rules)
-* Errors with i18n (`DomainViolationException`, etc.)
+* Value Objects (name, identity, package, dependencies)
+* Policies & validation rules
+* i18n domain errors
 
-**Application Layer**
+### Application
 
-* Ports for artifact generation (`ProjectArtifactsPort`, `ArtifactPort`)
-* Application services orchestrating project generation
+* `ProjectArtifactsPort` — executes ordered artifact pipeline
+* `ArtifactPort` — one adapter per artifact type
+* Artifact orchestration logic
 
-**Adapter Layer**
+### Outbound Adapters
 
-* **Outbound:**
+Profile: `springboot-maven-java`
 
-  * FreeMarker templating
-  * Artifact adapters (`pom`, `.gitignore`, `application.yml`, scaffolder, README)
-  * Profile selection: `springboot-maven-java`
+Implements ArtifactKeys:
 
-* **Inbound:**
+* `BUILD_CONFIG` → MavenPomBuildConfigurationAdapter
+* `BUILD_TOOL_METADATA` → MavenWrapperBuildToolFilesAdapter
+* `IGNORE_RULES` → GitIgnoreAdapter
+* `APP_CONFIG` → ApplicationYamlAdapter
+* `MAIN_SOURCE_ENTRY_POINT` → MainSourceEntrypointAdapter
+* `TEST_SOURCE_ENTRY_POINT` → TestSourceEntrypointAdapter
+* `PROJECT_DOCUMENTATION` → ProjectDocumentationAdapter
 
-  * CLI (coming soon)
-  * REST (coming soon)
+### Inbound Adapters
 
-**Bootstrap Layer**
+* CLI (coming soon)
+* REST (coming soon)
 
-* Spring Boot configuration
-* Template loader
-* Profile bindings
+### Bootstrap
+
+* Spring configuration for wiring profile → adapters → renderer
 
 ---
 
 ## 📦 Features (1.0.0 Core)
 
-### ✅ Completed
+### ✅ Done
 
-* Hexagonal refactor
-* Domain-driven blueprint & policies
-* FreeMarker template rendering
-* Profile-based artifact pipeline
-* Integration test suite (`SpringBootTest` + Failsafe)
-* Codecov integration
-* CodeQL + Security scanning
-* GitHub Actions (build + test)
+* Full hexagonal refactor
+* FreeMarker templating support
+* Strict domain validation
+* Profile‑based artifact pipeline
+* Integration test suite
+* Codecov + CodeQL
+* GitHub Actions pipeline
 
 ### 🔄 In Progress
 
-* CLI adapter (inbound)
-* REST adapter (inbound)
+* CLI + REST inbound adapters
 * Additional profiles
 
 ---
 
 ## 🧪 Testing
 
-Run all tests:
+Run full test suite:
 
 ```bash
 mvn verify
 ```
 
-Test suite includes:
+Covers:
 
-* Domain unit tests (policies, value objects, selectors)
-* Adapter unit tests
-* Integration tests verifying `springboot-maven-java` pipeline end‑to‑end
-* JaCoCo + Codecov reporting
+* Domain policies & selectors
+* Outbound artifact adapters
+* End‑to‑end pipeline verification (Failsafe)
+* JaCoCo + Codecov
 
 ---
 
-## 📂 Project Structure (Generated Output Example)
+## 📂 Sample Output (Generated)
 
 ```text
 my-app/
@@ -203,25 +200,25 @@ my-app/
 
 ## 🛣 Roadmap (Post‑1.0.0)
 
-* Additional generation profiles (Kotlin, Gradle, multi‑module)
-* Dockerfile & CI/CD template artifacts
-* Pluggable dependency catalogs
+* Additional profiles (Kotlin, Gradle, multi‑module)
+* Dockerfile + CI/CD artifact adapters
+* Extensible dependency catalogs
 
 ---
 
 ## 📘 Contributing
 
-Contributions and discussions are welcome.
-Open issues or PRs at:
+PRs and ideas welcome 🎯
 [https://github.com/bsayli/codegen-blueprint](https://github.com/bsayli/codegen-blueprint)
 
 ---
 
 ## 🛡 License
 
-Licensed under **MIT** — see [LICENSE](LICENSE).
+MIT — see [LICENSE](LICENSE)
 
 ---
 
 **Author:** Barış Saylı
 GitHub: [https://github.com/bsayli](https://github.com/bsayli)
+

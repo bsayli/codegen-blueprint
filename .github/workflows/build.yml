@@ -5,9 +5,13 @@ on:
     branches: [ main ]
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -17,6 +21,18 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+          cache: maven
 
-      - name: Build with Maven
-        run: mvn -B clean verify
+      - name: Build with Maven (tests + coverage)
+        run: mvn -B -q -ntp clean verify
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: |
+            target/site/jacoco/jacoco.xml
+            target/site/jacoco-it/jacoco.xml
+          flags: codegen-blueprint
+          name: codegen-blueprint
+          fail_ci_if_error: false

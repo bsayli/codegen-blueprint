@@ -1,216 +1,228 @@
-# Codegen Spring Boot Initializr
+# Codegen Blueprint — Hexagonal, Template‑Driven, Zero‑Boilerplate Project Generator
 
-![Build](https://github.com/bsayli/spring-boot-openapi-generics-clients/actions/workflows/build.yml/badge.svg)
-![Java](https://img.shields.io/badge/Java-21-red)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5-green)
-![Maven](https://img.shields.io/badge/Maven-3.9-blue)
-![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
-
-<p align="center">
-  <img src="docs/images/social-preview.png" alt="Social preview" width="720"/>
-  <br/>
-  <em>Social preview banner for GitHub and sharing</em>
-</p>
-
-**A customizable project generator for Spring Boot.**
-Quickly scaffold a new Java application with predefined structure, configuration, and tests — no repetitive setup
-required.
+[![Build](https://github.com/bsayli/codegen-blueprint/actions/workflows/build.yml/badge.svg)](https://github.com/bsayli/codegen-blueprint/actions/workflows/build.yml)
+[![Release](https://img.shields.io/github/v/release/bsayli/codegen-blueprint?logo=github\&label=release)](https://github.com/bsayli/codegen-blueprint/releases/latest)
+[![CodeQL](https://github.com/bsayli/codegen-blueprint/actions/workflows/codeql.yml/badge.svg)](https://github.com/bsayli/codegen-blueprint/actions/workflows/codeql.yml)
+[![codecov](https://codecov.io/gh/bsayli/codegen-blueprint/branch/refactor/hexagonal-architecture/graph/badge.svg)](https://codecov.io/gh/bsayli/codegen-blueprint/tree/refactor/hexagonal-architecture)
+[![Java](https://img.shields.io/badge/Java-21-red?logo=openjdk)](https://openjdk.org/projects/jdk/21/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.7-green?logo=springboot)](https://spring.io/projects/spring-boot)
+[![Maven](https://img.shields.io/badge/Maven-3.9-blue?logo=apachemaven)](https://maven.apache.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ---
 
-## 🔄 Active Development Notice
+## ⚠ Project Status (1.0.0 Refactor Branch)
 
-This repository is currently undergoing a full **hexagonal architecture refactor**.
+This README reflects the ongoing **hexagonal architecture rewrite** for version **1.0.0**.
 
-For the most up-to-date implementation, tests, templates, and documentation, please follow the active development branch:
+The core **domain**, **application layer**, **artifact pipeline**, **FreeMarker templating**, **CI/CD**, and **test suite** are complete.
 
-👉 **https://github.com/bsayli/codegen-blueprint/tree/refactor/hexagonal-architecture**
-
-The `main` branch reflects the previous stable version and will be updated once the refactor reaches **1.0.0-RC**.
+🔄 **Inbound adapters (CLI & REST)** are under active development and will land before the **1.0.0 GA release**.
 
 ---
 
-## 🚀 Problem Statement
+## 🚀 Overview
 
-Bootstrapping a new Spring Boot project often involves:
+**Codegen Blueprint** is a **hexagonal, template‑driven generator** designed as a flexible **blueprint engine**.
 
-* Manually creating Maven folders
-* Writing boilerplate `pom.xml`
-* Copying `.gitignore`, `application.yml`, and test classes
-* Setting up wrapper scripts
+Instead of supporting only one stack, it enables generating project structures for different combinations of:
 
-❌ Time wasted on repetitive setup
-❌ Risk of inconsistencies between projects
-❌ Slower onboarding for new developers
+* Frameworks (Spring Boot first, others later)
+* Build tools (Maven now, Gradle later)
+* Languages (Java now, Kotlin later)
+* Profiles (fully configurable)
+
+The first supported profile is:
+
+```
+springboot-maven-java
+```
+
+It produces production‑ready Spring Boot project skeletons featuring:
+
+* Strictly validated domain blueprint
+* **Profile‑defined artifact pipelines** (see ArtifactKeys)
+* Fully isolated and tested **ports/adapters**
+* Zero‑boilerplate, consistent project structures
+
+Hexagonal architecture ensures new tech stacks can be added **without core changes**, only by supplying new
+**templates + profile configuration + adapters**.
+
+---
+
+## 💡 Problem Statement
+
+Engineering teams repeatedly perform the same manual setup when starting a new project:
+
+* Create base structure
+* Write/copy build files (`pom.xml`, `build.gradle`, ...)
+* Configure `.gitignore`, `application.yml`, starter classes, test bootstrapping
+* Ensure consistency across multiple services and teams
+
+Most internal tools are limited to a **specific stack**, such as:
+
+* Spring Boot + Maven + Java
+* Kotlin + Gradle
+
+But the real problem is universal:
+
+> Given a **blueprint** (name, identity, tech stack, dependencies) —
+> how do we generate a high‑quality, consistent skeleton **without coupling** to technology choices?
+
+**Codegen Blueprint** solves this by acting as a **hexagonal, profile‑driven engine**.
 
 ---
 
 ## 💡 Solution
 
-This project automates all of that:
+**Key architectural guarantees:**
 
-* Generates a **ready-to-run Spring Boot project** with Maven
-* Adds `.gitignore`, `application.yml`, starter class, and test class
-* Supports **custom package and project naming**
-* Ships with **CLI runner** for one-liner project generation
-* Produces a **zip archive** you can immediately extract and use
+* **Hexagonal core** — no framework/build‑tool dependencies
+* **ArtifactPorts** defining generation behavior
+* **Outbound adapters** per profile
+* FreeMarker‑powered template rendering
+* Profile‑based configuration determining:
 
----
+  * Template base paths
+  * Ordered **ArtifactKeys**
+  * Template → generated file mapping
+* Full coverage — unit + integration
+* CI/CD automation — CodeQL, JaCoCo, Codecov, GitHub Actions
 
-## ⚡ Quick Start
+Planned inbound adapters for **1.0.0 GA**:
 
-### 1. Clone the Repository
+* **CLI** (command‑line invocation)
+* **REST API** (service‑driven generation)
 
-```bash
-git clone https://github.com/bsayli/codegen-springboot-initializr.git
-cd codegen-springboot-initializr
-```
+The engine is ready for future profiles:
 
-### 2. Build the Project
+* Kotlin, Gradle
+* Multi‑module
+* Other frameworks
+* Organization‑specific stacks
 
-```bash
-mvn clean install
-```
-
-### 3. Run in CLI Mode
-
-```bash
-mvn spring-boot:run -Dspring-boot.run.profiles=cli \
-  -Dspring-boot.run.arguments="--groupId=com.example --artifactId=demo-app --packageName=com.example.demo --outputDir=./target/generated-projects --overwrite=true"
-```
-
-✅ This generates a new project as a zip archive under the specified output directory (default:
-`./target/generated-projects`):
-
-```
-[OK] Project archive generated at: /.../target/generated-projects/demo-app/demo-app.zip
-```
-
-ℹ️ Tips:
-
-* If you don’t provide `--outputDir`, the project will be created under the default path `target/generated-projects`.
-* If the target directory already exists:
-
-    * By default, the generator will **fail-fast** with a clear error.
-    * Add `--overwrite=true` to **delete and regenerate** the project in the same directory.
+The core never needs to change — profiles live entirely in adapters + template sets.
 
 ---
 
-## 🧑‍💻 Programmatic Usage
+## 🧩 Current Architecture (Hexagonal)
 
-```java
-import java.nio.file.Path;
-import java.util.List;
+📘 Want to explore how Hexagonal Architecture is implemented here?
 
-import io.github.bsayli.codegen.initializr.projectgeneration.model.Dependency;
-import io.github.bsayli.codegen.initializr.projectgeneration.model.ProjectType;
-import io.github.bsayli.codegen.initializr.projectgeneration.model.spring.SpringBootJavaProjectMetadata.SpringBootJavaProjectMetadataBuilder;
-import io.github.bsayli.codegen.initializr.projectgeneration.model.techstack.BuildTool;
-import io.github.bsayli.codegen.initializr.projectgeneration.model.techstack.Framework;
-import io.github.bsayli.codegen.initializr.projectgeneration.model.techstack.Language;
-import io.github.bsayli.codegen.initializr.projectgeneration.service.ProjectGenerationService;
+See: [How to Explore This Project (Hexagonal Guide)](docs/how-to-explore-hexagonal-architecture.md)
 
-// Assume ProjectGenerationService is injected or obtained from Spring context
-ProjectGenerationService service = /* @Autowired or ApplicationContext.getBean(...) */;
+The system follows pure **ports & adapters** design.
 
-        var depWeb = new Dependency.DependencyBuilder()
-                .groupId("org.springframework.boot")
-                .artifactId("spring-boot-starter-web")
-                .build();
+### Domain
 
-        var depTest = new Dependency.DependencyBuilder()
-                .groupId("org.springframework.boot")
-                .artifactId("spring-boot-starter-test")
-                .scope("test")
-                .build();
+* `ProjectBlueprint` (aggregate root)
+* Value Objects (name, identity, package, dependencies)
+* Policies & validation rules
+* i18n domain errors
 
-        var metadata = new SpringBootJavaProjectMetadataBuilder()
-                .springBootVersion("3.5.5")
-                .javaVersion("21")
-                .groupId("com.example")
-                .artifactId("demo-app")
-                .name("demo-app")
-                .description("Generated by codegen-initializr-core")
-                .packageName("com.example.demo")
-                .dependencies(List.of(depWeb, depTest))
-                .build();
+### Application
 
-        var type = new ProjectType(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
+* `ProjectArtifactsPort` — executes ordered artifact pipeline
+* `ArtifactPort` — one adapter per artifact type
+* Artifact orchestration logic
 
-        Path zip = service.generateProject(type, metadata);
-System.out.
+### Outbound Adapters
 
-        println("Archive generated at: "+zip.toAbsolutePath());
-```
+Profile: `springboot-maven-java`
+
+Implements ArtifactKeys:
+
+* `BUILD_CONFIG` → MavenPomBuildConfigurationAdapter
+* `BUILD_TOOL_METADATA` → MavenWrapperBuildToolFilesAdapter
+* `IGNORE_RULES` → GitIgnoreAdapter
+* `APP_CONFIG` → ApplicationYamlAdapter
+* `MAIN_SOURCE_ENTRY_POINT` → MainSourceEntrypointAdapter
+* `TEST_SOURCE_ENTRY_POINT` → TestSourceEntrypointAdapter
+* `PROJECT_DOCUMENTATION` → ProjectDocumentationAdapter
+
+### Inbound Adapters
+
+* CLI (coming soon)
+* REST (coming soon)
+
+### Bootstrap
+
+* Spring configuration for wiring profile → adapters → renderer
 
 ---
 
-## 🖼 Demo Output
+## 📦 Features (1.0.0 Core)
 
-Example of the generated project structure:
+### ✅ Done
 
-```text
-demo-app/
- ├── pom.xml
- ├── .gitignore
- ├── src/
- │   ├── main/java/com/example/demo/DemoAppApplication.java
- │   ├── main/resources/application.yml
- │   ├── test/java/com/example/demo/DemoAppApplicationTests.java
- │   └── gen/java/... (for codegen output)
-```
+* Full hexagonal refactor
+* FreeMarker templating support
+* Strict domain validation
+* Profile‑based artifact pipeline
+* Integration test suite
+* Codecov + CodeQL
+* GitHub Actions pipeline
 
----
+### 🔄 In Progress
 
-## 🛠 Tech Stack & Features
-
-* 🚀 **Java 21** — modern baseline
-* 🍃 **Spring Boot 3.5**
-* 📦 **Maven 3.9+** — build and dependency management
-* 🧩 **FreeMarker templates** — for generator extensibility
-* 📂 **Automatic directory structure** — `src/main/java`, `src/test/java`, etc.
-* 🧪 **JUnit 5** — generated test classes
-
----
-
-## 🧩 Architecture
-
-This project follows a **hexagonal (ports & adapters) architecture**:
-
-* **Ports** — abstract interfaces like `ProjectBuildGenerator`, `ApplicationYamlGenerator`, `ProjectArchiver`
-* **Adapters** — framework-specific implementations (Spring Boot, Maven, FreeMarker)
-* **Core** — generation service depends only on ports, making it extensible and testable
-
-This design allows the generator to evolve independently of specific tools while staying highly testable.
+* CLI + REST inbound adapters
+* Additional profiles
 
 ---
 
 ## 🧪 Testing
 
-Run the test suite:
+Run full test suite:
 
 ```bash
-mvn test
+mvn verify
 ```
 
-The generator components (`pom.xml`, `.gitignore`, `application.yml`, layout, archiver) are fully covered with unit &
-integration tests.
+Covers:
+
+* Domain policies & selectors
+* Outbound artifact adapters
+* End‑to‑end pipeline verification (Failsafe)
+* JaCoCo + Codecov
 
 ---
 
-## 📖 Related Work
+## 📂 Sample Output (Generated)
 
-This tool is inspired by the need to automate repetitive **Spring Boot project initialization** tasks.
-It works well alongside other repositories
-like [spring-boot-openapi-generics-clients](https://github.com/bsayli/spring-boot-openapi-generics-clients).
+```text
+my-app/
+ ├── pom.xml
+ ├── .gitignore
+ ├── src/
+ │   ├── main/java/.../MyAppApplication.java
+ │   ├── main/resources/application.yml
+ │   ├── test/java/.../MyAppApplicationTests.java
+ │   └── gen/java/... (reserved for future generators)
+```
+
+---
+
+## 🛣 Roadmap (Post‑1.0.0)
+
+* Additional profiles (Kotlin, Gradle, multi‑module)
+* Dockerfile + CI/CD artifact adapters
+* Extensible dependency catalogs
+
+---
+
+## 📘 Contributing
+
+PRs and ideas welcome 🎯
+[https://github.com/bsayli/codegen-blueprint](https://github.com/bsayli/codegen-blueprint)
 
 ---
 
 ## 🛡 License
 
-MIT
+MIT — see [LICENSE](LICENSE)
 
 ---
 
 **Author:** Barış Saylı
-**GitHub:** [bsayli](https://github.com/bsayli)
+GitHub: [https://github.com/bsayli](https://github.com/bsayli)
+

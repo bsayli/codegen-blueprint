@@ -15,11 +15,12 @@ import io.github.bsayli.codegen.initializr.domain.model.value.naming.ProjectName
 import io.github.bsayli.codegen.initializr.domain.model.value.pkg.PackageName;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.JavaVersion;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.PlatformTarget;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.SpringBootJvmTarget;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.SpringBootVersion;
-import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.BuildOptions;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.BuildTool;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.Framework;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.Language;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.TechStack;
 import io.github.bsayli.codegen.initializr.domain.port.out.artifact.GeneratedFile;
 import java.util.List;
 import java.util.stream.StreamSupport;
@@ -56,11 +57,11 @@ class SpringBootMavenJavaArtifactsAdapterIT {
     ProjectDescription description = new ProjectDescription("Integration test blueprint");
     PackageName packageName = new PackageName("com.example.demo");
 
-    BuildOptions buildOptions =
-        new BuildOptions(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
+    TechStack techStack =
+        new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
 
     PlatformTarget platformTarget =
-        new PlatformTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5_6);
+        new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5_6);
 
     Dependency webStarter =
         new Dependency(
@@ -72,6 +73,6 @@ class SpringBootMavenJavaArtifactsAdapterIT {
     Dependencies dependencies = Dependencies.of(List.of(webStarter));
 
     return ProjectBlueprintFactory.of(
-        identity, name, description, packageName, buildOptions, platformTarget, dependencies);
+        identity, name, description, packageName, techStack, platformTarget, dependencies);
   }
 }

@@ -6,7 +6,7 @@ import io.github.bsayli.codegen.initializr.domain.model.value.naming.ProjectDesc
 import io.github.bsayli.codegen.initializr.domain.model.value.naming.ProjectName;
 import io.github.bsayli.codegen.initializr.domain.model.value.pkg.PackageName;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.PlatformTarget;
-import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.BuildOptions;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.TechStack;
 
 public class ProjectBlueprint {
 
@@ -14,7 +14,7 @@ public class ProjectBlueprint {
   private final ProjectName name;
   private final ProjectDescription description;
   private final PackageName packageName;
-  private final BuildOptions buildOptions;
+  private final TechStack techStack;
   private final PlatformTarget platformTarget;
   private final Dependencies dependencies;
 
@@ -23,14 +23,14 @@ public class ProjectBlueprint {
       ProjectName name,
       ProjectDescription description,
       PackageName packageName,
-      BuildOptions buildOptions,
+      TechStack techStack,
       PlatformTarget platformTarget,
       Dependencies dependencies) {
     this.identity = identity;
     this.name = name;
     this.description = description;
     this.packageName = packageName;
-    this.buildOptions = buildOptions;
+    this.techStack = techStack;
     this.platformTarget = platformTarget;
     this.dependencies = dependencies;
   }
@@ -51,8 +51,8 @@ public class ProjectBlueprint {
     return packageName;
   }
 
-  public BuildOptions getBuildOptions() {
-    return buildOptions;
+  public TechStack getTechStack() {
+    return techStack;
   }
 
   public PlatformTarget getPlatformTarget() {

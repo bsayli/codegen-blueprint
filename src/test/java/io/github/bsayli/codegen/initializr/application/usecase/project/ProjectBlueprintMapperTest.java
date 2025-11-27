@@ -7,10 +7,10 @@ import io.github.bsayli.codegen.initializr.domain.model.value.dependency.Depende
 import io.github.bsayli.codegen.initializr.domain.model.value.dependency.DependencyScope;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.JavaVersion;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.SpringBootVersion;
-import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.BuildOptions;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.BuildTool;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.Framework;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.Language;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.TechStack;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +40,7 @@ class ProjectBlueprintMapperTest {
             "Demo App",
             "desc",
             "com.acme.demo",
-            new BuildOptions(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA),
+            new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA),
             JavaVersion.JAVA_21,
             SpringBootVersion.V3_5_6,
             inputs,

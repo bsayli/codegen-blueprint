@@ -15,7 +15,8 @@ class PlatformTargetTest {
   @Test
   @DisplayName("valid java and springBoot should be accepted")
   void validTarget_shouldBeAccepted() {
-    PlatformTarget target = new PlatformTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_4_10);
+    SpringBootJvmTarget target =
+        new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_4_10);
 
     assertThat(target.java()).isEqualTo(JavaVersion.JAVA_21);
     assertThat(target.springBoot()).isEqualTo(SpringBootVersion.V3_4_10);
@@ -26,7 +27,7 @@ class PlatformTargetTest {
   @Test
   @DisplayName("null java should fail TARGET_REQUIRED")
   void nullJava_shouldFailTargetRequired() {
-    assertThatThrownBy(() -> new PlatformTarget(null, SpringBootVersion.V3_4_10))
+    assertThatThrownBy(() -> new SpringBootJvmTarget(null, SpringBootVersion.V3_4_10))
         .isInstanceOf(DomainViolationException.class)
         .satisfies(
             ex -> {
@@ -38,7 +39,7 @@ class PlatformTargetTest {
   @Test
   @DisplayName("null springBoot should fail TARGET_REQUIRED")
   void nullSpringBoot_shouldFailTargetRequired() {
-    assertThatThrownBy(() -> new PlatformTarget(JavaVersion.JAVA_21, null))
+    assertThatThrownBy(() -> new SpringBootJvmTarget(JavaVersion.JAVA_21, null))
         .isInstanceOf(DomainViolationException.class)
         .satisfies(
             ex -> {
@@ -50,7 +51,7 @@ class PlatformTargetTest {
   @Test
   @DisplayName("null java and springBoot should fail TARGET_REQUIRED")
   void nullJavaAndSpringBoot_shouldFailTargetRequired() {
-    assertThatThrownBy(() -> new PlatformTarget(null, null))
+    assertThatThrownBy(() -> new SpringBootJvmTarget(null, null))
         .isInstanceOf(DomainViolationException.class)
         .satisfies(
             ex -> {

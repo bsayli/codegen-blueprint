@@ -13,8 +13,8 @@ import io.github.bsayli.codegen.initializr.domain.model.ProjectBlueprint;
 import io.github.bsayli.codegen.initializr.domain.model.value.dependency.Dependencies;
 import io.github.bsayli.codegen.initializr.domain.model.value.identity.ProjectIdentity;
 import io.github.bsayli.codegen.initializr.domain.model.value.pkg.PackageName;
-import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.PlatformTarget;
-import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.BuildOptions;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.SpringBootJvmTarget;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.TechStack;
 import java.util.List;
 import java.util.Map;
 
@@ -51,8 +51,9 @@ public class ProjectDocumentationAdapter extends AbstractSingleTemplateArtifactA
   @Override
   protected Map<String, Object> buildModel(ProjectBlueprint bp) {
     ProjectIdentity id = bp.getIdentity();
-    BuildOptions bo = bp.getBuildOptions();
-    PlatformTarget pt = bp.getPlatformTarget();
+    TechStack bo = bp.getTechStack();
+    SpringBootJvmTarget pt = (SpringBootJvmTarget) bp.getPlatformTarget();
+
     PackageName pn = bp.getPackageName();
     Dependencies selectedDependencies = bp.getDependencies();
 

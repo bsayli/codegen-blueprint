@@ -20,11 +20,12 @@ import io.github.bsayli.codegen.initializr.domain.model.value.naming.ProjectName
 import io.github.bsayli.codegen.initializr.domain.model.value.pkg.PackageName;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.JavaVersion;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.PlatformTarget;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.SpringBootJvmTarget;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.SpringBootVersion;
-import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.BuildOptions;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.BuildTool;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.Framework;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.Language;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.TechStack;
 import io.github.bsayli.codegen.initializr.domain.port.out.artifact.GeneratedFile;
 import io.github.bsayli.codegen.initializr.testsupport.build.RecordingPomDependencyMapper;
 import io.github.bsayli.codegen.initializr.testsupport.templating.CapturingTemplateRenderer;
@@ -51,10 +52,10 @@ class MavenPomBuildConfigurationAdapterTest {
     ProjectDescription description = new ProjectDescription("Sample Project");
     PackageName pkg = new PackageName("com.acme.demo");
 
-    BuildOptions buildOptions =
-        new BuildOptions(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
+    TechStack techStack =
+        new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
 
-    PlatformTarget target = new PlatformTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5_6);
+    PlatformTarget target = new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5_6);
 
     Dependency dep =
         new Dependency(
@@ -65,7 +66,7 @@ class MavenPomBuildConfigurationAdapterTest {
     Dependencies dependencies = Dependencies.of(List.of(dep));
 
     return new ProjectBlueprint(
-        identity, name, description, pkg, buildOptions, target, dependencies);
+        identity, name, description, pkg, techStack, target, dependencies);
   }
 
   @Test

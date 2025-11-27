@@ -29,12 +29,12 @@ public class ProjectBlueprintMapper {
     PackageName pkg = new PackageName(c.packageName());
 
     PlatformTarget target =
-        PlatformTargetSelector.select(c.buildOptions(), c.preferredJava(), c.preferredBoot());
+        PlatformTargetSelector.select(c.techStack(), c.preferredJava(), c.preferredBoot());
 
     Dependencies deps = mapDependencies(c.dependencies());
 
     return ProjectBlueprintFactory.of(
-        identity, name, description, pkg, c.buildOptions(), target, deps);
+        identity, name, description, pkg, c.techStack(), target, deps);
   }
 
   private Dependencies mapDependencies(List<DependencyInput> raw) {

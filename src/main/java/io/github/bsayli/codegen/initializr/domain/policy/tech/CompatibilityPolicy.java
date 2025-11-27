@@ -10,11 +10,12 @@ import io.github.bsayli.codegen.initializr.domain.error.code.ErrorCode;
 import io.github.bsayli.codegen.initializr.domain.error.exception.DomainViolationException;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.JavaVersion;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.PlatformTarget;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.SpringBootJvmTarget;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.SpringBootVersion;
-import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.BuildOptions;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.BuildTool;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.Framework;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.Language;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.TechStack;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -33,34 +34,35 @@ public final class CompatibilityPolicy {
 
   private CompatibilityPolicy() {}
 
-  public static void ensureCompatible(BuildOptions options, PlatformTarget target) {
-    if (options == null || target == null) {
+  public static void ensureCompatible(TechStack techStack, PlatformTarget target) {
+    if (techStack == null || target == null) {
       throw new DomainViolationException(TARGET_MISSING);
     }
 
-    if (options.framework() != Framework.SPRING_BOOT
-        || options.language() != Language.JAVA
-        || options.buildTool() != BuildTool.MAVEN) {
+    if (techStack.framework() != Framework.SPRING_BOOT
+            || techStack.language() != Language.JAVA
+            || techStack.buildTool() != BuildTool.MAVEN) {
       throw new DomainViolationException(
-          OPTIONS_UNSUPPORTED, options.framework(), options.language(), options.buildTool());
+              OPTIONS_UNSUPPORTED, techStack.framework(), techStack.language(), techStack.buildTool());
     }
 
-    var allowed = SPRINGBOOT_JAVA_SUPPORT.getOrDefault(target.springBoot(), Set.of());
-    if (!allowed.contains(target.java())) {
+    if (!(target instanceof SpringBootJvmTarget(JavaVersion java, SpringBootVersion springBoot))) {
       throw new DomainViolationException(
-          TARGET_INCOMPATIBLE, target.springBoot().value(), target.java().asString());
+              TARGET_INCOMPATIBLE, "SPRING_BOOT", target.getClass().getSimpleName());
     }
-  }
 
-  public static Set<JavaVersion> allowedJavaFor(SpringBootVersion boot) {
-    return SPRINGBOOT_JAVA_SUPPORT.getOrDefault(boot, Set.of());
+    var allowed = SPRINGBOOT_JAVA_SUPPORT.getOrDefault(springBoot, Set.of());
+    if (!allowed.contains(java)) {
+      throw new DomainViolationException(
+              TARGET_INCOMPATIBLE, springBoot.value(), java.asString());
+    }
   }
 
   public static List<PlatformTarget> allSupportedTargets() {
     List<PlatformTarget> list = new ArrayList<>();
     for (var e : SPRINGBOOT_JAVA_SUPPORT.entrySet()) {
       for (var j : e.getValue()) {
-        list.add(new PlatformTarget(j, e.getKey()));
+        list.add(new SpringBootJvmTarget(j, e.getKey()));
       }
     }
     return List.copyOf(list);

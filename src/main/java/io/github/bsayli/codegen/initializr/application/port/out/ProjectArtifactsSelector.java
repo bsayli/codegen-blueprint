@@ -1,7 +1,7 @@
 package io.github.bsayli.codegen.initializr.application.port.out;
 
-import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.BuildOptions;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.TechStack;
 
 public interface ProjectArtifactsSelector {
-  ProjectArtifactsPort select(BuildOptions options);
+  ProjectArtifactsPort select(TechStack options);
 }

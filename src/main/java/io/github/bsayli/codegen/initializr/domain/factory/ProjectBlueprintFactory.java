@@ -15,7 +15,7 @@ import io.github.bsayli.codegen.initializr.domain.model.value.naming.ProjectDesc
 import io.github.bsayli.codegen.initializr.domain.model.value.naming.ProjectName;
 import io.github.bsayli.codegen.initializr.domain.model.value.pkg.PackageName;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.PlatformTarget;
-import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.BuildOptions;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.TechStack;
 import io.github.bsayli.codegen.initializr.domain.policy.tech.CompatibilityPolicy;
 import java.util.Arrays;
 import java.util.List;
@@ -23,7 +23,7 @@ import java.util.List;
 public final class ProjectBlueprintFactory {
 
   private static final ErrorCode IDENTITY_REQUIRED = () -> "project.identity.not.blank";
-  private static final ErrorCode BUILD_OPTIONS_REQUIRED = () -> "project.build-options.not.blank";
+  private static final ErrorCode TECH_STACK_REQUIRED = () -> "project.tech-stack.not.blank";
   private static final ErrorCode TARGET_REQUIRED = () -> "platform.target.not.blank";
   private static final ErrorCode DEPENDENCIES_REQUIRED = () -> "dependency.list.not.blank";
 
@@ -34,21 +34,21 @@ public final class ProjectBlueprintFactory {
       ProjectName name,
       ProjectDescription description,
       PackageName packageName,
-      BuildOptions buildOptions,
+      TechStack techStack,
       PlatformTarget platformTarget,
       Dependencies dependencies) {
 
     ensureNotNull(identity, IDENTITY_REQUIRED);
     ensureNotNull(name, compose(PROJECT_NAME, NOT_BLANK));
     ensureNotNull(packageName, compose(PACKAGE_NAME, NOT_BLANK));
-    ensureNotNull(buildOptions, BUILD_OPTIONS_REQUIRED);
+    ensureNotNull(techStack, TECH_STACK_REQUIRED);
     ensureNotNull(platformTarget, TARGET_REQUIRED);
     ensureNotNull(dependencies, DEPENDENCIES_REQUIRED);
 
-    CompatibilityPolicy.ensureCompatible(buildOptions, platformTarget);
+    CompatibilityPolicy.ensureCompatible(techStack, platformTarget);
 
     return new ProjectBlueprint(
-        identity, name, description, packageName, buildOptions, platformTarget, dependencies);
+        identity, name, description, packageName, techStack, platformTarget, dependencies);
   }
 
   public static ProjectBlueprint of(
@@ -56,7 +56,7 @@ public final class ProjectBlueprintFactory {
       ProjectName name,
       ProjectDescription description,
       PackageName packageName,
-      BuildOptions buildOptions,
+      TechStack techStack,
       PlatformTarget platformTarget,
       List<Dependency> dependencies) {
     return of(
@@ -64,7 +64,7 @@ public final class ProjectBlueprintFactory {
         name,
         description,
         packageName,
-        buildOptions,
+        techStack,
         platformTarget,
         Dependencies.of(dependencies));
   }
@@ -74,7 +74,7 @@ public final class ProjectBlueprintFactory {
       ProjectName name,
       ProjectDescription description,
       PackageName packageName,
-      BuildOptions buildOptions,
+      TechStack techStack,
       PlatformTarget platformTarget,
       Dependency... deps) {
     return of(
@@ -82,7 +82,7 @@ public final class ProjectBlueprintFactory {
         name,
         description,
         packageName,
-        buildOptions,
+        techStack,
         platformTarget,
         Dependencies.of(Arrays.asList(deps)));
   }

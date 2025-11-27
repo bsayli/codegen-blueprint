@@ -11,7 +11,7 @@ import io.github.bsayli.codegen.initializr.application.port.out.artifact.BuildCo
 import io.github.bsayli.codegen.initializr.bootstrap.config.ArtifactDefinition;
 import io.github.bsayli.codegen.initializr.domain.model.ProjectBlueprint;
 import io.github.bsayli.codegen.initializr.domain.model.value.identity.ProjectIdentity;
-import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.PlatformTarget;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.SpringBootJvmTarget;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +51,7 @@ public class MavenPomBuildConfigurationAdapter extends AbstractSingleTemplateArt
   @Override
   protected Map<String, Object> buildModel(ProjectBlueprint bp) {
     ProjectIdentity id = bp.getIdentity();
-    PlatformTarget pt = bp.getPlatformTarget();
+    SpringBootJvmTarget pt = (SpringBootJvmTarget) bp.getPlatformTarget();
 
     List<PomDependency> dependencies = new ArrayList<>();
     dependencies.add(CORE_STARTER);

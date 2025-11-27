@@ -39,7 +39,7 @@ public class CreateProjectHandler implements CreateProjectUseCase {
         rootPort.prepareRoot(
             command.targetDirectory(), bp.getIdentity().artifactId().value(), FAIL_IF_EXISTS);
 
-    ProjectArtifactsPort port = artifactsSelector.select(bp.getBuildOptions());
+    ProjectArtifactsPort port = artifactsSelector.select(bp.getTechStack());
     var files = port.generate(bp);
 
     writerPort.write(projectRoot, files);

@@ -4,7 +4,7 @@ import io.github.bsayli.codegen.initializr.adapter.error.exception.ArtifactsPort
 import io.github.bsayli.codegen.initializr.adapter.error.exception.UnsupportedProfileTypeException;
 import io.github.bsayli.codegen.initializr.application.port.out.ProjectArtifactsPort;
 import io.github.bsayli.codegen.initializr.application.port.out.ProjectArtifactsSelector;
-import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.BuildOptions;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.TechStack;
 import java.util.Map;
 
 public class ProfileBasedArtifactsSelector implements ProjectArtifactsSelector {
@@ -16,7 +16,7 @@ public class ProfileBasedArtifactsSelector implements ProjectArtifactsSelector {
   }
 
   @Override
-  public ProjectArtifactsPort select(BuildOptions options) {
+  public ProjectArtifactsPort select(TechStack options) {
     ProfileType type = ProfileType.from(options);
     if (type == null) {
       throw new UnsupportedProfileTypeException(options);

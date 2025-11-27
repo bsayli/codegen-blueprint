@@ -10,12 +10,12 @@ import org.junit.jupiter.api.Test;
 
 @Tag("unit")
 @Tag("domain")
-class BuildOptionsTest {
+class TechStackTest {
 
   @Test
   @DisplayName("valid framework, buildTool and language should be accepted")
   void validOptions_shouldBeAccepted() {
-    BuildOptions options = new BuildOptions(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
+    TechStack options = new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
 
     assertThat(options.framework()).isEqualTo(Framework.SPRING_BOOT);
     assertThat(options.buildTool()).isEqualTo(BuildTool.MAVEN);
@@ -23,38 +23,38 @@ class BuildOptionsTest {
   }
 
   @Test
-  @DisplayName("null framework should fail BUILD_OPTIONS_REQUIRED")
-  void nullFramework_shouldFailBuildOptionsRequired() {
-    assertThatThrownBy(() -> new BuildOptions(null, BuildTool.MAVEN, Language.JAVA))
+  @DisplayName("null framework should fail TECH_STACK_REQUIRED")
+  void nullFramework_shouldFailTechStackRequired() {
+    assertThatThrownBy(() -> new TechStack(null, BuildTool.MAVEN, Language.JAVA))
         .isInstanceOf(DomainViolationException.class)
         .satisfies(
             ex -> {
               DomainViolationException dve = (DomainViolationException) ex;
-              assertThat(dve.getMessageKey()).isEqualTo("project.build-options.not.blank");
+              assertThat(dve.getMessageKey()).isEqualTo("project.tech-stack.not.blank");
             });
   }
 
   @Test
-  @DisplayName("null buildTool should fail BUILD_OPTIONS_REQUIRED")
-  void nullBuildTool_shouldFailBuildOptionsRequired() {
-    assertThatThrownBy(() -> new BuildOptions(Framework.SPRING_BOOT, null, Language.JAVA))
+  @DisplayName("null buildTool should fail TECH_STACK_REQUIRED")
+  void nullBuildTool_shouldFailTechStackRequired() {
+    assertThatThrownBy(() -> new TechStack(Framework.SPRING_BOOT, null, Language.JAVA))
         .isInstanceOf(DomainViolationException.class)
         .satisfies(
             ex -> {
               DomainViolationException dve = (DomainViolationException) ex;
-              assertThat(dve.getMessageKey()).isEqualTo("project.build-options.not.blank");
+              assertThat(dve.getMessageKey()).isEqualTo("project.tech-stack.not.blank");
             });
   }
 
   @Test
-  @DisplayName("null language should fail BUILD_OPTIONS_REQUIRED")
-  void nullLanguage_shouldFailBuildOptionsRequired() {
-    assertThatThrownBy(() -> new BuildOptions(Framework.SPRING_BOOT, BuildTool.MAVEN, null))
+  @DisplayName("null language should fail TECH_STACK_REQUIRED")
+  void nullLanguage_shouldFailTechStackRequired() {
+    assertThatThrownBy(() -> new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, null))
         .isInstanceOf(DomainViolationException.class)
         .satisfies(
             ex -> {
               DomainViolationException dve = (DomainViolationException) ex;
-              assertThat(dve.getMessageKey()).isEqualTo("project.build-options.not.blank");
+              assertThat(dve.getMessageKey()).isEqualTo("project.tech-stack.not.blank");
             });
   }
 }

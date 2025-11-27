@@ -16,11 +16,12 @@ import io.github.bsayli.codegen.initializr.domain.model.value.naming.ProjectName
 import io.github.bsayli.codegen.initializr.domain.model.value.pkg.PackageName;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.JavaVersion;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.PlatformTarget;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.SpringBootJvmTarget;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.SpringBootVersion;
-import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.BuildOptions;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.BuildTool;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.Framework;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.Language;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.TechStack;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -46,12 +47,12 @@ class ProjectBlueprintFactoryTest {
     return new PackageName("com.example.demo");
   }
 
-  private static BuildOptions buildOptions() {
-    return new BuildOptions(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
+  private static TechStack techStack() {
+    return new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
   }
 
   private static PlatformTarget target() {
-    return new PlatformTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5_6);
+    return new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5_6);
   }
 
   private static Dependencies dependencies() {
@@ -72,7 +73,7 @@ class ProjectBlueprintFactoryTest {
     ProjectName name = name();
     ProjectDescription description = description();
     PackageName packageName = pkg();
-    BuildOptions options = buildOptions();
+    TechStack options = techStack();
     PlatformTarget target = target();
     Dependencies dependencies = dependencies();
 
@@ -84,7 +85,7 @@ class ProjectBlueprintFactoryTest {
     assertThat(bp.getName()).isSameAs(name);
     assertThat(bp.getDescription()).isSameAs(description);
     assertThat(bp.getPackageName()).isSameAs(packageName);
-    assertThat(bp.getBuildOptions()).isSameAs(options);
+    assertThat(bp.getTechStack()).isSameAs(options);
     assertThat(bp.getPlatformTarget()).isSameAs(target);
     assertThat(bp.getDependencies()).isSameAs(dependencies);
   }
@@ -97,7 +98,7 @@ class ProjectBlueprintFactoryTest {
 
     ProjectBlueprint bp =
         ProjectBlueprintFactory.of(
-            identity(), name(), description(), pkg(), buildOptions(), target(), List.of(d1, d2));
+            identity(), name(), description(), pkg(), techStack(), target(), List.of(d1, d2));
 
     assertThat(bp.getDependencies()).isNotNull();
     assertThat(bp.getDependencies().asList()).hasSize(2);
@@ -111,7 +112,7 @@ class ProjectBlueprintFactoryTest {
 
     ProjectBlueprint bp =
         ProjectBlueprintFactory.of(
-            identity(), name(), description(), pkg(), buildOptions(), target(), d1, d2);
+            identity(), name(), description(), pkg(), techStack(), target(), d1, d2);
 
     assertThat(bp.getDependencies()).isNotNull();
     assertThat(bp.getDependencies().asList()).hasSize(2);
@@ -123,7 +124,7 @@ class ProjectBlueprintFactoryTest {
     assertThatThrownBy(
             () ->
                 ProjectBlueprintFactory.of(
-                    null, name(), description(), pkg(), buildOptions(), target(), dependencies()))
+                    null, name(), description(), pkg(), techStack(), target(), dependencies()))
         .isInstanceOfSatisfying(
             DomainViolationException.class,
             dve -> assertThat(dve.getMessageKey()).isEqualTo("project.identity.not.blank"));
@@ -135,13 +136,7 @@ class ProjectBlueprintFactoryTest {
     assertThatThrownBy(
             () ->
                 ProjectBlueprintFactory.of(
-                    identity(),
-                    null,
-                    description(),
-                    pkg(),
-                    buildOptions(),
-                    target(),
-                    dependencies()))
+                    identity(), null, description(), pkg(), techStack(), target(), dependencies()))
         .isInstanceOfSatisfying(
             DomainViolationException.class,
             dve -> assertThat(dve.getMessageKey()).isEqualTo("project.name.not.blank"));
@@ -153,28 +148,22 @@ class ProjectBlueprintFactoryTest {
     assertThatThrownBy(
             () ->
                 ProjectBlueprintFactory.of(
-                    identity(),
-                    name(),
-                    description(),
-                    null,
-                    buildOptions(),
-                    target(),
-                    dependencies()))
+                    identity(), name(), description(), null, techStack(), target(), dependencies()))
         .isInstanceOfSatisfying(
             DomainViolationException.class,
             dve -> assertThat(dve.getMessageKey()).isEqualTo("project.package-name.not.blank"));
   }
 
   @Test
-  @DisplayName("null build options should fail with project.build-options.not.blank")
-  void nullBuildOptions_shouldFailBuildOptionsRequired() {
+  @DisplayName("null tech stack should fail with project.tech-stack.not.blank")
+  void nullBuildOptions_shouldFailTechStackRequired() {
     assertThatThrownBy(
             () ->
                 ProjectBlueprintFactory.of(
                     identity(), name(), description(), pkg(), null, target(), dependencies()))
         .isInstanceOfSatisfying(
             DomainViolationException.class,
-            dve -> assertThat(dve.getMessageKey()).isEqualTo("project.build-options.not.blank"));
+            dve -> assertThat(dve.getMessageKey()).isEqualTo("project.tech-stack.not.blank"));
   }
 
   @Test
@@ -183,7 +172,7 @@ class ProjectBlueprintFactoryTest {
     assertThatThrownBy(
             () ->
                 ProjectBlueprintFactory.of(
-                    identity(), name(), description(), pkg(), buildOptions(), null, dependencies()))
+                    identity(), name(), description(), pkg(), techStack(), null, dependencies()))
         .isInstanceOfSatisfying(
             DomainViolationException.class,
             dve -> assertThat(dve.getMessageKey()).isEqualTo("platform.target.not.blank"));
@@ -199,7 +188,7 @@ class ProjectBlueprintFactoryTest {
                     name(),
                     description(),
                     pkg(),
-                    buildOptions(),
+                    techStack(),
                     target(),
                     (Dependencies) null))
         .isInstanceOfSatisfying(
@@ -210,9 +199,9 @@ class ProjectBlueprintFactoryTest {
   @Test
   @DisplayName("incompatible platform target should delegate to CompatibilityPolicy and fail")
   void incompatiblePlatformTarget_shouldFailCompatibility() {
-    BuildOptions options = buildOptions();
+    TechStack options = techStack();
     PlatformTarget incompatible =
-        new PlatformTarget(JavaVersion.JAVA_25, SpringBootVersion.V3_4_10);
+        new SpringBootJvmTarget(JavaVersion.JAVA_25, SpringBootVersion.V3_4_10);
 
     assertThatThrownBy(
             () ->

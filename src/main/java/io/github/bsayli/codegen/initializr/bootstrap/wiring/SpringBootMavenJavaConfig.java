@@ -31,118 +31,117 @@ public class SpringBootMavenJavaConfig {
 
   @Bean
   MavenPomBuildConfigurationAdapter springBootMavenJavaMavenPomBuildConfigurationAdapter(
-          TemplateRenderer renderer,
-          CodegenProfilesProperties profiles,
-          PomDependencyMapper pomDependencyMapper) {
+      TemplateRenderer renderer,
+      CodegenProfilesProperties profiles,
+      PomDependencyMapper pomDependencyMapper) {
     ArtifactDefinition props =
-            profiles.artifact(ProfileType.SPRINGBOOT_MAVEN_JAVA, ArtifactKey.BUILD_CONFIG);
+        profiles.artifact(ProfileType.SPRINGBOOT_MAVEN_JAVA, ArtifactKey.BUILD_CONFIG);
     return new MavenPomBuildConfigurationAdapter(renderer, props, pomDependencyMapper);
   }
 
   @Bean
   MavenWrapperBuildToolFilesAdapter springBootMavenJavaMavenWrapperBuildToolFilesAdapter(
-          TemplateRenderer renderer, CodegenProfilesProperties profiles) {
+      TemplateRenderer renderer, CodegenProfilesProperties profiles) {
     ArtifactDefinition props =
-            profiles.artifact(ProfileType.SPRINGBOOT_MAVEN_JAVA, ArtifactKey.BUILD_TOOL_METADATA);
+        profiles.artifact(ProfileType.SPRINGBOOT_MAVEN_JAVA, ArtifactKey.BUILD_TOOL_METADATA);
     return new MavenWrapperBuildToolFilesAdapter(renderer, props);
   }
 
   @Bean
   GitIgnoreAdapter springBootMavenJavaGitIgnoreAdapter(
-          TemplateRenderer renderer, CodegenProfilesProperties profiles) {
+      TemplateRenderer renderer, CodegenProfilesProperties profiles) {
     ArtifactDefinition props =
-            profiles.artifact(ProfileType.SPRINGBOOT_MAVEN_JAVA, ArtifactKey.IGNORE_RULES);
+        profiles.artifact(ProfileType.SPRINGBOOT_MAVEN_JAVA, ArtifactKey.IGNORE_RULES);
     return new GitIgnoreAdapter(renderer, props);
   }
 
   @Bean
   ApplicationYamlAdapter springBootMavenJavaApplicationYamlAdapter(
-          TemplateRenderer renderer, CodegenProfilesProperties profiles) {
+      TemplateRenderer renderer, CodegenProfilesProperties profiles) {
     ArtifactDefinition props =
-            profiles.artifact(ProfileType.SPRINGBOOT_MAVEN_JAVA, ArtifactKey.APP_CONFIG);
+        profiles.artifact(ProfileType.SPRINGBOOT_MAVEN_JAVA, ArtifactKey.APP_CONFIG);
     return new ApplicationYamlAdapter(renderer, props);
   }
 
   @Bean
   MainSourceEntrypointAdapter springBootMavenJavaMainSourceEntrypointAdapter(
-          TemplateRenderer renderer,
-          CodegenProfilesProperties profiles,
-          StringCaseFormatter stringCaseFormatter) {
+      TemplateRenderer renderer,
+      CodegenProfilesProperties profiles,
+      StringCaseFormatter stringCaseFormatter) {
     ArtifactDefinition props =
-            profiles.artifact(ProfileType.SPRINGBOOT_MAVEN_JAVA, ArtifactKey.MAIN_SOURCE_ENTRY_POINT);
+        profiles.artifact(ProfileType.SPRINGBOOT_MAVEN_JAVA, ArtifactKey.MAIN_SOURCE_ENTRY_POINT);
     return new MainSourceEntrypointAdapter(renderer, props, stringCaseFormatter);
   }
 
   @Bean
   TestSourceEntrypointAdapter springBootMavenJavaTestSourceEntrypointAdapter(
-          TemplateRenderer renderer,
-          CodegenProfilesProperties profiles,
-          StringCaseFormatter stringCaseFormatter) {
+      TemplateRenderer renderer,
+      CodegenProfilesProperties profiles,
+      StringCaseFormatter stringCaseFormatter) {
     ArtifactDefinition props =
-            profiles.artifact(ProfileType.SPRINGBOOT_MAVEN_JAVA, ArtifactKey.TEST_SOURCE_ENTRY_POINT);
+        profiles.artifact(ProfileType.SPRINGBOOT_MAVEN_JAVA, ArtifactKey.TEST_SOURCE_ENTRY_POINT);
     return new TestSourceEntrypointAdapter(renderer, props, stringCaseFormatter);
   }
 
   @Bean
   ProjectDocumentationAdapter springBootMavenJavaProjectDocumentationAdapter(
-          TemplateRenderer renderer,
-          CodegenProfilesProperties profiles,
-          PomDependencyMapper pomDependencyMapper) {
+      TemplateRenderer renderer,
+      CodegenProfilesProperties profiles,
+      PomDependencyMapper pomDependencyMapper) {
     ArtifactDefinition props =
-            profiles.artifact(ProfileType.SPRINGBOOT_MAVEN_JAVA, ArtifactKey.PROJECT_DOCUMENTATION);
+        profiles.artifact(ProfileType.SPRINGBOOT_MAVEN_JAVA, ArtifactKey.PROJECT_DOCUMENTATION);
     return new ProjectDocumentationAdapter(renderer, props, pomDependencyMapper);
   }
 
   @Bean
   Map<ArtifactKey, ArtifactPort> springBootMavenJavaArtifactRegistry(
-          MavenPomBuildConfigurationAdapter springBootMavenJavaMavenPomBuildConfigurationAdapter,
-          MavenWrapperBuildToolFilesAdapter springBootMavenJavaMavenWrapperBuildToolFilesAdapter,
-          GitIgnoreAdapter springBootMavenJavaGitIgnoreAdapter,
-          ApplicationYamlAdapter springBootMavenJavaApplicationYamlAdapter,
-          MainSourceEntrypointAdapter springBootMavenJavaMainSourceEntrypointAdapter,
-          TestSourceEntrypointAdapter springBootMavenJavaTestSourceEntrypointAdapter,
-          ProjectDocumentationAdapter springBootMavenJavaProjectDocumentationAdapter) {
+      MavenPomBuildConfigurationAdapter springBootMavenJavaMavenPomBuildConfigurationAdapter,
+      MavenWrapperBuildToolFilesAdapter springBootMavenJavaMavenWrapperBuildToolFilesAdapter,
+      GitIgnoreAdapter springBootMavenJavaGitIgnoreAdapter,
+      ApplicationYamlAdapter springBootMavenJavaApplicationYamlAdapter,
+      MainSourceEntrypointAdapter springBootMavenJavaMainSourceEntrypointAdapter,
+      TestSourceEntrypointAdapter springBootMavenJavaTestSourceEntrypointAdapter,
+      ProjectDocumentationAdapter springBootMavenJavaProjectDocumentationAdapter) {
 
     Map<ArtifactKey, ArtifactPort> registry = new EnumMap<>(ArtifactKey.class);
     registry.put(ArtifactKey.BUILD_CONFIG, springBootMavenJavaMavenPomBuildConfigurationAdapter);
     registry.put(
-            ArtifactKey.BUILD_TOOL_METADATA, springBootMavenJavaMavenWrapperBuildToolFilesAdapter);
+        ArtifactKey.BUILD_TOOL_METADATA, springBootMavenJavaMavenWrapperBuildToolFilesAdapter);
     registry.put(ArtifactKey.IGNORE_RULES, springBootMavenJavaGitIgnoreAdapter);
     registry.put(ArtifactKey.APP_CONFIG, springBootMavenJavaApplicationYamlAdapter);
     registry.put(
-            ArtifactKey.MAIN_SOURCE_ENTRY_POINT, springBootMavenJavaMainSourceEntrypointAdapter);
+        ArtifactKey.MAIN_SOURCE_ENTRY_POINT, springBootMavenJavaMainSourceEntrypointAdapter);
     registry.put(
-            ArtifactKey.TEST_SOURCE_ENTRY_POINT, springBootMavenJavaTestSourceEntrypointAdapter);
-    registry.put(
-            ArtifactKey.PROJECT_DOCUMENTATION, springBootMavenJavaProjectDocumentationAdapter);
+        ArtifactKey.TEST_SOURCE_ENTRY_POINT, springBootMavenJavaTestSourceEntrypointAdapter);
+    registry.put(ArtifactKey.PROJECT_DOCUMENTATION, springBootMavenJavaProjectDocumentationAdapter);
     return Collections.unmodifiableMap(registry);
   }
 
   @Bean
   ProjectArtifactsPort springBootMavenJavaArtifactsAdapter(
-          CodegenProfilesProperties codegenProfilesProperties,
-          Map<ArtifactKey, ArtifactPort> springBootMavenJavaArtifactRegistry) {
+      CodegenProfilesProperties codegenProfilesProperties,
+      Map<ArtifactKey, ArtifactPort> springBootMavenJavaArtifactRegistry) {
 
     var profile = codegenProfilesProperties.requireProfile(ProfileType.SPRINGBOOT_MAVEN_JAVA);
     var orderedArtifactKeys = profile.orderedArtifactKeys();
 
     List<ArtifactPort> ordered =
-            orderedArtifactKeys.stream()
-                    .map(
-                            key -> {
-                              ArtifactPort port = springBootMavenJavaArtifactRegistry.get(key);
-                              if (port == null) {
-                                throw new ProfileConfigurationException(
-                                        "bootstrap.artifact.not.found",
-                                        key.key(),
-                                        ProfileType.SPRINGBOOT_MAVEN_JAVA.key());
-                              }
-                              if (!port.artifactKey().equals(key)) {
-                                throw new ArtifactKeyMismatchException(key, port.artifactKey());
-                              }
-                              return port;
-                            })
-                    .toList();
+        orderedArtifactKeys.stream()
+            .map(
+                key -> {
+                  ArtifactPort port = springBootMavenJavaArtifactRegistry.get(key);
+                  if (port == null) {
+                    throw new ProfileConfigurationException(
+                        "bootstrap.artifact.not.found",
+                        key.key(),
+                        ProfileType.SPRINGBOOT_MAVEN_JAVA.key());
+                  }
+                  if (!port.artifactKey().equals(key)) {
+                    throw new ArtifactKeyMismatchException(key, port.artifactKey());
+                  }
+                  return port;
+                })
+            .toList();
 
     return new SpringBootMavenJavaArtifactsAdapter(ordered);
   }

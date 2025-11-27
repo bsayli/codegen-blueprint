@@ -7,10 +7,10 @@ import static org.mockito.Mockito.*;
 import io.github.bsayli.codegen.initializr.adapter.error.exception.ArtifactsPortNotFoundException;
 import io.github.bsayli.codegen.initializr.adapter.error.exception.UnsupportedProfileTypeException;
 import io.github.bsayli.codegen.initializr.application.port.out.ProjectArtifactsPort;
-import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.BuildOptions;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.BuildTool;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.Framework;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.Language;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.TechStack;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -22,7 +22,7 @@ class ProfileBasedArtifactsSelectorTest {
   @Test
   @DisplayName("Should throw UnsupportedProfileTypeException when ProfileType.from() returns null")
   void shouldThrowWhenProfileUnsupported() {
-    BuildOptions options = mock(BuildOptions.class);
+    TechStack options = mock(TechStack.class);
 
     ProfileBasedArtifactsSelector selector = new ProfileBasedArtifactsSelector(Map.of());
 
@@ -33,7 +33,7 @@ class ProfileBasedArtifactsSelectorTest {
   @Test
   @DisplayName("Should throw ArtifactsPortNotFoundException when no port registered for type")
   void shouldThrowWhenPortMissing() {
-    BuildOptions opts = new BuildOptions(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
+    TechStack opts = new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
 
     ProfileType type = ProfileType.from(opts);
     assertThat(type).isNotNull();
@@ -48,7 +48,7 @@ class ProfileBasedArtifactsSelectorTest {
   @Test
   @DisplayName("Should return registered ProjectArtifactsPort for matching profile")
   void shouldReturnMatchingPort() {
-    BuildOptions opts = new BuildOptions(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
+    TechStack opts = new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
 
     ProfileType type = ProfileType.from(opts);
 

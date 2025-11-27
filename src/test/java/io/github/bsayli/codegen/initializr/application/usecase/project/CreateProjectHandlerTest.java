@@ -9,10 +9,10 @@ import io.github.bsayli.codegen.initializr.application.port.out.archive.ProjectA
 import io.github.bsayli.codegen.initializr.domain.model.ProjectBlueprint;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.JavaVersion;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.SpringBootVersion;
-import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.BuildOptions;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.BuildTool;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.Framework;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.Language;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.TechStack;
 import io.github.bsayli.codegen.initializr.domain.port.out.artifact.GeneratedFile;
 import io.github.bsayli.codegen.initializr.domain.port.out.filesystem.ProjectRootExistencePolicy;
 import io.github.bsayli.codegen.initializr.domain.port.out.filesystem.ProjectRootPort;
@@ -53,7 +53,7 @@ class CreateProjectHandlerTest {
             "Demo App",
             "desc",
             "com.acme.demo",
-            new BuildOptions(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA),
+            new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA),
             JavaVersion.JAVA_21,
             SpringBootVersion.V3_5_6,
             List.of(),
@@ -93,7 +93,7 @@ class CreateProjectHandlerTest {
     }
 
     @Override
-    public ProjectArtifactsPort select(BuildOptions options) {
+    public ProjectArtifactsPort select(TechStack options) {
       return delegate;
     }
   }

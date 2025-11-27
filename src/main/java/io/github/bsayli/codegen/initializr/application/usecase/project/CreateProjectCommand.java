@@ -2,7 +2,7 @@ package io.github.bsayli.codegen.initializr.application.usecase.project;
 
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.JavaVersion;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.SpringBootVersion;
-import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.BuildOptions;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.TechStack;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -12,7 +12,7 @@ public record CreateProjectCommand(
     String projectName,
     String projectDescription,
     String packageName,
-    BuildOptions buildOptions,
+    TechStack techStack,
     JavaVersion preferredJava,
     SpringBootVersion preferredBoot,
     List<DependencyInput> dependencies,

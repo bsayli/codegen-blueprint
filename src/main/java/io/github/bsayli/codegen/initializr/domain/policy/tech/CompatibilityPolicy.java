@@ -40,21 +40,20 @@ public final class CompatibilityPolicy {
     }
 
     if (techStack.framework() != Framework.SPRING_BOOT
-            || techStack.language() != Language.JAVA
-            || techStack.buildTool() != BuildTool.MAVEN) {
+        || techStack.language() != Language.JAVA
+        || techStack.buildTool() != BuildTool.MAVEN) {
       throw new DomainViolationException(
-              OPTIONS_UNSUPPORTED, techStack.framework(), techStack.language(), techStack.buildTool());
+          OPTIONS_UNSUPPORTED, techStack.framework(), techStack.language(), techStack.buildTool());
     }
 
     if (!(target instanceof SpringBootJvmTarget(JavaVersion java, SpringBootVersion springBoot))) {
       throw new DomainViolationException(
-              TARGET_INCOMPATIBLE, "SPRING_BOOT", target.getClass().getSimpleName());
+          TARGET_INCOMPATIBLE, "SPRING_BOOT", target.getClass().getSimpleName());
     }
 
     var allowed = SPRINGBOOT_JAVA_SUPPORT.getOrDefault(springBoot, Set.of());
     if (!allowed.contains(java)) {
-      throw new DomainViolationException(
-              TARGET_INCOMPATIBLE, springBoot.value(), java.asString());
+      throw new DomainViolationException(TARGET_INCOMPATIBLE, springBoot.value(), java.asString());
     }
   }
 

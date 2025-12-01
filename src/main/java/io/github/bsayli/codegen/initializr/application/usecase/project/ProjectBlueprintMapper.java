@@ -14,7 +14,6 @@ import io.github.bsayli.codegen.initializr.domain.model.value.naming.ProjectDesc
 import io.github.bsayli.codegen.initializr.domain.model.value.naming.ProjectName;
 import io.github.bsayli.codegen.initializr.domain.model.value.pkg.PackageName;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.PlatformTarget;
-import io.github.bsayli.codegen.initializr.domain.policy.tech.PlatformTargetSelector;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,8 +27,7 @@ public class ProjectBlueprintMapper {
     ProjectDescription description = new ProjectDescription(c.projectDescription());
     PackageName pkg = new PackageName(c.packageName());
 
-    PlatformTarget target =
-        PlatformTargetSelector.select(c.techStack(), c.preferredJava(), c.preferredBoot());
+    PlatformTarget target = c.platformTarget();
 
     Dependencies deps = mapDependencies(c.dependencies());
 

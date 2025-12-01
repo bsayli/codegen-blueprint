@@ -57,8 +57,7 @@ class SpringBootMavenJavaArtifactsAdapterIT {
     ProjectDescription description = new ProjectDescription("Integration test blueprint");
     PackageName packageName = new PackageName("com.example.demo");
 
-    TechStack techStack =
-        new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
+    TechStack techStack = new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
 
     PlatformTarget platformTarget =
         new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5_6);

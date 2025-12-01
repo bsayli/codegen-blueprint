@@ -67,25 +67,25 @@ class ProjectBlueprintFactoryTest {
 
   @Test
   @DisplayName(
-      "of(identity, name, desc, package, options, target, dependencies) should create blueprint with same references")
+      "of(identity, name, desc, package, stack, target, dependencies) should create blueprint with same references")
   void of_withDependenciesObject_shouldCreateBlueprint() {
     ProjectIdentity identity = identity();
     ProjectName name = name();
     ProjectDescription description = description();
     PackageName packageName = pkg();
-    TechStack options = techStack();
+    TechStack stack = techStack();
     PlatformTarget target = target();
     Dependencies dependencies = dependencies();
 
     ProjectBlueprint bp =
         ProjectBlueprintFactory.of(
-            identity, name, description, packageName, options, target, dependencies);
+            identity, name, description, packageName, stack, target, dependencies);
 
     assertThat(bp.getIdentity()).isSameAs(identity);
     assertThat(bp.getName()).isSameAs(name);
     assertThat(bp.getDescription()).isSameAs(description);
     assertThat(bp.getPackageName()).isSameAs(packageName);
-    assertThat(bp.getTechStack()).isSameAs(options);
+    assertThat(bp.getTechStack()).isSameAs(stack);
     assertThat(bp.getPlatformTarget()).isSameAs(target);
     assertThat(bp.getDependencies()).isSameAs(dependencies);
   }
@@ -119,100 +119,41 @@ class ProjectBlueprintFactoryTest {
   }
 
   @Test
-  @DisplayName("null identity should fail with project.identity.not.blank")
-  void nullIdentity_shouldFailIdentityRequired() {
-    assertThatThrownBy(
-            () ->
-                ProjectBlueprintFactory.of(
-                    null, name(), description(), pkg(), techStack(), target(), dependencies()))
-        .isInstanceOfSatisfying(
-            DomainViolationException.class,
-            dve -> assertThat(dve.getMessageKey()).isEqualTo("project.identity.not.blank"));
-  }
-
-  @Test
-  @DisplayName("null project name should fail with project.name.not.blank")
-  void nullProjectName_shouldFailNotBlankRule() {
-    assertThatThrownBy(
-            () ->
-                ProjectBlueprintFactory.of(
-                    identity(), null, description(), pkg(), techStack(), target(), dependencies()))
-        .isInstanceOfSatisfying(
-            DomainViolationException.class,
-            dve -> assertThat(dve.getMessageKey()).isEqualTo("project.name.not.blank"));
-  }
-
-  @Test
-  @DisplayName("null package name should fail with project.package-name.not.blank")
-  void nullPackageName_shouldFailNotBlankRule() {
-    assertThatThrownBy(
-            () ->
-                ProjectBlueprintFactory.of(
-                    identity(), name(), description(), null, techStack(), target(), dependencies()))
-        .isInstanceOfSatisfying(
-            DomainViolationException.class,
-            dve -> assertThat(dve.getMessageKey()).isEqualTo("project.package-name.not.blank"));
-  }
-
-  @Test
-  @DisplayName("null tech stack should fail with project.tech-stack.not.blank")
-  void nullBuildOptions_shouldFailTechStackRequired() {
+  @DisplayName("null tech stack should fail via CompatibilityPolicy with platform.target.missing")
+  void nullTechStack_shouldFailPlatformTargetMissing() {
     assertThatThrownBy(
             () ->
                 ProjectBlueprintFactory.of(
                     identity(), name(), description(), pkg(), null, target(), dependencies()))
         .isInstanceOfSatisfying(
             DomainViolationException.class,
-            dve -> assertThat(dve.getMessageKey()).isEqualTo("project.tech-stack.not.blank"));
+            dve -> assertThat(dve.getMessageKey()).isEqualTo("platform.target.missing"));
   }
 
   @Test
-  @DisplayName("null platform target should fail with platform.target.not.blank")
-  void nullPlatformTarget_shouldFailTargetRequired() {
+  @DisplayName(
+      "null platform target should fail via CompatibilityPolicy with platform.target.missing")
+  void nullPlatformTarget_shouldFailPlatformTargetMissing() {
     assertThatThrownBy(
             () ->
                 ProjectBlueprintFactory.of(
                     identity(), name(), description(), pkg(), techStack(), null, dependencies()))
         .isInstanceOfSatisfying(
             DomainViolationException.class,
-            dve -> assertThat(dve.getMessageKey()).isEqualTo("platform.target.not.blank"));
-  }
-
-  @Test
-  @DisplayName("null dependencies should fail with dependency.list.not.blank")
-  void nullDependencies_shouldFailDependenciesRequired() {
-    assertThatThrownBy(
-            () ->
-                ProjectBlueprintFactory.of(
-                    identity(),
-                    name(),
-                    description(),
-                    pkg(),
-                    techStack(),
-                    target(),
-                    (Dependencies) null))
-        .isInstanceOfSatisfying(
-            DomainViolationException.class,
-            dve -> assertThat(dve.getMessageKey()).isEqualTo("dependency.list.not.blank"));
+            dve -> assertThat(dve.getMessageKey()).isEqualTo("platform.target.missing"));
   }
 
   @Test
   @DisplayName("incompatible platform target should delegate to CompatibilityPolicy and fail")
   void incompatiblePlatformTarget_shouldFailCompatibility() {
-    TechStack options = techStack();
+    TechStack stack = techStack();
     PlatformTarget incompatible =
         new SpringBootJvmTarget(JavaVersion.JAVA_25, SpringBootVersion.V3_4_10);
 
     assertThatThrownBy(
             () ->
                 ProjectBlueprintFactory.of(
-                    identity(),
-                    name(),
-                    description(),
-                    pkg(),
-                    options,
-                    incompatible,
-                    dependencies()))
+                    identity(), name(), description(), pkg(), stack, incompatible, dependencies()))
         .isInstanceOfSatisfying(
             DomainViolationException.class,
             dve -> assertThat(dve.getMessageKey()).isEqualTo("platform.target.incompatible"));

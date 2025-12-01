@@ -53,8 +53,7 @@ class ProjectDocumentationAdapterTest {
     ProjectDescription description = new ProjectDescription("Sample Project");
     PackageName pkg = new PackageName("com.acme.demo");
 
-    TechStack techStack =
-        new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
+    TechStack techStack = new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
 
     PlatformTarget target = new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5_6);
 
@@ -66,8 +65,7 @@ class ProjectDocumentationAdapterTest {
 
     Dependencies dependencies = Dependencies.of(List.of(dep));
 
-    return new ProjectBlueprint(
-        identity, name, description, pkg, techStack, target, dependencies);
+    return new ProjectBlueprint(identity, name, description, pkg, techStack, target, dependencies);
   }
 
   @Test

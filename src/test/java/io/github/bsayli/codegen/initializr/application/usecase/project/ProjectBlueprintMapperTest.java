@@ -6,6 +6,7 @@ import io.github.bsayli.codegen.initializr.domain.model.ProjectBlueprint;
 import io.github.bsayli.codegen.initializr.domain.model.value.dependency.Dependency;
 import io.github.bsayli.codegen.initializr.domain.model.value.dependency.DependencyScope;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.JavaVersion;
+import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.SpringBootJvmTarget;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.platform.SpringBootVersion;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.BuildTool;
 import io.github.bsayli.codegen.initializr.domain.model.value.tech.stack.Framework;
@@ -27,26 +28,33 @@ class ProjectBlueprintMapperTest {
     var mapper = new ProjectBlueprintMapper();
 
     var inputs =
-        List.of(
-            new DependencyInput("org.acme", "alpha", "", ""),
-            new DependencyInput("org.acme", "beta", "1.2.3", "runtime"),
-            new DependencyInput("org.acme", "gamma", "  ", "  "),
-            new DependencyInput("org.acme", "delta", "2.0.0-RC1", "TeSt"));
+            List.of(
+                    new DependencyInput("org.acme", "alpha", "", ""),
+                    new DependencyInput("org.acme", "beta", "1.2.3", "runtime"),
+                    new DependencyInput("org.acme", "gamma", "  ", "  "),
+                    new DependencyInput("org.acme", "delta", "2.0.0-RC1", "TeSt"));
 
-    var cmd =
-        new CreateProjectCommand(
-            "com.acme",
-            "demo-app",
-            "Demo App",
-            "desc",
-            "com.acme.demo",
-            new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA),
-            JavaVersion.JAVA_21,
-            SpringBootVersion.V3_5_6,
-            inputs,
-            Path.of("."));
+    var cmd = getCreateProjectCommand(inputs);
 
     return mapper.from(cmd);
+  }
+
+  private static CreateProjectCommand getCreateProjectCommand(List<DependencyInput> inputs) {
+    var techStack = new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
+    var platformTarget =
+            new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5_6);
+
+    return
+            new CreateProjectCommand(
+                    "com.acme",
+                    "demo-app",
+                    "Demo App",
+                    "desc",
+                    "com.acme.demo",
+                    techStack,
+                    platformTarget,
+                    inputs,
+                    Path.of("."));
   }
 
   @Test
@@ -57,8 +65,8 @@ class ProjectBlueprintMapperTest {
     assertThat(bp.getDependencies().asList()).hasSize(4);
 
     Map<String, Dependency> byArtifact =
-        bp.getDependencies().asList().stream()
-            .collect(Collectors.toMap(d -> d.coordinates().artifactId().value(), d -> d));
+            bp.getDependencies().asList().stream()
+                    .collect(Collectors.toMap(d -> d.coordinates().artifactId().value(), d -> d));
 
     var alpha = byArtifact.get("alpha");
     assertThat(alpha.coordinates().groupId().value()).isEqualTo("org.acme");

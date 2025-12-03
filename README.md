@@ -78,6 +78,7 @@ Codegen Blueprint is evolving into a platform where:
 The long-term mission:
 
 > **Architectural excellence should be the default — not an afterthought.**
+> **Standards should execute — not be forgotten.**
 
 ### Profiles + Foundation Libraries
 

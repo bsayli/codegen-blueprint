@@ -1,4 +1,4 @@
-package io.github.bsayli.codegen.initializr.bootstrap.wiring.profile;
+package io.github.bsayli.codegen.initializr.bootstrap.wiring.out.profile;
 
 import io.github.bsayli.codegen.initializr.adapter.error.exception.ArtifactKeyMismatchException;
 import io.github.bsayli.codegen.initializr.adapter.out.build.maven.shared.PomDependencyMapper;

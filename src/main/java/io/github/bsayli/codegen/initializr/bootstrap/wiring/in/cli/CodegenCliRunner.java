@@ -1,5 +1,6 @@
-package io.github.bsayli.codegen.initializr.bootstrap.wiring.cli;
+package io.github.bsayli.codegen.initializr.bootstrap.wiring.in.cli;
 
+import io.github.bsayli.codegen.initializr.adapter.in.cli.CodegenCliExceptionHandler;
 import io.github.bsayli.codegen.initializr.adapter.in.cli.CodegenCommand;
 import java.util.ArrayList;
 import java.util.List;

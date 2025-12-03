@@ -1,4 +1,4 @@
-package io.github.bsayli.codegen.initializr.bootstrap.wiring.cli;
+package io.github.bsayli.codegen.initializr.adapter.in.cli;
 
 import io.github.bsayli.codegen.initializr.adapter.error.exception.AdapterException;
 import io.github.bsayli.codegen.initializr.application.error.exception.ApplicationException;
@@ -9,13 +9,11 @@ import java.util.Locale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
-import org.springframework.stereotype.Component;
 import picocli.CommandLine;
 import picocli.CommandLine.IExecutionExceptionHandler;
 import picocli.CommandLine.ParameterException;
 import picocli.CommandLine.ParseResult;
 
-@Component
 public class CodegenCliExceptionHandler implements IExecutionExceptionHandler {
 
   private static final Logger log = LoggerFactory.getLogger(CodegenCliExceptionHandler.class);

@@ -1,4 +1,4 @@
-package io.github.bsayli.codegen.initializr.bootstrap.wiring.filesystem;
+package io.github.bsayli.codegen.initializr.bootstrap.wiring.out.filesystem;
 
 import io.github.bsayli.codegen.initializr.adapter.out.filesystem.FileSystemProjectArchiverAdapter;
 import io.github.bsayli.codegen.initializr.adapter.out.filesystem.FileSystemProjectRootAdapter;

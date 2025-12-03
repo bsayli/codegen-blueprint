@@ -1,4 +1,4 @@
-package io.github.bsayli.codegen.initializr.bootstrap.wiring.cli;
+package io.github.bsayli.codegen.initializr.bootstrap.wiring.in.cli;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;

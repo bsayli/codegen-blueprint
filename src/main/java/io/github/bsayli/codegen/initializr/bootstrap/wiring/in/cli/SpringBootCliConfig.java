@@ -1,4 +1,4 @@
-package io.github.bsayli.codegen.initializr.bootstrap.wiring.cli;
+package io.github.bsayli.codegen.initializr.bootstrap.wiring.in.cli;
 
 import io.github.bsayli.codegen.initializr.adapter.in.cli.springboot.CreateProjectCommandMapper;
 import io.github.bsayli.codegen.initializr.adapter.in.cli.springboot.SpringBootGenerateCommand;

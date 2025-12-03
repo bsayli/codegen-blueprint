@@ -1,4 +1,4 @@
-package io.github.bsayli.codegen.initializr.bootstrap.wiring.project;
+package io.github.bsayli.codegen.initializr.bootstrap.wiring.application.project;
 
 import io.github.bsayli.codegen.initializr.application.port.out.ProjectArtifactsSelector;
 import io.github.bsayli.codegen.initializr.application.port.out.archive.ProjectArchiverPort;

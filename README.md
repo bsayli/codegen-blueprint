@@ -79,6 +79,20 @@ The long-term mission:
 
 > **Architectural excellence should be the default — not an afterthought.**
 
+### Profiles + Foundation Libraries
+
+In this vision, a profile is not only a **tech stack** (Spring Boot, Maven, Gradle, etc.) but also a curated set of **foundation libraries**:
+
+- API contracts (envelopes, RFC 9457 / error handling)
+- Logging, tracing, and request context propagation
+- Security & identity integration (e.g. OAuth2 / Keycloak)
+- Client patterns and HTTP integration
+
+Codegen Blueprint’s job is to:
+
+1. Generate a clean, hexagonal project structure, and
+2. Wire in the relevant **“blueprint-\*” libraries** so that teams start with **ready-made, opinionated defaults** instead of reinventing the same patterns in every repo.
+
 As the project grows, profiles will define not only **technology choices**, but **engineering quality** itself:
 
 * Hexagonal vs layered vs CQRS options
@@ -86,10 +100,8 @@ As the project grows, profiles will define not only **technology choices**, but 
 * Tracing + metrics + resilience toggles
 * CI/CD + Docker artifacts (roadmap)
 
----
-
 📌 *Status:* Today a strong architectural generator.  
-🌱 *Vision:* A platform engineering accelerator.
+🌱 *Vision:* A platform engineering accelerator backed by reusable, shared libraries.
 
 ## 🧱 Architectural Model (Pure Hexagonal)
 
@@ -233,6 +245,9 @@ Want to collaborate? Feel free to connect:
 ---
 
 ## 🛡 License
+
+This project is fully open-source under MIT — enabling anyone to adopt the blueprint freely
+while contributing back to improve the platform ecosystem.
 
 Licensed under the **MIT License** — free for personal and commercial use.  
 See: [LICENSE](LICENSE)

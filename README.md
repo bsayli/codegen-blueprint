@@ -41,45 +41,55 @@ This is not a typical "initializr clone" — this is a **blueprint engine** with
 
 ## 💡 Why This Project Matters
 
-Modern microservices demand **more than folder scaffolding**.
+Modern applications deserve to begin with a strong architectural foundation — not a bare skeleton.
 
-Teams need new services to start **production‑ready**:
+It should begin with:
 
-✓ Clean architecture enforced from day 0
-✓ Resilience, security, observability baked‑in
-✓ Unified engineering standards across the organization
-✓ Zero dependency on who is starting the service
+✓ A clean architectural foundation  
+✓ A consistent project structure that every developer recognizes  
+✓ Testability and maintainability from day 0  
+✓ A basis that scales when the system grows
 
-But today — everywhere:
+Today, however:
 
-❌ Copy/paste project templates
-❌ Inconsistent configurations
-❌ Best practices as optional “docs nobody reads”
-❌ Every squad reinvents the wheel
+❌ Every new repository starts differently  
+❌ Best practices are manually copied — and often forgotten  
+❌ Initial structure varies by team and developer  
+❌ Architecture decisions drift over time
 
-> **This project eliminates variability at Day 0** — the platform becomes the standard.
+**Codegen Blueprint** brings structure, consistency, and architectural clarity right at the starting line.
+
+It reduces setup time while ensuring every new service is built on **solid, modern engineering principles**.
 
 ---
 
 ## 🚀 Vision — Architecture as a Product
 
-Codegen Blueprint enables:
+Codegen Blueprint is evolving into a platform where:
 
-| Capability                           | Value Delivered                                         |
-| ------------------------------------ | ------------------------------------------------------- |
-| **Architecture Profiles**            | Choose hexagonal, layered, CQRS etc. at generation time |
-| **Tech Stack Variation**             | Spring → then Quarkus, Micronaut, Vert.x                |
-| **Production Essentials by Default** | CB/Retry, tracing, metrics, versioning                  |
-| **Security First**                   | OAuth2 / Keycloak integration ready to toggle           |
-| **Consistent DevEx**                 | Unified structure across all teams                      |
+| Need | How this project helps |
+|------|-----------------------|
+| Standardization | Architecture becomes reusable — and enforceable |
+| Flexibility | Choose stack, architecture style, and defaults at generation time |
+| Future scaling | Support for multi-module and additional frameworks |
+| Developer Experience | Faster onboarding and consistent tooling |
+| Enterprise features | Security, resilience, and observability options (roadmap) |
 
-Your internal engineering rules become:
+The long-term mission:
 
-→ **Automated** ❌ no docs needed
-→ **Repeatable** ❌ no tribal knowledge
-→ **Enforced** ✔ from the first commit
+> **Architectural excellence should be the default — not an afterthought.**
+
+As the project grows, profiles will define not only **technology choices**, but **engineering quality** itself:
+
+* Hexagonal vs layered vs CQRS options
+* Security & Keycloak integration toggle
+* Tracing + metrics + resilience toggles
+* CI/CD + Docker artifacts (roadmap)
 
 ---
+
+📌 *Status:* Today a strong architectural generator.  
+🌱 *Vision:* A platform engineering accelerator.
 
 ## 🧱 Architectural Model (Pure Hexagonal)
 
@@ -197,17 +207,31 @@ This is how platform engineering becomes **automated**.
 
 ## 🤝 Contributing
 
-Ideas & PRs welcome! 🙌
+Contributions of all kinds are welcome — new ideas, bug reports, feature requests, and adapters for different stacks (Gradle, Kotlin, Keycloak, etc.)
 
-🔗 [https://github.com/bsayli/codegen-blueprint](https://github.com/bsayli/codegen-blueprint)
+💬 Start a conversation or ask a question:  
+👉 Discussions: https://github.com/bsayli/codegen-blueprint/discussions
+
+🐛 Found an issue or missing capability?  
+👉 Issues: https://github.com/bsayli/codegen-blueprint/issues
+
+---
+
+## ⭐ Support & Community
+
+If this project helped you or inspired you, please consider giving it a ⭐ —  
+it helps others discover and benefit from the work.
+
+Want to collaborate? Feel free to connect:
+
+**Barış Saylı**  
+🔗 GitHub — https://github.com/bsayli  
+💼 LinkedIn — https://www.linkedin.com/in/bsayli  
+📝 Medium — https://medium.com/@baris.sayli
 
 ---
 
 ## 🛡 License
 
-MIT — Free for all.
-
----
-
-**Author:** Barış Saylı
-GitHub: [https://github.com/bsayli](https://github.com/bsayli)
+Licensed under the **MIT License** — free for personal and commercial use.  
+See: [LICENSE](LICENSE)

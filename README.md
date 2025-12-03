@@ -195,13 +195,14 @@ demo/
 
 ## 🛣 Roadmap
 
-* **Architecture style selection (hexagonal, layered, CQRS, etc.)**
-* Spring Security & Keycloak integration option
-* Circuit breaker + retry + tracing + metrics options
-* Multi‑module enterprise layouts
-* Developer portal integration (Backstage etc.)
+* **Architecture style selection** (hexagonal, layered, CQRS, etc.)
+* Optional **security defaults** (OAuth2 / Keycloak toggle)
+* **Resilience & observability** (retry, tracing, metrics)
+* **Multi-module layouts** for scaling microservices
+* **Additional stack profiles** (Gradle, Kotlin, Quarkus)
 
-This is how platform engineering becomes **automated**.
+These steps evolve Codegen Blueprint from a strong architectural generator  
+into a **platform engineering accelerator**.
 
 ---
 

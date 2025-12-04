@@ -112,6 +112,11 @@ Modern services deserve more than a bare `/src/main/java`:
 
 > Codegen Blueprint = **consistency + correctness delivered automatically**
 
+📘 Want to explore the Hexagonal Architecture?
+
+Check out our guide:
+👉 [How to Explore This Project (Hexagonal Architecture Guide)](./docs/how-to-explore-hexagonal-architecture.md)
+
 ### 🧩 Strategic Impact (Why it matters at scale)
 
 > 🔒 **Best practices become the default. Architecture stays intentional — not accidental.**

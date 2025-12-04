@@ -13,171 +13,150 @@
 
 ## 📑 Table of Contents
 
-* 🧭 [Project Status & Release Plan](#-project-status--release-plan)
+* ⚡ [What is Codegen Blueprint (Today)?](#-what-is-codegen-blueprint-today)
+* 🧭 [1.0.0 Scope & Status](#-100-scope--status)
 * 💡 [Why This Project Matters](#-why-this-project-matters)
-* 🚀 [Vision — Architecture as a Product](#-vision--architecture-as-a-product)
-* 🧱 [Architectural Model](#-architectural-model-pure-hexagonal)
-* 🔌 [Inbound Adapters](#-inbound-adapters-delivery-channels)
-* ⚙️ [Outbound Adapters & Artifact Rendering](#-outbound-adapters--artifact-rendering)
+* 🔌 [Inbound Adapter](#-inbound-adapter-delivery)
+* ⚙️ [Outbound Adapters & Artifacts](#-outbound-adapters--artifacts)
 * 🧪 [Testing & CI](#-testing--ci)
-* 🔄 [Example CLI Usage](#-example-cli-usage)
-* 🛣 [Roadmap](#-roadmap)
+* 🔄 [CLI Usage Example](#-cli-usage-example)
+* 🚀 [Vision & Roadmap](#-vision--roadmap-beyond-100)
 * 🤝 [Contributing](#-contributing)
+* ⭐ [Support & Community](#-support--community)
 * 🛡 [License](#-license)
 
 ---
 
-## 🧭 Project Status & Release Plan
+## ⚡ What is Codegen Blueprint (Today)?
 
-This repository is in **active development** toward **1.0.0 GA**.
+A **CLI-driven**, **architecture-aware** project generator.
 
-✔ Hexagonal domain, pipeline engine, templating system, CI/CD, and test suite are complete.
-✔ **CLI inbound adapter** is implemented — production‑ready project generation via terminal.
-🔄 **REST inbound adapter** will follow shortly.
+📌 Current primary profile:
+**springboot-maven-java**
+(Spring Boot 3 + Maven + Java 21)
 
-This is not a typical "initializr clone" — this is a **blueprint engine** with real architectural guarantees.
+By default, it generates a **clean, production-ready** Spring Boot service skeleton — similar to Spring Initializr, but with:
+
+- Standardized project metadata
+- CI-ready structure (tests, coverage, security)
+- Opinionated quality controls
+
+### Optional Architecture Layouts
+
+📌 Hexagonal is an evolution path — not a barrier.
+
+> Architecture should enable teams — not block them.
+> You can start simple and progressively introduce ports/adapters later.
+
+For teams embracing Clean/Hexagonal architecture,  
+Codegen Blueprint provides an **optional** layout:
+
+```
+domain       // business rules (no Spring dependencies)
+application  // use cases orchestrating ports
+adapters      // inbound & outbound adapters
+bootstrap    //  wiring and configuration
+```
+
+Short summary:
+
+> “Spring Initializr — but **with best-practice architecture options built-in**, not bolted on later.”
+
+---
+
+## 🧭 1.0.0 Scope & Status
+
+### What is included (1.0.0)
+
+| Capability                                      | Status                    |
+| ----------------------------------------------- | ------------------------- |
+| CLI-based generation                            | ✔ Production-ready        |
+| Standard Spring Boot service skeleton           | ✔ Stable                  |
+| Optional architecture layout (hexagonal-basic)  | ✔ Available (opt-in)      |
+| Spring Boot 3 / Java 21 / Maven support         | ✔                         |
+| Build artifacts (pom, wrapper, .gitignore…)     | ✔                         |
+| Main + test source entrypoints                  | ✔                         |
+| CI: Build, tests, coverage, security scans      | ✔ (Jacoco + CodeQL)       |
+| Open-source licensing                           | ✔ MIT License             |
+
+### What is planned next
+
+| Feature                                       | Status           |
+| --------------------------------------------- | ---------------- |
+| REST inbound adapter generation               | Planned          |
+| Advanced hexagonal variations (ports, CQRS)   | Planned          |
+| Additional profiles (Gradle, Kotlin, Quarkus) | Planned          |
+| Multi-module architecture generation          | Planned          |
+| Foundation libraries (`blueprint-*`)          | Planned          |
+| Developer UI / web console                    | Under evaluation |
+
+> Strategy: **Deep quality for one profile first** → Expand profiles afterward.
 
 ---
 
 ## 💡 Why This Project Matters
 
-Modern applications deserve to begin with a strong architectural foundation — not a bare skeleton.
+Modern services deserve more than a bare `/src/main/java`:
 
-It should begin with:
+**What you get:**
+- ✔ Predictable, recognizable structure
+- ✔ Testability from day zero
+- ✔ Architectural integrity as a **standard**, not an afterthought
+- ✔ Faster onboarding and reduced cognitive load
 
-✓ A clean architectural foundation  
-✓ A consistent project structure that every developer recognizes  
-✓ Testability and maintainability from day 0  
-✓ A basis that scales when the system grows
+**What you avoid:**
+- ❌ Copy-paste architecture
+- ❌ Every repo looks different
+- ❌ Best practices get lost over time
+- ❌ Architecture silently degrades as systems evolve
 
-Today, however:
+> Codegen Blueprint = **consistency + correctness delivered automatically**
 
-❌ Every new repository starts differently  
-❌ Best practices are manually copied — and often forgotten  
-❌ Initial structure varies by team and developer  
-❌ Architecture decisions drift over time
+### 🧩 Strategic Impact (Why it matters at scale)
 
-**Codegen Blueprint** brings structure, consistency, and architectural clarity right at the starting line.
+> 🔒 **Enforced Best Practices. Organizational Consistency. Architecture seniors approve — even when a junior generates it.**
 
-It reduces setup time while ensuring every new service is built on **solid, modern engineering principles**.
+Codegen Blueprint does not only scaffold a project structure —  
+it **enforces architectural correctness** and **prevents silent drift** as services evolve.
 
----
+Teams get:
+- Standardized setup across all microservices
+- Strong testing + quality gates from day zero
+- Faster onboarding regardless of experience level
 
-## 🚀 Vision — Architecture as a Product
-
-Codegen Blueprint is evolving into a platform where:
-
-| Need                 | How this project helps                                            |
-|----------------------|-------------------------------------------------------------------|
-| Standardization      | Architecture becomes reusable — and enforceable                   |
-| Flexibility          | Choose stack, architecture style, and defaults at generation time |
-| Future scaling       | Support for multi-module and additional frameworks                |
-| Developer Experience | Faster onboarding and consistent tooling                          |
-| Enterprise features  | Security, resilience, and observability options (roadmap)         |
-
-The long-term mission:
-
-> **Architectural excellence should be the default — not an afterthought.**
-> **Standards should execute — not be forgotten.**
-
-### Profiles + Foundation Libraries
-
-In this vision, a profile is not only a **tech stack** (Spring Boot, Maven, Gradle, etc.) but also a curated set of **foundation libraries**:
-
-- API contracts (envelopes, RFC 9457 / error handling)
-- Logging, tracing, and request context propagation
-- Security & identity integration (e.g. OAuth2 / Keycloak)
-- Client patterns and HTTP integration
-
-Codegen Blueprint’s job is to:
-
-1. Generate a clean, hexagonal project structure, and
-2. Wire in the relevant **“blueprint-\*” libraries** so that teams start with **ready-made, opinionated defaults**
-   instead of reinventing the same patterns in every repo.
-
-As the project grows, profiles will define not only **technology choices**, but **engineering quality** itself:
-
-* Hexagonal vs layered vs CQRS options
-* Security & Keycloak integration toggle
-* Tracing + metrics + resilience toggles
-* CI/CD + Docker artifacts (roadmap)
-
-📌 *Status:* Today a strong architectural generator.  
-🌱 *Vision:* A platform engineering accelerator backed by reusable, shared libraries.
+Result:
+**Every new service enters the ecosystem aligned — and stays aligned.**
 
 ---
 
-📌 **Generated Architecture + Shared Libraries = Sustainable Standards**
+## 🔌 Inbound Adapter (Delivery)
 
-Codegen Blueprint is not only generating structure — it is **distributing architectural behavior** through shared
-foundation libraries (`blueprint-*`).
-
-Logging, security, observability, API conventions, and client patterns stay consistent across all services because they
-evolve **in one place** and flow to every project through **version upgrades — not copy-paste**.
-
-> Best practices are not documentation — **they are libraries**.
-
-## 🧱 Architectural Model (Pure Hexagonal)
-
-*Domain is king — NO Spring dependencies inside.*
-
-Layers:
-
-```
-domain
-└─ model (aggregate, VOs, policies)
-application
-└─ use cases orchestrating ports
-adapter
-├─ outbound (renderers, build files, deps)
-└─ inbound (CLI, REST)
-bootstrap
-└─ wiring (profiles → adapters → engine)
-```
-
-Ports define intent — adapters define technology.
-
-Switching Spring Boot → Quarkus?
-
-➡ Add adapter package + new templates
-➡ Core engine **does not change**
+| Adapter | Status           |
+| ------- | ---------------- |
+| CLI     | ✔ Primary driver |
+| REST    | Planned          |
 
 ---
 
-## 🔌 Inbound Adapters (Delivery Channels)
+## ⚙️ Outbound Adapters & Artifacts
 
-| Adapter      | Status                                     |
-|--------------|--------------------------------------------|
-| **CLI**      | ✔ Complete (primary driver)                |
-| **REST API** | 🔄 In progress (service‑driven automation) |
-
----
-
-## ⚙ Outbound Adapters & Artifact Rendering
-
-Current Profile:
+Active profile:
 
 ```
-springboot-maven-java
+springboot‑maven‑java
 ```
 
-Implements ArtifactKeys:
+Generated artifacts:
 
-* Maven POM
-* Maven Wrapper
-* `.gitignore`
-* Application YAML
-* Main Source Entrypoint
-* Test Entrypoint
-* Documentation
-
-Upcoming adapters:
-
-* Gradle
-* Kotlin
-* Multi‑module
-* CI/CD
-* Dockerfile
+| Artifact               | Status |
+| ---------------------- | ------ |
+| Maven POM              | ✔      |
+| Maven Wrapper          | ✔      |
+| `.gitignore`           | ✔      |
+| Application YAML       | ✔      |
+| Main source entrypoint | ✔      |
+| Test source entrypoint | ✔      |
+| Project documentation  | ✔      |
 
 ---
 
@@ -187,14 +166,16 @@ Upcoming adapters:
 mvn verify
 ```
 
-✔ Full integration tests
-✔ JaCoCo coverage
-✔ CodeQL security scanning
-✔ Codecov reporting
+Includes:
+
+- ✔ Unit + integration tests
+- ✔ JaCoCo coverage reporting
+- ✔ CodeQL security analysis
+- ✔ Codecov metrics
 
 ---
 
-## 🔄 Example CLI Usage
+## 🔄 CLI Usage Example
 
 ```bash
 java -jar codegen-blueprint.jar \
@@ -206,63 +187,64 @@ java -jar codegen-blueprint.jar \
   --dependency WEB
 ```
 
-Output:
+📁 Output (simplified)
 
-```text
+```
 demo/
  ├── pom.xml
- ├── src/main/java/.../DemoApplication.java
+ ├── src/main/java/com/example/demo/DemoApplication.java
+ ├── src/test/java/com/example/demo/DemoApplicationTests.java
  ├── src/main/resources/application.yml
- ├── src/test/java/.../DemoApplicationTests.java
  └── .gitignore
 ```
 
 ---
 
-## 🛣 Roadmap
+## 🚀 Vision & Roadmap (Beyond 1.0.0)
 
-* **Architecture style selection** (hexagonal, layered, CQRS, etc.)
-* Optional **security defaults** (OAuth2 / Keycloak toggle)
-* **Resilience & observability** (retry, tracing, metrics)
-* **Multi-module layouts** for scaling microservices
-* **Additional stack profiles** (Gradle, Kotlin, Quarkus)
+> Best practices should **execute**, not just be documented.
 
-These steps evolve Codegen Blueprint from a strong architectural generator  
-into a **platform engineering accelerator**.
+Roadmap themes:
+
+* Architecture variations (hexagonal / layered / CQRS)
+* Observability defaults (logging, metrics, tracing)
+* Security integrations (OAuth2 / Keycloak)
+* Multi‑module architecture support
+* Richer profile ecosystem:
+
+    * Gradle
+    * Kotlin
+    * Quarkus
+* Developer UI to configure + generate + download
+
+Long‑term goal:
+
+> **Executable architectural standards** for modern service development.
 
 ---
 
 ## 🤝 Contributing
 
-Contributions of all kinds are welcome — new ideas, bug reports, feature requests, and adapters for different stacks (
-Gradle, Kotlin, Keycloak, etc.)
+Contributions are welcome!
 
-💬 Start a conversation or ask a question:  
-👉 Discussions: https://github.com/blueprint-platform/codegen-blueprint/discussions
-
-🐛 Found an issue or missing capability?  
-👉 Issues: https://github.com/blueprint-platform/codegen-blueprint/issues
+💬 Discussions: [https://github.com/blueprint-platform/codegen-blueprint/discussions](https://github.com/blueprint-platform/codegen-blueprint/discussions)
+🐛 Issues: [https://github.com/blueprint-platform/codegen-blueprint/issues](https://github.com/blueprint-platform/codegen-blueprint/issues)
 
 ---
 
 ## ⭐ Support & Community
 
-If this project helped you or inspired you, please consider giving it a ⭐ —  
-it helps others discover and benefit from the work.
+If Codegen Blueprint helps you:
+👉 Please star the repo — it really matters.
 
-Want to collaborate? Feel free to connect:
-
-**Barış Saylı**  
-🔗 GitHub — https://github.com/bsayli  
-💼 LinkedIn — https://www.linkedin.com/in/bsayli  
-📝 Medium — https://medium.com/@baris.sayli
+**Barış Saylı**
+GitHub — [https://github.com/bsayli](https://github.com/bsayli)
+LinkedIn — [https://www.linkedin.com/in/bsayli](https://www.linkedin.com/in/bsayli)
+Medium — [https://medium.com/@baris.sayli](https://medium.com/@baris.sayli)
 
 ---
 
 ## 🛡 License
 
-This project is fully open-source under MIT — enabling anyone to adopt the blueprint freely
-while contributing back to improve the platform ecosystem.
-
-Licensed under the **MIT License** — free for personal and commercial use.  
+Licensed under MIT — free for personal and commercial use.
 See: [LICENSE](LICENSE)

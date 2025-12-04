@@ -1,4 +1,4 @@
-# Codegen Blueprint — Enterprise‑Grade, Hexagonal, Architecture‑First Project Generator
+Codegen Blueprint — Profile-Driven Project Generator with Architecture Options
 
 [![Build](https://github.com/blueprint-platform/codegen-blueprint/actions/workflows/build.yml/badge.svg)](https://github.com/blueprint-platform/codegen-blueprint/actions/workflows/build.yml)
 [![Release](https://img.shields.io/github/v/release/blueprint-platform/codegen-blueprint?logo=github\&label=release)](https://github.com/blueprint-platform/codegen-blueprint/releases/latest)
@@ -35,11 +35,12 @@ A **CLI-driven**, **architecture-aware** project generator.
 **springboot-maven-java**
 (Spring Boot 3 + Maven + Java 21)
 
-By default, it generates a **clean, production-ready** Spring Boot service skeleton — similar to Spring Initializr, but with:
+By default, it generates a **clean**, **ready-to-extend** Spring Boot project structure — similar to Spring Initializr, but with:
 
-- Standardized project metadata
-- CI-ready structure (tests, coverage, security)
-- Opinionated quality controls
+- Clear and predictable layout
+- Standardized project metadata (name, groupId, package structure)
+- Built-in test entry points from day zero
+- Consistent defaults that avoid “starter chaos”
 
 ### Optional Architecture Layouts
 
@@ -76,7 +77,6 @@ Short summary:
 | Spring Boot 3 / Java 21 / Maven support         | ✔                         |
 | Build artifacts (pom, wrapper, .gitignore…)     | ✔                         |
 | Main + test source entrypoints                  | ✔                         |
-| CI: Build, tests, coverage, security scans      | ✔ (Jacoco + CodeQL)       |
 | Open-source licensing                           | ✔ MIT License             |
 
 ### What is planned next
@@ -114,18 +114,19 @@ Modern services deserve more than a bare `/src/main/java`:
 
 ### 🧩 Strategic Impact (Why it matters at scale)
 
-> 🔒 **Enforced Best Practices. Organizational Consistency. Architecture seniors approve — even when a junior generates it.**
+> 🔒 **Best practices become the default. Architecture stays intentional — not accidental.**
 
-Codegen Blueprint does not only scaffold a project structure —  
-it **enforces architectural correctness** and **prevents silent drift** as services evolve.
+Codegen Blueprint gives teams a strong starting point that aligns with modern architectural
+expectations — and reduces the risk of chaotic divergence as projects evolve.
 
-Teams get:
-- Standardized setup across all microservices
-- Strong testing + quality gates from day zero
-- Faster onboarding regardless of experience level
+Teams benefit from:
+- Standardized setup across all services
+- A clean structure where responsibilities are explicit
+- Faster onboarding, even for junior developers
+- A foundation that supports future enforcement if needed (e.g., ArchUnit, module boundaries)
 
 Result:
-**Every new service enters the ecosystem aligned — and stays aligned.**
+**Every new service starts aligned — and can scale without losing its architectural intent.**
 
 ---
 

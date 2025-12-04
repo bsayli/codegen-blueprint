@@ -228,24 +228,27 @@ Long‑term goal:
 
 Contributions are welcome!
 
-💬 Discussions: [https://github.com/blueprint-platform/codegen-blueprint/discussions](https://github.com/blueprint-platform/codegen-blueprint/discussions)
-🐛 Issues: [https://github.com/blueprint-platform/codegen-blueprint/issues](https://github.com/blueprint-platform/codegen-blueprint/issues)
+💬 Discussions:  
+https://github.com/blueprint-platform/codegen-blueprint/discussions
+
+🐛 Issues:  
+https://github.com/blueprint-platform/codegen-blueprint/issues
 
 ---
 
 ## ⭐ Support & Community
 
-If Codegen Blueprint helps you:
+If Codegen Blueprint helps you:  
 👉 Please star the repo — it really matters.
 
-**Barış Saylı**
-GitHub — [https://github.com/bsayli](https://github.com/bsayli)
-LinkedIn — [https://www.linkedin.com/in/bsayli](https://www.linkedin.com/in/bsayli)
-Medium — [https://medium.com/@baris.sayli](https://medium.com/@baris.sayli)
+**Barış Saylı**  
+GitHub — https://github.com/bsayli  
+LinkedIn — https://www.linkedin.com/in/bsayli  
+Medium — https://medium.com/@baris.sayli
 
 ---
 
 ## 🛡 License
 
-Licensed under MIT — free for personal and commercial use.
+Licensed under MIT — free for personal and commercial use.  
 See: [LICENSE](LICENSE)

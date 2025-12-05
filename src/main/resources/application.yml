@@ -1,16 +1,60 @@
 spring:
   application:
-    name: codegen-springboot-initializr
+    name: codegen-blueprint
 
-freemarker:
+codegen:
+  profiles:
+    springboot-maven-java:
+      template-base-path: springboot/maven/java/
+
+      ordered-artifact-keys:
+        - build-config
+        - build-tool-metadata
+        - ignore-rules
+        - app-config
+        - main-source-entrypoint
+        - test-source-entrypoint
+        - project-documentation
+
+      artifacts:
+        build-config:
+          templates:
+            - template: pom.xml.ftl
+              output-path: pom.xml
+
+        build-tool-metadata:
+          templates:
+            - template: maven-wrapper.properties.ftl
+              output-path: .mvn/wrapper/maven-wrapper.properties
+
+        ignore-rules:
+          templates:
+            - template: gitignore.ftl
+              output-path: .gitignore
+
+        app-config:
+          templates:
+            - template: application.yml.ftl
+              output-path: src/main/resources/application.yml
+
+        main-source-entrypoint:
+          templates:
+            - template: MainClass.java.ftl
+              output-path: src/main/java
+
+        test-source-entrypoint:
+          templates:
+            - template: MainClassTests.java.ftl
+              output-path: src/test/java
+
+        project-documentation:
+          templates:
+            - template: README.md.ftl
+              output-path: README.md
+
+templating:
   encoding: UTF-8
-  template-exception-handler: RETHROW_HANDLER
+  handler: RETHROW
   template-path: /templates
-
-maven:
-  source-folder:
-    src-main-java: src/main/java
-    src-main-resources: src/main/resources
-    src-test-java: src/test/java
-    src-test-resources: src/test/resources
-    src-gen-java: src/gen/java
+  cache-enabled: true
+  cache-update-delay-ms: 60000

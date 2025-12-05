@@ -1,0 +1,20 @@
+package io.github.blueprintplatform.codegen.bootstrap.wiring.common;
+
+import io.github.blueprintplatform.codegen.adapter.out.build.maven.shared.PomDependencyMapper;
+import io.github.blueprintplatform.codegen.adapter.shared.naming.StringCaseFormatter;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class CodegenCommonConfig {
+
+  @Bean
+  public StringCaseFormatter stringCaseFormatter() {
+    return new StringCaseFormatter();
+  }
+
+  @Bean
+  public PomDependencyMapper pomDependencyMapper() {
+    return new PomDependencyMapper();
+  }
+}

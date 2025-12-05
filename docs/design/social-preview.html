@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Codegen Blueprint – Social Preview</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg: #050816;
+      --bg-panel: #0b1120;
+      --accent: #38bdf8;
+      --accent-soft: rgba(56, 189, 248, 0.1);
+      --accent-strong: #0ea5e9;
+      --muted: #9ca3af;
+      --text: #e5e7eb;
+      --border: #111827;
+      --badge-bg: #020617;
+      --badge-border: #1f2937;
+      --font-main: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+        "Liberation Mono", "Courier New", monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      width: 1200px;
+      height: 630px;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background: radial-gradient(circle at top left, #0f172a 0, #020617 40%, #000 100%);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .frame {
+      width: 1100px;
+      height: 540px;
+      border-radius: 32px;
+      border: 1px solid rgba(148, 163, 184, 0.15);
+      background: radial-gradient(circle at top left, #1e293b 0, #020617 45%, #020617 100%);
+      box-shadow:
+        0 40px 80px rgba(15, 23, 42, 0.9),
+        0 0 0 1px rgba(15, 23, 42, 0.9);
+      padding: 32px 36px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .frame::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 10% 0%, rgba(56, 189, 248, 0.18), transparent 55%),
+        radial-gradient(circle at 85% 90%, rgba(59, 130, 246, 0.25), transparent 60%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      gap: 32px;
+      height: 100%;
+    }
+
+    .left,
+    .right {
+      border-radius: 24px;
+      background: linear-gradient(
+        145deg,
+        rgba(15, 23, 42, 0.96),
+        rgba(2, 6, 23, 0.98)
+      );
+      border: 1px solid rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(14px);
+      box-shadow:
+        0 18px 40px rgba(15, 23, 42, 0.9),
+        inset 0 0 0 1px rgba(15, 23, 42, 0.9);
+    }
+
+    .left {
+      flex: 3;
+      padding: 24px 26px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .right {
+      flex: 2.4;
+      padding: 20px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: radial-gradient(circle at top left, rgba(15, 118, 110, 0.4), #020617);
+    }
+
+    .brand-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+    }
+
+    .brand-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 0%, #e0f2fe, #0ea5e9);
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.9);
+    }
+
+    .badge-small {
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 11px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      background: radial-gradient(circle at 0 0, rgba(59, 130, 246, 0.35), rgba(15, 23, 42, 0.96));
+      color: #e5e7eb;
+    }
+
+    h1 {
+      font-size: 34px;
+      line-height: 1.1;
+      margin-bottom: 10px;
+      letter-spacing: -0.03em;
+    }
+
+    h1 span.highlight {
+      background: linear-gradient(120deg, #38bdf8, #a855f7, #22c55e);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .subtitle {
+      font-size: 15px;
+      line-height: 1.5;
+      color: var(--muted);
+      margin-bottom: 14px;
+      max-width: 540px;
+    }
+
+    .subtitle strong {
+      color: #e5e7eb;
+      font-weight: 600;
+    }
+
+    .bullets {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px 14px;
+      margin-bottom: 18px;
+      font-size: 13px;
+    }
+
+    .bullet {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      color: var(--muted);
+    }
+
+    .bullet-dot {
+      margin-top: 4px;
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #22c55e, #4ade80);
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.9);
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .badge {
+      font-size: 11px;
+      padding: 6px 11px;
+      border-radius: 999px;
+      border: 1px solid var(--badge-border);
+      background: radial-gradient(circle at 0 0, rgba(15, 23, 42, 0.9), var(--badge-bg));
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .badge-label {
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 10px;
+      color: #9ca3af;
+    }
+
+    .badge-value {
+      font-weight: 600;
+      color: #e5e7eb;
+    }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: var(--muted);
+      border-top: 1px solid rgba(30, 64, 175, 0.35);
+      padding-top: 10px;
+      margin-top: 8px;
+    }
+
+    .footer a {
+      color: var(--accent);
+      text-decoration: none;
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+    .pill {
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      background: rgba(15, 23, 42, 0.9);
+      font-size: 11px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pill span {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: #e5e7eb;
+    }
+
+    .code-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .code-header-title {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+    }
+
+    .code-header-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 0%, #bbf7d0, #22c55e);
+      box-shadow: 0 0 12px rgba(34, 197, 94, 0.9);
+    }
+
+    .code-window {
+      border-radius: 16px;
+      background: radial-gradient(circle at 0 0, #0f172a, #020617);
+      border: 1px solid rgba(30, 64, 175, 0.55);
+      box-shadow:
+        0 20px 45px rgba(15, 23, 42, 0.9),
+        inset 0 0 0 1px rgba(15, 23, 42, 0.9);
+      padding: 10px 12px 12px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: #e5e7eb;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .code-cmd {
+      color: #e5e7eb;
+    }
+
+    .code-muted {
+      color: #6b7280;
+    }
+
+    .code-key {
+      color: #60a5fa;
+    }
+
+    .code-str {
+      color: #f97316;
+    }
+
+    .code-tree {
+      margin-top: 4px;
+    }
+
+    .code-line {
+      white-space: pre;
+    }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <div class="content">
+      <!-- LEFT: title, pitch, badges -->
+      <div class="left">
+        <div>
+          <div class="brand-row">
+            <div class="brand">
+              <div class="brand-dot"></div>
+              <span>Blueprint Platform</span>
+            </div>
+            <div class="badge-small">Profile-Driven · Architecture-Aware</div>
+          </div>
+
+          <h1>
+            <span class="highlight">Codegen Blueprint</span>
+          </h1>
+
+          <div class="subtitle">
+            Profile-driven project generator with <strong>architecture options</strong> —
+            clean Spring Boot scaffolding plus optional <strong>hexagonal layouts</strong>,
+            ready to extend and standardize across teams.
+          </div>
+
+          <div class="bullets">
+            <div class="bullet">
+              <div class="bullet-dot"></div>
+              <div>Standardized, ready-to-extend Spring Boot services from day zero.</div>
+            </div>
+            <div class="bullet">
+              <div class="bullet-dot"></div>
+              <div>Optional hexagonal layout for domain-centric, framework-free design.</div>
+            </div>
+            <div class="bullet">
+              <div class="bullet-dot"></div>
+              <div>Profiles capture your stack: Spring Boot, Maven, Java 21 — and beyond.</div>
+            </div>
+            <div class="bullet">
+              <div class="bullet-dot"></div>
+              <div>Built for “Architecture as a Product” — not just folder scaffolding.</div>
+            </div>
+          </div>
+
+          <div class="badges">
+            <div class="badge">
+              <span class="badge-label">Runtime</span>
+              <span class="badge-value">Java&nbsp;21</span>
+            </div>
+            <div class="badge">
+              <span class="badge-label">Framework</span>
+              <span class="badge-value">Spring&nbsp;Boot&nbsp;3.x</span>
+            </div>
+            <div class="badge">
+              <span class="badge-label">Build</span>
+              <span class="badge-value">Maven</span>
+            </div>
+            <div class="badge">
+              <span class="badge-label">Architecture</span>
+              <span class="badge-value">Hexagonal-ready</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer">
+          <div>Executable architectural standards — starting with <strong>springboot-maven-java</strong>.</div>
+          <div>
+            <span class="pill">
+              <span>github.com/blueprint-platform/codegen-blueprint</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: code / CLI teaser -->
+      <div class="right">
+        <div class="code-header">
+          <div class="code-header-title">
+            <div class="code-header-dot"></div>
+            <span>Generate a new service</span>
+          </div>
+          <span>CLI profile: springboot-maven-java</span>
+        </div>
+
+        <div class="code-window">
+          <div class="code-line code-muted">// Architecture-aware scaffolding</div>
+
+          <div class="code-line code-cmd">
+            <span class="code-key">java</span> -jar <span class="code-str">codegen-blueprint.jar</span> springboot \
+          </div>
+          <div class="code-line code-cmd">
+            --group-id <span class="code-str">com.example</span> \
+          </div>
+          <div class="code-line code-cmd">
+            --artifact-id <span class="code-str">demo-service</span> \
+          </div>
+          <div class="code-line code-cmd">
+            --package-name <span class="code-str">com.example.demo</span>
+          </div>
+
+          <div class="code-line code-muted" style="margin-top: 10px;">
+            // Optional hexagonal layout (profile-driven)
+          </div>
+          <div class="code-line code-cmd">
+            --layout <span class="code-str">hexagonal-basic</span>
+          </div>
+
+          <div class="code-tree">
+            <div class="code-line code-muted" style="margin-top: 8px;">// Generated structure (simplified)</div>
+            <div class="code-line">demo-service/</div>
+            <div class="code-line">  ├─ src/main/java/com/example/demo/</div>
+            <div class="code-line">  ├─ domain/        <span class="code-muted">// pure domain</span></div>
+            <div class="code-line">  ├─ application/   <span class="code-muted">// use cases</span></div>
+            <div class="code-line">  ├─ adapters/      <span class="code-muted">// inbound/outbound</span></div>
+            <div class="code-line">  └─ bootstrap/     <span class="code-muted">// wiring & config</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

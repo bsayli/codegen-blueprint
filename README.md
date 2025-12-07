@@ -18,15 +18,15 @@ required.
 
 ---
 
-## 🔄 Active Development Notice
+## 🚧 Active Development Notice
 
-This repository is currently undergoing a full **hexagonal architecture refactor**.
+This repository is currently undergoing a full **Hexagonal Architecture refactor**.
 
-For the most up-to-date implementation, tests, templates, and documentation, please follow the active development branch:
+➡️ All active development continues on the branch:
 
-👉 **https://github.com/bsayli/codegen-blueprint/tree/refactor/hexagonal-architecture**
+🔗 **https://github.com/blueprint-platform/codegen-blueprint/tree/refactor/hexagonal-architecture**
 
-The `main` branch reflects the previous stable version and will be updated once the refactor reaches **1.0.0-RC**.
+The `main` branch currently reflects **the older pre-refactor version** and will be updated once the refactor reaches **1.0.0-RC**.
 
 ---
 

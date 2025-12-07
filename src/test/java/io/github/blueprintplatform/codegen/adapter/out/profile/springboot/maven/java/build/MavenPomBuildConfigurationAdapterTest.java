@@ -54,7 +54,7 @@ class MavenPomBuildConfigurationAdapterTest {
 
     TechStack techStack = new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
 
-    PlatformTarget target = new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5_6);
+    PlatformTarget target = new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5_8);
 
     Dependency dep =
         new Dependency(
@@ -116,7 +116,7 @@ class MavenPomBuildConfigurationAdapterTest {
         .containsEntry("groupId", "com.acme")
         .containsEntry("artifactId", "demo-app")
         .containsEntry("javaVersion", "21")
-        .containsEntry("springBootVersion", "3.5.6")
+        .containsEntry("springBootVersion", "3.5.8")
         .containsEntry("projectName", "demo-app")
         .containsEntry("projectDescription", "Sample Project");
 

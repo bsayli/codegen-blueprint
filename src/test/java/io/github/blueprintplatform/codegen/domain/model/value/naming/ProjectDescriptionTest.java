@@ -22,21 +22,42 @@ class ProjectDescriptionTest {
   }
 
   @Test
-  @DisplayName("null description should become empty string and be valid")
-  void nullDescription_shouldBecomeEmptyAndValid() {
-    ProjectDescription desc = new ProjectDescription(null);
-
-    assertThat(desc.value()).isEmpty();
-    assertThat(desc.isEmpty()).isTrue();
+  @DisplayName("null description should fail NOT_BLANK rule")
+  void nullDescription_shouldFailNotBlankRule() {
+    assertThatThrownBy(() -> new ProjectDescription(null))
+        .isInstanceOf(DomainViolationException.class)
+        .satisfies(
+            ex -> {
+              DomainViolationException dve = (DomainViolationException) ex;
+              assertThat(dve.getMessageKey()).isEqualTo("project.description.not.blank");
+            });
   }
 
   @Test
-  @DisplayName("blank description should normalize to empty string and be valid")
-  void blankDescription_shouldNormalizeToEmptyAndBeValid() {
-    ProjectDescription desc = new ProjectDescription("    ");
+  @DisplayName("blank description should fail NOT_BLANK rule")
+  void blankDescription_shouldFailNotBlankRule() {
+    assertThatThrownBy(() -> new ProjectDescription("    "))
+        .isInstanceOf(DomainViolationException.class)
+        .satisfies(
+            ex -> {
+              DomainViolationException dve = (DomainViolationException) ex;
+              assertThat(dve.getMessageKey()).isEqualTo("project.description.not.blank");
+            });
+  }
 
-    assertThat(desc.value()).isEmpty();
-    assertThat(desc.isEmpty()).isTrue();
+  @Test
+  @DisplayName("too short description should fail LENGTH rule")
+  void tooShortDescription_shouldFailLengthRule() {
+    // 9 karakter, MIN = 10 altında
+    String shortText = "too short";
+
+    assertThatThrownBy(() -> new ProjectDescription(shortText))
+        .isInstanceOf(DomainViolationException.class)
+        .satisfies(
+            ex -> {
+              DomainViolationException dve = (DomainViolationException) ex;
+              assertThat(dve.getMessageKey()).isEqualTo("project.description.length");
+            });
   }
 
   @Test

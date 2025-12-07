@@ -60,7 +60,7 @@ class SpringBootMavenJavaArtifactsAdapterIT {
     TechStack techStack = new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
 
     PlatformTarget platformTarget =
-        new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5_6);
+        new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5_8);
 
     Dependency webStarter =
         new Dependency(

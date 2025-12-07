@@ -54,7 +54,6 @@ public final class ProjectNamePolicy {
             new AllowedCharsRule("[a-z0-9-]", PROJECT_NAME, INVALID_CHARS),
             new StartsWithLetterRule(PROJECT_NAME, STARTS_WITH_LETTER),
             new NoEdgeCharRule('-', PROJECT_NAME, EDGE_CHAR),
-            new NoConsecutiveCharRule('-', PROJECT_NAME, CONSECUTIVE_CHAR),
             new ReservedNamesRule(RESERVED_NAMES, PROJECT_NAME));
     rule.check(value);
   }

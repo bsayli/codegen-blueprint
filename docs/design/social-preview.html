@@ -17,9 +17,9 @@
       --badge-bg: #020617;
       --badge-border: #1f2937;
       --font-main: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-        "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-        "Liberation Mono", "Courier New", monospace;
+      "Liberation Mono", "Courier New", monospace;
     }
 
     * {
@@ -50,8 +50,8 @@
       border: 1px solid rgba(148, 163, 184, 0.15);
       background: radial-gradient(circle at top left, #1e293b 0, #020617 45%, #020617 100%);
       box-shadow:
-        0 40px 80px rgba(15, 23, 42, 0.9),
-        0 0 0 1px rgba(15, 23, 42, 0.9);
+              0 40px 80px rgba(15, 23, 42, 0.9),
+              0 0 0 1px rgba(15, 23, 42, 0.9);
       padding: 32px 36px;
       display: flex;
       flex-direction: column;
@@ -64,7 +64,7 @@
       position: absolute;
       inset: 0;
       background: radial-gradient(circle at 10% 0%, rgba(56, 189, 248, 0.18), transparent 55%),
-        radial-gradient(circle at 85% 90%, rgba(59, 130, 246, 0.25), transparent 60%);
+      radial-gradient(circle at 85% 90%, rgba(59, 130, 246, 0.25), transparent 60%);
       opacity: 0.9;
       pointer-events: none;
     }
@@ -81,15 +81,15 @@
     .right {
       border-radius: 24px;
       background: linear-gradient(
-        145deg,
-        rgba(15, 23, 42, 0.96),
-        rgba(2, 6, 23, 0.98)
+              145deg,
+              rgba(15, 23, 42, 0.96),
+              rgba(2, 6, 23, 0.98)
       );
       border: 1px solid rgba(15, 23, 42, 0.9);
       backdrop-filter: blur(14px);
       box-shadow:
-        0 18px 40px rgba(15, 23, 42, 0.9),
-        inset 0 0 0 1px rgba(15, 23, 42, 0.9);
+              0 18px 40px rgba(15, 23, 42, 0.9),
+              inset 0 0 0 1px rgba(15, 23, 42, 0.9);
     }
 
     .left {
@@ -292,8 +292,8 @@
       background: radial-gradient(circle at 0 0, #0f172a, #020617);
       border: 1px solid rgba(30, 64, 175, 0.55);
       box-shadow:
-        0 20px 45px rgba(15, 23, 42, 0.9),
-        inset 0 0 0 1px rgba(15, 23, 42, 0.9);
+              0 20px 45px rgba(15, 23, 42, 0.9),
+              inset 0 0 0 1px rgba(15, 23, 42, 0.9);
       padding: 10px 12px 12px;
       font-family: var(--font-mono);
       font-size: 11px;
@@ -329,123 +329,115 @@
   </style>
 </head>
 <body>
-  <div class="frame">
-    <div class="content">
-      <!-- LEFT: title, pitch, badges -->
-      <div class="left">
-        <div>
-          <div class="brand-row">
-            <div class="brand">
-              <div class="brand-dot"></div>
-              <span>Blueprint Platform</span>
-            </div>
-            <div class="badge-small">Profile-Driven · Architecture-Aware</div>
+<div class="frame">
+  <div class="content">
+    <!-- LEFT: title, pitch, badges -->
+    <div class="left">
+      <div>
+        <div class="brand-row">
+          <div class="brand">
+            <div class="brand-dot"></div>
+            <span>Blueprint Platform</span>
           </div>
+          <div class="badge-small">Profile-Driven · Architecture-Aware</div>
+        </div>
 
-          <h1>
-            <span class="highlight">Codegen Blueprint</span>
-          </h1>
+        <h1>
+          <span class="highlight">Codegen Blueprint</span>
+        </h1>
 
-          <div class="subtitle">
-            Profile-driven project generator with <strong>architecture options</strong> —
-            clean Spring Boot scaffolding plus optional <strong>hexagonal layouts</strong>,
-            ready to extend and standardize across teams.
+        <div class="subtitle">
+          Profile-driven project generator with <strong>architecture options</strong> —
+          clean Spring Boot scaffolding plus <strong>hexagonal-ready layout paths</strong>,
+          ready to extend and standardize across teams.
+        </div>
+
+        <div class="bullets">
+          <div class="bullet">
+            <div class="bullet-dot"></div>
+            <div>Standardized, ready-to-extend Spring Boot services from day zero.</div>
           </div>
-
-          <div class="bullets">
-            <div class="bullet">
-              <div class="bullet-dot"></div>
-              <div>Standardized, ready-to-extend Spring Boot services from day zero.</div>
-            </div>
-            <div class="bullet">
-              <div class="bullet-dot"></div>
-              <div>Optional hexagonal layout for domain-centric, framework-free design.</div>
-            </div>
-            <div class="bullet">
-              <div class="bullet-dot"></div>
-              <div>Profiles capture your stack: Spring Boot, Maven, Java 21 — and beyond.</div>
-            </div>
-            <div class="bullet">
-              <div class="bullet-dot"></div>
-              <div>Built for “Architecture as a Product” — not just folder scaffolding.</div>
-            </div>
+          <div class="bullet">
+            <div class="bullet-dot"></div>
+            <div>Hexagonal-ready layout path for domain-centric, framework-free design.</div>
           </div>
-
-          <div class="badges">
-            <div class="badge">
-              <span class="badge-label">Runtime</span>
-              <span class="badge-value">Java&nbsp;21</span>
-            </div>
-            <div class="badge">
-              <span class="badge-label">Framework</span>
-              <span class="badge-value">Spring&nbsp;Boot&nbsp;3.x</span>
-            </div>
-            <div class="badge">
-              <span class="badge-label">Build</span>
-              <span class="badge-value">Maven</span>
-            </div>
-            <div class="badge">
-              <span class="badge-label">Architecture</span>
-              <span class="badge-value">Hexagonal-ready</span>
-            </div>
+          <div class="bullet">
+            <div class="bullet-dot"></div>
+            <div>Profiles capture your stack: Spring Boot, Maven, Java 21 — and beyond.</div>
+          </div>
+          <div class="bullet">
+            <div class="bullet-dot"></div>
+            <div>Built for “Architecture as a Product” — not just folder scaffolding.</div>
           </div>
         </div>
 
-        <div class="footer">
-          <div>Executable architectural standards — starting with <strong>springboot-maven-java</strong>.</div>
-          <div>
+        <div class="badges">
+          <div class="badge">
+            <span class="badge-label">Runtime</span>
+            <span class="badge-value">Java&nbsp;21</span>
+          </div>
+          <div class="badge">
+            <span class="badge-label">Framework</span>
+            <span class="badge-value">Spring&nbsp;Boot&nbsp;3.x</span>
+          </div>
+          <div class="badge">
+            <span class="badge-label">Build</span>
+            <span class="badge-value">Maven</span>
+          </div>
+          <div class="badge">
+            <span class="badge-label">Architecture</span>
+            <span class="badge-value">Hexagonal-ready</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div>Executable architectural standards — starting with <strong>springboot-maven-java</strong>.</div>
+        <div>
             <span class="pill">
               <span>github.com/blueprint-platform/codegen-blueprint</span>
             </span>
-          </div>
-        </div>
-      </div>
-
-      <!-- RIGHT: code / CLI teaser -->
-      <div class="right">
-        <div class="code-header">
-          <div class="code-header-title">
-            <div class="code-header-dot"></div>
-            <span>Generate a new service</span>
-          </div>
-          <span>CLI profile: springboot-maven-java</span>
-        </div>
-
-        <div class="code-window">
-          <div class="code-line code-muted">// Architecture-aware scaffolding</div>
-
-          <div class="code-line code-cmd">
-            <span class="code-key">java</span> -jar <span class="code-str">codegen-blueprint.jar</span> springboot \
-          </div>
-          <div class="code-line code-cmd">
-            --group-id <span class="code-str">com.example</span> \
-          </div>
-          <div class="code-line code-cmd">
-            --artifact-id <span class="code-str">demo-service</span> \
-          </div>
-          <div class="code-line code-cmd">
-            --package-name <span class="code-str">com.example.demo</span>
-          </div>
-
-          <div class="code-line code-muted" style="margin-top: 10px;">
-            // Optional hexagonal layout (profile-driven)
-          </div>
-          <div class="code-line code-cmd">
-            --layout <span class="code-str">hexagonal-basic</span>
-          </div>
-
-          <div class="code-tree">
-            <div class="code-line code-muted" style="margin-top: 8px;">// Generated structure (simplified)</div>
-            <div class="code-line">demo-service/</div>
-            <div class="code-line">  ├─ src/main/java/com/example/demo/</div>
-            <div class="code-line">  ├─ domain/        <span class="code-muted">// pure domain</span></div>
-            <div class="code-line">  ├─ application/   <span class="code-muted">// use cases</span></div>
-            <div class="code-line">  ├─ adapters/      <span class="code-muted">// inbound/outbound</span></div>
-            <div class="code-line">  └─ bootstrap/     <span class="code-muted">// wiring & config</span></div>
-          </div>
         </div>
       </div>
     </div>
+
+    <!-- RIGHT: code / CLI teaser -->
+    <div class="right">
+      <div class="code-header">
+        <div class="code-header-title">
+          <div class="code-header-dot"></div>
+          <span>Generate a new service</span>
+        </div>
+        <span>CLI profile: springboot-maven-java</span>
+      </div>
+      <div class="code-window">
+        <div class="code-line code-muted">// Architecture-aware scaffolding</div>
+
+        <div class="code-line code-cmd"><span class="code-key">java</span> -jar <span class="code-str">codegen-blueprint-1.0.0.jar</span> \</div>
+        <div class="code-line code-cmd">--cli \</div>
+        <div class="code-line code-cmd">springboot \</div>
+        <div class="code-line code-cmd">--group-id <span class="code-str">com.example</span> \</div>
+        <div class="code-line code-cmd">--artifact-id <span class="code-str">demo-service</span> \</div>
+        <div class="code-line code-cmd">--name <span class="code-str">"Demo Service"</span> \</div>
+        <div class="code-line code-cmd">--description <span class="code-str">"Demo service for Acme"</span> \</div>
+        <div class="code-line code-cmd">--package-name <span class="code-str">com.example.demo</span></div>
+
+        <div class="code-line code-muted" style="margin-top: 8px;">// Optional: hexagonal layout</div>
+        <div class="code-line code-cmd">--layout <span class="code-str">hexagonal-basic</span></div>
+
+        <div class="code-line code-muted" style="margin-top: 8px;">// Optional: add Spring Boot dependencies</div>
+        <div class="code-line code-cmd">--dependency <span class="code-str">WEB</span></div>
+
+        <div class="code-line code-muted" style="margin-top: 8px;">// Generated structure (simplified)</div>
+        <div class="code-line">demo-service/</div>
+        <div class="code-line">├─ pom.xml</div>
+        <div class="code-line">├─ src/main/java/com/example/demo/DemoServiceApplication.java</div>
+        <div class="code-line">├─ src/test/java/com/example/demo/DemoServiceApplicationTests.java</div>
+        <div class="code-line">└─ src/main/resources/application.yml</div>
+      </div>
+
+    </div>
   </div>
+</div>
 </body>
 </html>

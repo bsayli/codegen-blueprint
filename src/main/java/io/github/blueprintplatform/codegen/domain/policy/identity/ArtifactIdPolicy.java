@@ -7,7 +7,6 @@ import static io.github.blueprintplatform.codegen.domain.error.code.Violation.*;
 import io.github.blueprintplatform.codegen.domain.error.exception.DomainViolationException;
 import io.github.blueprintplatform.codegen.domain.policy.rule.AllowedCharsRule;
 import io.github.blueprintplatform.codegen.domain.policy.rule.LengthBetweenRule;
-import io.github.blueprintplatform.codegen.domain.policy.rule.NoConsecutiveCharRule;
 import io.github.blueprintplatform.codegen.domain.policy.rule.NoEdgeCharRule;
 import io.github.blueprintplatform.codegen.domain.policy.rule.NotBlankRule;
 import io.github.blueprintplatform.codegen.domain.policy.rule.StartsWithLetterRule;
@@ -44,8 +43,7 @@ public final class ArtifactIdPolicy {
             new LengthBetweenRule(MIN, MAX, ARTIFACT_ID),
             new AllowedCharsRule("[a-z0-9-]", ARTIFACT_ID, INVALID_CHARS),
             new StartsWithLetterRule(ARTIFACT_ID, STARTS_WITH_LETTER),
-            new NoEdgeCharRule('-', ARTIFACT_ID, EDGE_CHAR),
-            new NoConsecutiveCharRule('-', ARTIFACT_ID, CONSECUTIVE_CHAR));
+            new NoEdgeCharRule('-', ARTIFACT_ID, EDGE_CHAR));
     rule.check(value);
   }
 }

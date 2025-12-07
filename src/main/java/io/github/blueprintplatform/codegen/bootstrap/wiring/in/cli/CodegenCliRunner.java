@@ -6,24 +6,29 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;
 
 @Component
-@Profile("cli")
 public class CodegenCliRunner implements ApplicationRunner {
 
-  private static final List<String> FILTERED_OPTION_PREFIXES = List.of("--spring.");
+  private static final String CLI_OPTION_NAME = "cli";
+  private static final String CLI_FLAG = "--" + CLI_OPTION_NAME;
+  private static final String LONG_OPTION_PREFIX = "--";
+
+  private static final List<String> FILTERED_PREFIXES =
+          List.of(
+                  "--spring."
+          );
 
   private final CodegenCommand codegenCommand;
   private final CommandLine.IFactory factory;
   private final CodegenCliExceptionHandler exceptionHandler;
 
   public CodegenCliRunner(
-      CodegenCommand codegenCommand,
-      CommandLine.IFactory factory,
-      CodegenCliExceptionHandler exceptionHandler) {
+          CodegenCommand codegenCommand,
+          CommandLine.IFactory factory,
+          CodegenCliExceptionHandler exceptionHandler) {
     this.codegenCommand = codegenCommand;
     this.factory = factory;
     this.exceptionHandler = exceptionHandler;
@@ -31,63 +36,55 @@ public class CodegenCliRunner implements ApplicationRunner {
 
   @Override
   public void run(ApplicationArguments args) {
-    String[] cliArgs = extractCliArgs(args);
+    if (!args.containsOption(CLI_OPTION_NAME)) {
+      return;
+    }
 
-    CommandLine cmd = new CommandLine(codegenCommand, factory);
+    var cliArgs = extractCliArgs(args.getSourceArgs());
+
+    var cmd = new CommandLine(codegenCommand, factory);
     cmd.setExecutionExceptionHandler(exceptionHandler);
 
-    int exitCode = cmd.execute(cliArgs);
-    System.exit(exitCode);
+    System.exit(cmd.execute(cliArgs));
   }
 
-  private String[] extractCliArgs(ApplicationArguments args) {
-    String[] source = args.getSourceArgs();
-    List<String> cli = new ArrayList<>(source.length);
+  @SuppressWarnings("java:S135")
+  private String[] extractCliArgs(String[] source) {
+    var cli = new ArrayList<String>(source.length);
+    boolean skipNextValue = false;
 
-    int index = 0;
-    int length = source.length;
+    for (int i = 0; i < source.length; i++) {
+      var arg = source[i];
 
-    while (index < length) {
-      String arg = source[index];
+      if (CLI_FLAG.equals(arg)) {
+        continue;
+      }
+      if (skipNextValue) {
+        skipNextValue = false;
+        continue;
+      }
 
-      if (isFilteredOption(arg)) {
-        index = skipOptionWithPossibleValue(source, index, length);
+      if (shouldFilter(arg)) {
+        if (requiresValueSkip(arg, source, i)) {
+          skipNextValue = true;
+        }
         continue;
       }
 
       cli.add(arg);
-      index++;
     }
 
     return cli.toArray(String[]::new);
   }
 
-  private boolean isFilteredOption(String arg) {
-    for (String prefix : FILTERED_OPTION_PREFIXES) {
-      if (arg.startsWith(prefix)) {
-        return true;
-      }
-    }
-    return false;
+  private boolean shouldFilter(String arg) {
+    return FILTERED_PREFIXES.stream().anyMatch(arg::startsWith);
   }
 
-  private int skipOptionWithPossibleValue(String[] source, int index, int length) {
-    String option = source[index];
-    int next = index + 1;
-
-    if (option.contains("=")) {
-      return next;
-    }
-
-    if (next >= length) {
-      return next;
-    }
-
-    String candidate = source[next];
-    if (candidate.startsWith("--")) {
-      return next;
-    }
-
-    return next + 1;
+  private boolean requiresValueSkip(String arg, String[] source, int index) {
+    var nextIndex = index + 1;
+    return !arg.contains("=")
+            && nextIndex < source.length
+            && !source[nextIndex].startsWith(LONG_OPTION_PREFIX);
   }
 }

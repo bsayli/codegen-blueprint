@@ -47,8 +47,8 @@ public class SpringBootGenerateCommand implements Callable<Integer> {
 
   @Option(
       names = {"--description"},
-      required = false,
-      description = "Optional project description")
+      required = true,
+      description = "Project description (min 10 characters)")
   String description;
 
   @Option(
@@ -82,7 +82,7 @@ public class SpringBootGenerateCommand implements Callable<Integer> {
       names = {"--boot"},
       required = false,
       description = "Spring Boot version. Valid values: ${COMPLETION-CANDIDATES}",
-      defaultValue = "V3_5_6")
+      defaultValue = "V3_5_8")
   SpringBootVersion bootVersion;
 
   @Option(

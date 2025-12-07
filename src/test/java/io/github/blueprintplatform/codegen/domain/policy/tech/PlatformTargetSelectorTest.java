@@ -31,14 +31,14 @@ class PlatformTargetSelectorTest {
     TechStack stack = techStack();
 
     PlatformTarget result =
-        PlatformTargetSelector.select(stack, JavaVersion.JAVA_21, SpringBootVersion.V3_5_6);
+        PlatformTargetSelector.select(stack, JavaVersion.JAVA_21, SpringBootVersion.V3_5_8);
 
     assertThat(result)
         .isInstanceOf(SpringBootJvmTarget.class)
         .extracting("java")
         .isEqualTo(JavaVersion.JAVA_21);
 
-    assertThat(result).extracting("springBoot").isEqualTo(SpringBootVersion.V3_5_6);
+    assertThat(result).extracting("springBoot").isEqualTo(SpringBootVersion.V3_5_8);
   }
 
   @Test
@@ -49,7 +49,7 @@ class PlatformTargetSelectorTest {
     assertThatThrownBy(
             () ->
                 PlatformTargetSelector.select(
-                    stack, JavaVersion.JAVA_25, SpringBootVersion.V3_4_10))
+                    stack, JavaVersion.JAVA_25, SpringBootVersion.V3_4_12))
         .isInstanceOfSatisfying(
             DomainViolationException.class,
             dve -> assertThat(dve.getMessageKey()).isEqualTo("platform.target.incompatible"));
@@ -62,6 +62,6 @@ class PlatformTargetSelectorTest {
 
     assertThat(targets)
         .isNotEmpty()
-        .contains(new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5_6));
+        .contains(new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5_8));
   }
 }

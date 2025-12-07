@@ -68,7 +68,7 @@ class MavenWrapperBuildToolFilesAdapterTest {
     Map<String, Object> model = renderer.capturedModel;
     assertThat(model)
         .isNotNull()
-        .containsEntry("wrapperVersion", "3.3.3")
+        .containsEntry("wrapperVersion", "3.3.4")
         .containsEntry("mavenVersion", "3.9.11");
   }
 }

@@ -16,7 +16,7 @@ public class MavenWrapperBuildToolFilesAdapter extends AbstractSingleTemplateArt
   private static final String KEY_WRAPPER_VERSION = "wrapperVersion";
   private static final String KEY_MAVEN_VERSION = "mavenVersion";
 
-  private static final String DEFAULT_WRAPPER_VERSION = "3.3.3";
+  private static final String DEFAULT_WRAPPER_VERSION = "3.3.4";
   private static final String DEFAULT_MAVEN_VERSION = "3.9.11";
 
   public MavenWrapperBuildToolFilesAdapter(

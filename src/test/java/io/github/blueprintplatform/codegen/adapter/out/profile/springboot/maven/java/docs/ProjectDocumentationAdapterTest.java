@@ -55,7 +55,7 @@ class ProjectDocumentationAdapterTest {
 
     TechStack techStack = new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
 
-    PlatformTarget target = new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5_6);
+    PlatformTarget target = new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5_8);
 
     Dependency dep =
         new Dependency(
@@ -125,7 +125,7 @@ class ProjectDocumentationAdapterTest {
         .containsEntry("language", "JAVA")
         .containsEntry("framework", "SPRING_BOOT")
         .containsEntry("javaVersion", "21")
-        .containsEntry("springBootVersion", "3.5.6");
+        .containsEntry("springBootVersion", "3.5.8");
 
     assertThat(mapper.capturedDependencies).isSameAs(blueprint.getDependencies());
 

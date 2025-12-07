@@ -52,7 +52,7 @@ class ProjectBlueprintFactoryTest {
   }
 
   private static PlatformTarget target() {
-    return new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5_6);
+    return new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5_8);
   }
 
   private static Dependencies dependencies() {
@@ -148,7 +148,7 @@ class ProjectBlueprintFactoryTest {
   void incompatiblePlatformTarget_shouldFailCompatibility() {
     TechStack stack = techStack();
     PlatformTarget incompatible =
-        new SpringBootJvmTarget(JavaVersion.JAVA_25, SpringBootVersion.V3_4_10);
+        new SpringBootJvmTarget(JavaVersion.JAVA_25, SpringBootVersion.V3_4_12);
 
     assertThatThrownBy(
             () ->

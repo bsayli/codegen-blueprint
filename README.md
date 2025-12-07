@@ -159,6 +159,10 @@ bootstrap    // Spring wiring & configuration
 
 > Strategy: **Deep quality for one profile** → expand ecosystem after.
 
+📌 For details, see:
+- [Engine Enforcement Scope (1.0.0)](docs/architecture/engine-scope.md)
+- [Generated Project Scope (1.0.0)](docs/architecture/project-scope.md)
+
 ---
 
 ## 💡 Why This Project Matters
@@ -247,12 +251,14 @@ Includes:
 ## 🔄 CLI Usage Example
 
 ```bash
-java -jar codegen-blueprint.jar \
+java -jar codegen-blueprint-1.0.0.jar \
+  --cli \
   springboot \
-  --group-id com.example \
-  --artifact-id demo \
-  --name "Demo Service" \
-  --package-name com.example.demo \
+  --group-id com.acme \
+  --artifact-id demo-app \
+  --name "Demo App" \
+  --description "Demo application for Acme" \
+  --package-name com.acme.demo \
   --dependency WEB
 ```
 

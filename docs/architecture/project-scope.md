@@ -1,11 +1,10 @@
-## Project Scope — Generated Output for 1.0.0 (Target)
+# Project Scope — Generated Output for 1.0.0 GA
 
-🔹 This document defines what a generated project **must include** for the 1.0.0 GA release.
-🔹 It is used to validate the output of Codegen Blueprint for architectural consistency.
+> This document defines what a generated project **must include** for the 1.0.0 GA release — a checklist for architectural consistency.
 
 ---
 
-### 🎯 Goal
+## 🎯 Goal
 
 Ensure every new generated Spring Boot service starts **clean**, **testable**, and **architecture-aligned** — not just a folder dump.
 
@@ -51,7 +50,7 @@ The generated project **must include**:
 If user selects:
 
 ```bash
---layout hexagonal-basic
+--layout hexagonal
 ```
 
 then structure becomes:
@@ -96,7 +95,7 @@ Generated project must include:
 * `@SpringBootTest` example test
 * Structure that encourages future unit testing
 
-Later versions → arch enforcement tests (e.g., ArchUnit)
+> Future releases → architecture rule enforcement (ArchUnit)
 
 ---
 
@@ -105,66 +104,69 @@ Later versions → arch enforcement tests (e.g., ArchUnit)
 `README.md` must contain:
 
 * Build & run instructions
-* Version badges (Java, Spring Boot)
+* Version badges (Java / Spring Boot)
 * CLI usage example of Codegen Blueprint:
 
 ```bash
 java -jar codegen-blueprint-1.0.0.jar \
   --cli \
   springboot \
-  --group-id com.example \
-  --artifact-id demo-app \
+  --group-id com.acme \
+  --artifact-id demo \
   --name "Demo App" \
   --description "Demo application for Acme" \
-  --package-name com.example.demo \
-  --dependency WEB
+  --package-name com.acme.demo \
+  --layout hexagonal \   # optional architecture flag
+  --dependency web \
+  --dependency data_jpa \
+  --dependency validation
 ```
 
 Optional architecture-aware generation must be documented:
 
 ```bash
---layout hexagonal-basic
+--layout hexagonal
 ```
 
-> When omitted, standard Spring Boot layout is generated.
+> If omitted → standard Spring Boot layout
 
 ---
 
-## ❌ What is **not** included in 1.0.0
+## ❌ Explicitly Out of Scope (1.0.0 GA)
 
-| Not Included            | Reason                               |
-| ----------------------- | ------------------------------------ |
-| REST inbound adapter    | Planned for post-1.0.0               |
-| Security defaults       | Delayed — avoid opinionated coupling |
-| Observability setup     | Future profile variation             |
-| Multi-module generation | Later major iteration                |
+| Not Included            | Reason                             |
+| ----------------------- | ---------------------------------- |
+| REST inbound adapter    | Planned for post-1.0.0             |
+| Security defaults       | Avoid opinionated coupling (later) |
+| Observability setup     | Future profile variation           |
+| Multi-module generation | Larger iteration required          |
 
-These remain **explicitly out of scope** to keep GA concise.
+These remain out of GA scope **to keep the release focused**.
 
 ---
 
 ## ✔ Definition of Done (DoD)
 
-A project generated with current profile must:
+A generated project must:
 
-* Compile & run with no modification
-* Contain a correct package namespace
-* Contain minimal test scaffolding
-* Follow optional hexagonal layout **when selected**
-* Ship as a releasable starter template for production use
-
----
-
-### Status Tracking
-
-| Requirement Area | Status    | Notes                                  |
-| ---------------- | --------- | -------------------------------------- |
-| Standard layout  | 🚧 In Dev | Validate ZIP output naming             |
-| Hexagonal layout | 🚧 In Dev | Structure exists, refine templates     |
-| App metadata     | ✔ Done    | Already enforced by CLI                |
-| Tests            | ⚠ Partial | Basic tests exist, validate guarantees |
-| Documentation    | 🚧 In Dev | Needs stabilization                    |
+* Compile & run immediately
+* Contain correct package namespace
+* Include minimal test scaffolding
+* Apply optional hexagonal layout **when selected**
+* Be releasable as a **production‑starter template**
 
 ---
 
-> This document evolves with each milestone and defines the quality bar for 1.0.0 GA.
+## 📊 Status Tracking — GA Confidence
+
+| Requirement Area | Status             | Notes                                            |
+| ---------------- | ------------------ | ------------------------------------------------ |
+| Standard layout  | ✔ GA-ready         | ZIP output naming validated via CLI tests        |
+| Hexagonal layout | ✔ Opt-in (Limited) | Structure generates correctly — enforcement next |
+| App metadata     | ✔ Complete         | Rules apply consistently                         |
+| Tests            | ✔ Minimal Complete | Test entrypoints verified                        |
+| Documentation    | ✔ Ready            | README usage aligned                             |
+
+---
+
+> This document evolves with each milestone and defines the quality bar for **1.0.0 GA**.

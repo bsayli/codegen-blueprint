@@ -124,7 +124,9 @@ bootstrap    // Spring wiring & configuration
        alt="Codegen Blueprint — Hexagonal Architecture Overview"
        width="840"/>
   <br/>
-  <em>Inbound adapters ➜ Application layer ➜ Domain ➜ Outbound adapters ➜ Generated project</em>
+  <em>
+  Engine flow: CLI input ➜ Use case orchestration ➜ Domain constraints ➜ Artifact generation ➜ Spring Boot project output
+  </em>
 </p>
 
 ---
@@ -133,34 +135,32 @@ bootstrap    // Spring wiring & configuration
 
 ### What is included (1.0.0)
 
-| Capability                                    | Status             |
-| --------------------------------------------- | ------------------ |
-| CLI‑based generation                          | ✔ Production‑ready |
-| Standard Spring Boot skeleton                 | ✔ Stable           |
-| Optional architecture layout (hexagonal) | ✔ Opt‑in           |
-| Spring Boot 3 / Java 21 / Maven support       | ✔                  |
-| Generated build + runtime artifacts           | ✔                  |
-| Built‑in main + test entrypoints              | ✔                  |
-| Open‑source licensing                         | ✔ MIT License      |
+| Capability                                      | Status             |
+|-------------------------------------------------|-------------------|
+| CLI-based generation                            | ✔ Production-ready |
+| Standard Spring Boot skeleton                   | ✔ Stable           |
+| Hexagonal layout option (opt-in)                | ✔ Available        |
+| Spring Boot 3 / Java 21 / Maven support         | ✔                  |
+| Main + test entrypoints generated               | ✔                  |
+| Required artifacts generated (pom, YAML, etc.)  | ✔                  |
+| Open-source licensing                           | ✔ MIT License      |
 
 ### What is planned next
 
 | Feature                                       | Status     |
-| --------------------------------------------- | ---------- |
-| REST inbound adapter                          | Planned    |
-| Advanced hexagonal variations (ports, CQRS)   | Planned    |
-| Additional profiles (Gradle, Kotlin, Quarkus) | Planned    |
-| Multi‑module generation                       | Planned    |
-| Foundation libraries (`blueprint‑*`)          | Planned    |
-| Developer UI / web console                    | Evaluating |
+|----------------------------------------------|------------|
+| REST inbound adapter                         | Planned    |
+| Advanced hexagonal variations (ports, CQRS)  | Planned    |
+| Additional profiles (Gradle, Kotlin, Quarkus)| Planned    |
+| Multi-module generation                      | Planned    |
+| Foundation libraries (`blueprint-*`)         | Planned    |
+| Developer UI / web console                   | Evaluating |
 
-> Strategy: **Deep quality for one profile** → expand ecosystem after.
+> Strategy: **Deep quality in one profile** → then expand ecosystem.
 
-📌 For details, see:
+📌 For more details:
 - [Engine Enforcement Scope (1.0.0)](docs/architecture/engine-scope.md)
 - [Generated Project Scope (1.0.0)](docs/architecture/project-scope.md)
-
----
 
 ## 💡 Why This Project Matters
 
@@ -256,7 +256,7 @@ java -jar codegen-blueprint-1.0.0.jar \
   --name "Demo App" \
   --description "Demo application for Acme" \
   --package-name com.acme.demo \
-  --layout hexagonal \   // optional architecture flag
+  --layout hexagonal \   # optional architecture flag
   --dependency web \
   --dependency data_jpa \
   --dependency validation

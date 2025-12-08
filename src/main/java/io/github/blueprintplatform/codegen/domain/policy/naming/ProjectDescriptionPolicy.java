@@ -11,7 +11,6 @@ import io.github.blueprintplatform.codegen.domain.policy.rule.NotBlankRule;
 import io.github.blueprintplatform.codegen.domain.policy.rule.RegexMatchRule;
 import io.github.blueprintplatform.codegen.domain.policy.rule.base.CompositeRule;
 import io.github.blueprintplatform.codegen.domain.policy.rule.base.Rule;
-
 import java.util.regex.Pattern;
 
 public final class ProjectDescriptionPolicy {
@@ -39,10 +38,10 @@ public final class ProjectDescriptionPolicy {
 
   private static void validate(String value) {
     Rule<String> rule =
-            CompositeRule.of(
-                    new NotBlankRule(PROJECT_DESCRIPTION),
-                    new LengthBetweenRule(MIN, MAX, PROJECT_DESCRIPTION),
-                    new RegexMatchRule(NO_CONTROL_CHARS, PROJECT_DESCRIPTION, CONTROL_CHARS));
+        CompositeRule.of(
+            new NotBlankRule(PROJECT_DESCRIPTION),
+            new LengthBetweenRule(MIN, MAX, PROJECT_DESCRIPTION),
+            new RegexMatchRule(NO_CONTROL_CHARS, PROJECT_DESCRIPTION, CONTROL_CHARS));
     rule.check(value);
   }
 }

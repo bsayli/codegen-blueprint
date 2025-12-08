@@ -4,6 +4,7 @@ import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependencies;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependency;
 import io.github.blueprintplatform.codegen.domain.model.value.identity.ProjectIdentity;
+import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
 import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectDescription;
 import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectName;
 import io.github.blueprintplatform.codegen.domain.model.value.pkg.PackageName;
@@ -23,13 +24,14 @@ public final class ProjectBlueprintFactory {
       ProjectDescription description,
       PackageName packageName,
       TechStack techStack,
+      ProjectLayout layout,
       PlatformTarget platformTarget,
       Dependencies dependencies) {
 
     CompatibilityPolicy.ensureCompatible(techStack, platformTarget);
 
     return new ProjectBlueprint(
-        identity, name, description, packageName, techStack, platformTarget, dependencies);
+        identity, name, description, packageName, techStack, layout, platformTarget, dependencies);
   }
 
   public static ProjectBlueprint of(
@@ -38,14 +40,17 @@ public final class ProjectBlueprintFactory {
       ProjectDescription description,
       PackageName packageName,
       TechStack techStack,
+      ProjectLayout layout,
       PlatformTarget platformTarget,
       List<Dependency> dependencies) {
+
     return of(
         identity,
         name,
         description,
         packageName,
         techStack,
+        layout,
         platformTarget,
         Dependencies.of(dependencies));
   }
@@ -56,14 +61,17 @@ public final class ProjectBlueprintFactory {
       ProjectDescription description,
       PackageName packageName,
       TechStack techStack,
+      ProjectLayout layout,
       PlatformTarget platformTarget,
       Dependency... deps) {
+
     return of(
         identity,
         name,
         description,
         packageName,
         techStack,
+        layout,
         platformTarget,
         Dependencies.of(Arrays.asList(deps)));
   }

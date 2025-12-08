@@ -7,6 +7,7 @@ import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifacts
 import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifactsSelector;
 import io.github.blueprintplatform.codegen.application.port.out.archive.ProjectArchiverPort;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
+import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.JavaVersion;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootJvmTarget;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion;
@@ -65,7 +66,7 @@ class CreateProjectHandlerTest {
 
   private CreateProjectCommand getCreateProjectCommand() {
     var techStack = new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
-    var platformTarget = new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5_8);
+    var platformTarget = new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5);
 
     return new CreateProjectCommand(
         "com.acme",
@@ -74,6 +75,7 @@ class CreateProjectHandlerTest {
         "Demo project",
         "com.acme.demo",
         techStack,
+        ProjectLayout.STANDARD, // NEW: layout eklendi
         platformTarget,
         List.of(),
         tempDir);

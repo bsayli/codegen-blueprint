@@ -22,7 +22,8 @@ class SpringBootMavenJavaArtifactsAdapterTest {
     SpringBootMavenJavaArtifactsAdapter adapter =
         new SpringBootMavenJavaArtifactsAdapter(List.of());
 
-    ProjectBlueprint blueprint = new ProjectBlueprint(null, null, null, null, null, null, null);
+    ProjectBlueprint blueprint =
+        new ProjectBlueprint(null, null, null, null, null, null, null, null);
 
     List<? extends GeneratedFile> result =
         StreamSupport.stream(adapter.generate(blueprint).spliterator(), false).toList();
@@ -33,7 +34,8 @@ class SpringBootMavenJavaArtifactsAdapterTest {
   @Test
   @DisplayName("Should delegate generate() exactly once to each ArtifactPort")
   void shouldDelegateToEachArtifactPort() {
-    ProjectBlueprint blueprint = new ProjectBlueprint(null, null, null, null, null, null, null);
+    ProjectBlueprint blueprint =
+        new ProjectBlueprint(null, null, null, null, null, null, null, null);
 
     ArtifactPort p1 = mock(ArtifactPort.class);
     ArtifactPort p2 = mock(ArtifactPort.class);

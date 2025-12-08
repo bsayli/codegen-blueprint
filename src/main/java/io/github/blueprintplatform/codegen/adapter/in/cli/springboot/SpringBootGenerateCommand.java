@@ -4,6 +4,7 @@ import io.github.blueprintplatform.codegen.adapter.in.cli.CliProjectRequest;
 import io.github.blueprintplatform.codegen.adapter.in.cli.springboot.dependency.SpringBootDependencyAlias;
 import io.github.blueprintplatform.codegen.application.usecase.project.CreateProjectResult;
 import io.github.blueprintplatform.codegen.application.usecase.project.CreateProjectUseCase;
+import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.JavaVersion;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.BuildTool;
@@ -82,8 +83,15 @@ public class SpringBootGenerateCommand implements Callable<Integer> {
       names = {"--boot"},
       required = false,
       description = "Spring Boot version. Valid values: ${COMPLETION-CANDIDATES}",
-      defaultValue = "V3_5_8")
+      defaultValue = "V3_5")
   SpringBootVersion bootVersion;
+
+  @Option(
+      names = {"--layout"},
+      required = false,
+      description = "Project layout. Valid values: ${COMPLETION-CANDIDATES}",
+      defaultValue = "STANDARD") // enum constant name
+  ProjectLayout layout;
 
   @Option(
       names = {"--dependency"},
@@ -108,10 +116,8 @@ public class SpringBootGenerateCommand implements Callable<Integer> {
   public Integer call() {
     String profile = buildProfileKey(buildTool, language);
 
-    List<String> dependencyCoordinates =
-        dependencies == null
-            ? List.of()
-            : dependencies.stream().map(d -> d.groupId() + ":" + d.artifactId()).toList();
+    List<String> dependencyAliases =
+        dependencies == null ? List.of() : dependencies.stream().map(Enum::name).toList();
 
     CliProjectRequest request =
         new CliProjectRequest(
@@ -121,7 +127,8 @@ public class SpringBootGenerateCommand implements Callable<Integer> {
             description,
             packageName,
             profile,
-            dependencyCoordinates,
+            layout.key(),
+            dependencyAliases,
             targetDirectory);
 
     var command = mapper.from(request, buildTool, language, javaVersion, bootVersion);
@@ -135,8 +142,6 @@ public class SpringBootGenerateCommand implements Callable<Integer> {
   }
 
   private String buildProfileKey(BuildTool buildTool, Language language) {
-    String bt = buildTool.name().toLowerCase();
-    String lang = language.name().toLowerCase();
-    return "springboot-" + bt + "-" + lang;
+    return "springboot-" + buildTool.key() + "-" + language.key();
   }
 }

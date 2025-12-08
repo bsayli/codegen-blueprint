@@ -16,19 +16,16 @@ public class CodegenCliRunner implements ApplicationRunner {
   private static final String CLI_FLAG = "--" + CLI_OPTION_NAME;
   private static final String LONG_OPTION_PREFIX = "--";
 
-  private static final List<String> FILTERED_PREFIXES =
-          List.of(
-                  "--spring."
-          );
+  private static final List<String> FILTERED_PREFIXES = List.of("--spring.");
 
   private final CodegenCommand codegenCommand;
   private final CommandLine.IFactory factory;
   private final CodegenCliExceptionHandler exceptionHandler;
 
   public CodegenCliRunner(
-          CodegenCommand codegenCommand,
-          CommandLine.IFactory factory,
-          CodegenCliExceptionHandler exceptionHandler) {
+      CodegenCommand codegenCommand,
+      CommandLine.IFactory factory,
+      CodegenCliExceptionHandler exceptionHandler) {
     this.codegenCommand = codegenCommand;
     this.factory = factory;
     this.exceptionHandler = exceptionHandler;
@@ -84,7 +81,7 @@ public class CodegenCliRunner implements ApplicationRunner {
   private boolean requiresValueSkip(String arg, String[] source, int index) {
     var nextIndex = index + 1;
     return !arg.contains("=")
-            && nextIndex < source.length
-            && !source[nextIndex].startsWith(LONG_OPTION_PREFIX);
+        && nextIndex < source.length
+        && !source[nextIndex].startsWith(LONG_OPTION_PREFIX);
   }
 }

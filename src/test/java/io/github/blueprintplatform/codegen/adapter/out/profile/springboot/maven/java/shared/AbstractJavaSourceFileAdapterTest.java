@@ -41,7 +41,8 @@ class AbstractJavaSourceFileAdapterTest {
         new TestJavaSourceFileAdapter(renderer, artifactDefinition, formatter);
 
     ProjectBlueprint blueprint =
-        new ProjectBlueprint(null, null, null, new PackageName("com.acme.demo"), null, null, null);
+        new ProjectBlueprint(
+            null, null, null, new PackageName("com.acme.demo"), null, null, null, null);
 
     Path expectedPath = Path.of("src/main/java/com/acme/demo/DemoApplication.java");
 

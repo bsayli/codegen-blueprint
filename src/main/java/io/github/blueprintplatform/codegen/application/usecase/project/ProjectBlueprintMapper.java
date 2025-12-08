@@ -10,6 +10,7 @@ import io.github.blueprintplatform.codegen.domain.model.value.dependency.Depende
 import io.github.blueprintplatform.codegen.domain.model.value.identity.ArtifactId;
 import io.github.blueprintplatform.codegen.domain.model.value.identity.GroupId;
 import io.github.blueprintplatform.codegen.domain.model.value.identity.ProjectIdentity;
+import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
 import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectDescription;
 import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectName;
 import io.github.blueprintplatform.codegen.domain.model.value.pkg.PackageName;
@@ -28,11 +29,12 @@ public class ProjectBlueprintMapper {
     PackageName pkg = new PackageName(c.packageName());
 
     PlatformTarget target = c.platformTarget();
+    ProjectLayout layout = c.layout();
 
     Dependencies deps = mapDependencies(c.dependencies());
 
     return ProjectBlueprintFactory.of(
-        identity, name, description, pkg, c.techStack(), target, deps);
+        identity, name, description, pkg, c.techStack(), layout, target, deps);
   }
 
   private Dependencies mapDependencies(List<DependencyInput> raw) {

@@ -11,6 +11,7 @@ import io.github.blueprintplatform.codegen.domain.model.value.dependency.Depende
 import io.github.blueprintplatform.codegen.domain.model.value.identity.ArtifactId;
 import io.github.blueprintplatform.codegen.domain.model.value.identity.GroupId;
 import io.github.blueprintplatform.codegen.domain.model.value.identity.ProjectIdentity;
+import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
 import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectDescription;
 import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectName;
 import io.github.blueprintplatform.codegen.domain.model.value.pkg.PackageName;
@@ -52,7 +53,11 @@ class ProjectBlueprintFactoryTest {
   }
 
   private static PlatformTarget target() {
-    return new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5_8);
+    return new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5);
+  }
+
+  private static ProjectLayout layout() {
+    return ProjectLayout.STANDARD;
   }
 
   private static Dependencies dependencies() {
@@ -67,7 +72,7 @@ class ProjectBlueprintFactoryTest {
 
   @Test
   @DisplayName(
-      "of(identity, name, desc, package, stack, target, dependencies) should create blueprint with same references")
+      "of(identity, name, desc, package, stack, layout, target, dependencies) should create blueprint with same references")
   void of_withDependenciesObject_shouldCreateBlueprint() {
     ProjectIdentity identity = identity();
     ProjectName name = name();
@@ -75,17 +80,19 @@ class ProjectBlueprintFactoryTest {
     PackageName packageName = pkg();
     TechStack stack = techStack();
     PlatformTarget target = target();
+    ProjectLayout layout = layout();
     Dependencies dependencies = dependencies();
 
     ProjectBlueprint bp =
         ProjectBlueprintFactory.of(
-            identity, name, description, packageName, stack, target, dependencies);
+            identity, name, description, packageName, stack, layout, target, dependencies);
 
     assertThat(bp.getIdentity()).isSameAs(identity);
     assertThat(bp.getName()).isSameAs(name);
     assertThat(bp.getDescription()).isSameAs(description);
     assertThat(bp.getPackageName()).isSameAs(packageName);
     assertThat(bp.getTechStack()).isSameAs(stack);
+    assertThat(bp.getLayout()).isSameAs(layout);
     assertThat(bp.getPlatformTarget()).isSameAs(target);
     assertThat(bp.getDependencies()).isSameAs(dependencies);
   }
@@ -98,7 +105,14 @@ class ProjectBlueprintFactoryTest {
 
     ProjectBlueprint bp =
         ProjectBlueprintFactory.of(
-            identity(), name(), description(), pkg(), techStack(), target(), List.of(d1, d2));
+            identity(),
+            name(),
+            description(),
+            pkg(),
+            techStack(),
+            layout(),
+            target(),
+            List.of(d1, d2));
 
     assertThat(bp.getDependencies()).isNotNull();
     assertThat(bp.getDependencies().asList()).hasSize(2);
@@ -112,7 +126,7 @@ class ProjectBlueprintFactoryTest {
 
     ProjectBlueprint bp =
         ProjectBlueprintFactory.of(
-            identity(), name(), description(), pkg(), techStack(), target(), d1, d2);
+            identity(), name(), description(), pkg(), techStack(), layout(), target(), d1, d2);
 
     assertThat(bp.getDependencies()).isNotNull();
     assertThat(bp.getDependencies().asList()).hasSize(2);
@@ -124,7 +138,14 @@ class ProjectBlueprintFactoryTest {
     assertThatThrownBy(
             () ->
                 ProjectBlueprintFactory.of(
-                    identity(), name(), description(), pkg(), null, target(), dependencies()))
+                    identity(),
+                    name(),
+                    description(),
+                    pkg(),
+                    null, // techStack
+                    layout(),
+                    target(),
+                    dependencies()))
         .isInstanceOfSatisfying(
             DomainViolationException.class,
             dve -> assertThat(dve.getMessageKey()).isEqualTo("platform.target.missing"));
@@ -137,7 +158,14 @@ class ProjectBlueprintFactoryTest {
     assertThatThrownBy(
             () ->
                 ProjectBlueprintFactory.of(
-                    identity(), name(), description(), pkg(), techStack(), null, dependencies()))
+                    identity(),
+                    name(),
+                    description(),
+                    pkg(),
+                    techStack(),
+                    layout(),
+                    null, // platformTarget
+                    dependencies()))
         .isInstanceOfSatisfying(
             DomainViolationException.class,
             dve -> assertThat(dve.getMessageKey()).isEqualTo("platform.target.missing"));
@@ -148,12 +176,19 @@ class ProjectBlueprintFactoryTest {
   void incompatiblePlatformTarget_shouldFailCompatibility() {
     TechStack stack = techStack();
     PlatformTarget incompatible =
-        new SpringBootJvmTarget(JavaVersion.JAVA_25, SpringBootVersion.V3_4_12);
+        new SpringBootJvmTarget(JavaVersion.JAVA_25, SpringBootVersion.V3_4);
 
     assertThatThrownBy(
             () ->
                 ProjectBlueprintFactory.of(
-                    identity(), name(), description(), pkg(), stack, incompatible, dependencies()))
+                    identity(),
+                    name(),
+                    description(),
+                    pkg(),
+                    stack,
+                    layout(),
+                    incompatible,
+                    dependencies()))
         .isInstanceOfSatisfying(
             DomainViolationException.class,
             dve -> assertThat(dve.getMessageKey()).isEqualTo("platform.target.incompatible"));

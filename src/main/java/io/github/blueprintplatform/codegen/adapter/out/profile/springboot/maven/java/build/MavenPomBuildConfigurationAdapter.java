@@ -62,7 +62,7 @@ public class MavenPomBuildConfigurationAdapter extends AbstractSingleTemplateArt
         entry(KEY_GROUP_ID, id.groupId().value()),
         entry(KEY_ARTIFACT_ID, id.artifactId().value()),
         entry(KEY_JAVA_VERSION, pt.java().asString()),
-        entry(KEY_SPRING_BOOT_VER, pt.springBoot().value()),
+        entry(KEY_SPRING_BOOT_VER, pt.springBoot().defaultVersion()),
         entry(KEY_PROJECT_NAME, bp.getName().value()),
         entry(KEY_PROJECT_DESCRIPTION, bp.getDescription().value()),
         entry(KEY_DEPENDENCIES, dependencies));

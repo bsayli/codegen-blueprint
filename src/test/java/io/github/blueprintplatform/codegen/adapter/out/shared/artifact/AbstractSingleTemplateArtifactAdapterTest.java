@@ -36,7 +36,8 @@ class AbstractSingleTemplateArtifactAdapterTest {
 
     TestSingleTemplateAdapter adapter = new TestSingleTemplateAdapter(renderer, artifactDefinition);
 
-    ProjectBlueprint blueprint = new ProjectBlueprint(null, null, null, null, null, null, null);
+    ProjectBlueprint blueprint =
+        new ProjectBlueprint(null, null, null, null, null, null, null, null);
 
     Path relativePath = Path.of("output/test.txt");
     GeneratedFile.Text expectedFile =

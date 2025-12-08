@@ -15,6 +15,7 @@ import io.github.blueprintplatform.codegen.domain.model.value.dependency.Depende
 import io.github.blueprintplatform.codegen.domain.model.value.identity.ArtifactId;
 import io.github.blueprintplatform.codegen.domain.model.value.identity.GroupId;
 import io.github.blueprintplatform.codegen.domain.model.value.identity.ProjectIdentity;
+import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
 import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectDescription;
 import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectName;
 import io.github.blueprintplatform.codegen.domain.model.value.pkg.PackageName;
@@ -51,10 +52,10 @@ class MavenPomBuildConfigurationAdapterTest {
     ProjectName name = new ProjectName("Demo App");
     ProjectDescription description = new ProjectDescription("Sample Project");
     PackageName pkg = new PackageName("com.acme.demo");
-
+    ProjectLayout layout = ProjectLayout.STANDARD;
     TechStack techStack = new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
 
-    PlatformTarget target = new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5_8);
+    PlatformTarget target = new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5);
 
     Dependency dep =
         new Dependency(
@@ -64,7 +65,8 @@ class MavenPomBuildConfigurationAdapterTest {
 
     Dependencies dependencies = Dependencies.of(List.of(dep));
 
-    return new ProjectBlueprint(identity, name, description, pkg, techStack, target, dependencies);
+    return new ProjectBlueprint(
+        identity, name, description, pkg, techStack, layout, target, dependencies);
   }
 
   @Test

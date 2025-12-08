@@ -1,16 +1,25 @@
 package io.github.blueprintplatform.codegen.domain.model.value.tech.platform;
 
 public enum SpringBootVersion {
-  V3_5_8("3.5.8"),
-  V3_4_12("3.4.12");
+  V3_5("3.5.8"), // Latest known stable patch for 3.5.x
+  V3_4("3.4.12"); // Latest known stable patch for 3.4.x
 
-  private final String value;
+  private final String defaultPatch;
 
-  SpringBootVersion(String value) {
-    this.value = value;
+  SpringBootVersion(String defaultPatch) {
+    this.defaultPatch = defaultPatch;
   }
 
-  public String value() {
-    return value;
+  public String majorMinor() {
+    return name().substring(1).replace('_', '.');
+  }
+
+  public String defaultVersion() {
+    return defaultPatch;
+  }
+
+  @Override
+  public String toString() {
+    return defaultVersion();
   }
 }

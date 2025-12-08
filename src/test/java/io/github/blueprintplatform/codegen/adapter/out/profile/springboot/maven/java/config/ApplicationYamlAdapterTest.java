@@ -57,6 +57,7 @@ class ApplicationYamlAdapterTest {
             null,
             null,
             null,
+            null,
             null);
 
     Path relativePath = Path.of("src/main/resources/application.yml");

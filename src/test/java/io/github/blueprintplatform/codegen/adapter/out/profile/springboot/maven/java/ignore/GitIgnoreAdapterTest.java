@@ -46,7 +46,8 @@ class GitIgnoreAdapterTest {
 
     GitIgnoreAdapter adapter = new GitIgnoreAdapter(renderer, artifactDefinition);
 
-    ProjectBlueprint blueprint = new ProjectBlueprint(null, null, null, null, null, null, null);
+    ProjectBlueprint blueprint =
+        new ProjectBlueprint(null, null, null, null, null, null, null, null);
 
     Path relativePath = Path.of(".gitignore");
     GeneratedFile.Text expectedFile =

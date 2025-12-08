@@ -10,6 +10,7 @@ import io.github.blueprintplatform.codegen.domain.model.value.dependency.Depende
 import io.github.blueprintplatform.codegen.domain.model.value.identity.ArtifactId;
 import io.github.blueprintplatform.codegen.domain.model.value.identity.GroupId;
 import io.github.blueprintplatform.codegen.domain.model.value.identity.ProjectIdentity;
+import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
 import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectDescription;
 import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectName;
 import io.github.blueprintplatform.codegen.domain.model.value.pkg.PackageName;
@@ -60,7 +61,7 @@ class SpringBootMavenJavaArtifactsAdapterIT {
     TechStack techStack = new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
 
     PlatformTarget platformTarget =
-        new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5_8);
+        new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5);
 
     Dependency webStarter =
         new Dependency(
@@ -71,7 +72,9 @@ class SpringBootMavenJavaArtifactsAdapterIT {
 
     Dependencies dependencies = Dependencies.of(List.of(webStarter));
 
+    ProjectLayout layout = ProjectLayout.STANDARD;
+
     return ProjectBlueprintFactory.of(
-        identity, name, description, packageName, techStack, platformTarget, dependencies);
+        identity, name, description, packageName, techStack, layout, platformTarget, dependencies);
   }
 }

@@ -69,7 +69,7 @@ public class ProjectDocumentationAdapter extends AbstractSingleTemplateArtifactA
         entry(KEY_LANGUAGE, bo.language().name()),
         entry(KEY_FRAMEWORK, bo.framework().name()),
         entry(KEY_JAVA_VERSION, pt.java().asString()),
-        entry(KEY_SPRING_BOOT_VERSION, pt.springBoot().value()),
+        entry(KEY_SPRING_BOOT_VERSION, pt.springBoot().defaultVersion()),
         entry(KEY_DEPENDENCIES, dependencies));
   }
 }

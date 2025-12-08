@@ -51,7 +51,8 @@ class MavenWrapperBuildToolFilesAdapterTest {
     MavenWrapperBuildToolFilesAdapter adapter =
         new MavenWrapperBuildToolFilesAdapter(renderer, artifactDefinition);
 
-    ProjectBlueprint blueprint = new ProjectBlueprint(null, null, null, null, null, null, null);
+    ProjectBlueprint blueprint =
+        new ProjectBlueprint(null, null, null, null, null, null, null, null);
 
     Path relativePath = Path.of(".mvn/wrapper/maven-wrapper.properties");
     GeneratedFile.Text expectedFile =

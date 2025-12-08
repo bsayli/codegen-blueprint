@@ -10,5 +10,6 @@ public record CliProjectRequest(
     String description,
     String packageName,
     String profile,
+    String layoutKey,
     List<String> dependencies,
     Path targetDirectory) {}

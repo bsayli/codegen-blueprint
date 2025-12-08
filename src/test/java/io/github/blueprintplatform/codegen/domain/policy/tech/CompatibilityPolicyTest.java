@@ -35,7 +35,7 @@ class CompatibilityPolicyTest {
   @SuppressWarnings("DataFlowIssue")
   void ensureCompatible_nullTechStackOrTarget_shouldFailTargetMissing() {
     TechStack stack = techStack();
-    PlatformTarget target = target(JavaVersion.JAVA_21, SpringBootVersion.V3_5_8);
+    PlatformTarget target = target(JavaVersion.JAVA_21, SpringBootVersion.V3_5);
 
     assertThatThrownBy(() -> CompatibilityPolicy.ensureCompatible(null, target))
         .isInstanceOfSatisfying(
@@ -61,19 +61,19 @@ class CompatibilityPolicyTest {
     assertThatCode(
             () ->
                 CompatibilityPolicy.ensureCompatible(
-                    stack, target(JavaVersion.JAVA_21, SpringBootVersion.V3_5_8)))
+                    stack, target(JavaVersion.JAVA_21, SpringBootVersion.V3_5)))
         .doesNotThrowAnyException();
 
     assertThatCode(
             () ->
                 CompatibilityPolicy.ensureCompatible(
-                    stack, target(JavaVersion.JAVA_25, SpringBootVersion.V3_5_8)))
+                    stack, target(JavaVersion.JAVA_25, SpringBootVersion.V3_5)))
         .doesNotThrowAnyException();
 
     assertThatCode(
             () ->
                 CompatibilityPolicy.ensureCompatible(
-                    stack, target(JavaVersion.JAVA_21, SpringBootVersion.V3_4_12)))
+                    stack, target(JavaVersion.JAVA_21, SpringBootVersion.V3_4)))
         .doesNotThrowAnyException();
   }
 
@@ -81,7 +81,7 @@ class CompatibilityPolicyTest {
   @DisplayName("ensureCompatible should fail for incompatible Spring Boot / Java combinations")
   void ensureCompatible_incompatibleTarget_shouldFail() {
     TechStack stack = techStack();
-    PlatformTarget incompatible = target(JavaVersion.JAVA_25, SpringBootVersion.V3_4_12);
+    PlatformTarget incompatible = target(JavaVersion.JAVA_25, SpringBootVersion.V3_4);
 
     assertThatThrownBy(() -> CompatibilityPolicy.ensureCompatible(stack, incompatible))
         .isInstanceOfSatisfying(
@@ -90,7 +90,7 @@ class CompatibilityPolicyTest {
               assertThat(dve.getMessageKey()).isEqualTo("platform.target.incompatible");
               assertThat(dve.getArgs())
                   .containsExactly(
-                      SpringBootVersion.V3_4_12.value(), JavaVersion.JAVA_25.asString());
+                      SpringBootVersion.V3_4.defaultVersion(), JavaVersion.JAVA_25.asString());
             });
   }
 
@@ -101,8 +101,8 @@ class CompatibilityPolicyTest {
 
     assertThat(targets)
         .containsExactlyInAnyOrder(
-            target(JavaVersion.JAVA_21, SpringBootVersion.V3_4_12),
-            target(JavaVersion.JAVA_21, SpringBootVersion.V3_5_8),
-            target(JavaVersion.JAVA_25, SpringBootVersion.V3_5_8));
+            target(JavaVersion.JAVA_21, SpringBootVersion.V3_4),
+            target(JavaVersion.JAVA_21, SpringBootVersion.V3_5),
+            target(JavaVersion.JAVA_25, SpringBootVersion.V3_5));
   }
 }

@@ -219,17 +219,17 @@ Active profile:
 springboot‑maven‑java
 ```
 
-Generated artifacts:
+Generated artifacts (1.0.0):
 
-| Artifact               | Status |
-| ---------------------- | ------ |
-| Maven POM              | ✔      |
-| Maven Wrapper          | ✔      |
-| `.gitignore`           | ✔      |
-| Application YAML       | ✔      |
-| Main source entrypoint | ✔      |
-| Test entrypoint        | ✔      |
-| Project documentation  | ✔      |
+| Category          | Includes                                                               |
+|------------------|-------------------------------------------------------------------------|
+| Build files       | `pom.xml`, Maven Wrapper (`mvnw`, `.mvn/`)                              |
+| Runtime config    | `src/main/resources/application.yml`                                   |
+| Source entrypoints | Main application & test bootstrap classes                              |
+| Git hygiene       | Standard `.gitignore`                                                   |
+| Documentation     | Minimal `README.md` inside the generated project                        |
+
+> Everything required to **build, run, test and evolve** a clean Spring Boot service from day zero.
 
 ---
 

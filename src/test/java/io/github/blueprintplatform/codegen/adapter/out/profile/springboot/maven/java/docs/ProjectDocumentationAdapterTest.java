@@ -119,16 +119,17 @@ class ProjectDocumentationAdapterTest {
     Map<String, Object> model = renderer.capturedModel;
 
     assertThat(model)
-        .containsEntry("projectName", "demo-app")
+        .containsEntry("projectName", "Demo App")
         .containsEntry("projectDescription", "Sample Project")
         .containsEntry("groupId", "com.acme")
         .containsEntry("artifactId", "demo-app")
         .containsEntry("packageName", "com.acme.demo")
-        .containsEntry("buildTool", "MAVEN")
-        .containsEntry("language", "JAVA")
-        .containsEntry("framework", "SPRING_BOOT")
+        .containsEntry("buildTool", "maven")
+        .containsEntry("language", "java")
+        .containsEntry("framework", "spring-boot")
         .containsEntry("javaVersion", "21")
-        .containsEntry("springBootVersion", "3.5.8");
+        .containsEntry("springBootVersion", "3.5.8")
+        .containsEntry("hasHexSample", false);
 
     assertThat(mapper.capturedDependencies).isSameAs(blueprint.getDependencies());
 

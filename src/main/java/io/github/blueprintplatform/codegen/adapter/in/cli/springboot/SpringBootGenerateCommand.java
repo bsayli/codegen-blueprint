@@ -62,35 +62,35 @@ public class SpringBootGenerateCommand implements Callable<Integer> {
       names = {"--build-tool"},
       required = false,
       description = "Build tool. Valid values: ${COMPLETION-CANDIDATES}",
-      defaultValue = "MAVEN")
+      defaultValue = "maven")
   BuildTool buildTool;
 
   @Option(
       names = {"--language"},
       required = false,
       description = "Programming language. Valid values: ${COMPLETION-CANDIDATES}",
-      defaultValue = "JAVA")
+      defaultValue = "java")
   Language language;
 
   @Option(
       names = {"--java"},
       required = false,
       description = "Java version. Valid values: ${COMPLETION-CANDIDATES}",
-      defaultValue = "JAVA_21")
+      defaultValue = "21")
   JavaVersion javaVersion;
 
   @Option(
       names = {"--boot"},
       required = false,
       description = "Spring Boot version. Valid values: ${COMPLETION-CANDIDATES}",
-      defaultValue = "V3_5")
+      defaultValue = "3.5")
   SpringBootVersion bootVersion;
 
   @Option(
       names = {"--layout"},
       required = false,
       description = "Project layout. Valid values: ${COMPLETION-CANDIDATES}",
-      defaultValue = "STANDARD") // enum constant name
+      defaultValue = "standard")
   ProjectLayout layout;
 
   @Option(

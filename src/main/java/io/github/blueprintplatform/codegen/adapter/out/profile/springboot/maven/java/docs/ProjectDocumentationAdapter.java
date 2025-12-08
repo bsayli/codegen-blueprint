@@ -51,25 +51,28 @@ public class ProjectDocumentationAdapter extends AbstractSingleTemplateArtifactA
   @Override
   protected Map<String, Object> buildModel(ProjectBlueprint bp) {
     ProjectIdentity id = bp.getIdentity();
-    TechStack bo = bp.getTechStack();
+    TechStack stack = bp.getTechStack();
     SpringBootJvmTarget pt = (SpringBootJvmTarget) bp.getPlatformTarget();
 
-    PackageName pn = bp.getPackageName();
-    Dependencies selectedDependencies = bp.getDependencies();
+    PackageName pkg = bp.getPackageName();
+    Dependencies deps = bp.getDependencies();
 
-    List<PomDependency> dependencies = pomDependencyMapper.from(selectedDependencies);
+    List<PomDependency> mappedDeps = pomDependencyMapper.from(deps);
+
+    boolean hex = bp.getLayout().isHexagonal();
 
     return Map.ofEntries(
         entry(KEY_PROJECT_NAME, bp.getName().value()),
         entry(KEY_PROJECT_DESCRIPTION, bp.getDescription().value()),
         entry(KEY_GROUP_ID, id.groupId().value()),
         entry(KEY_ARTIFACT_ID, id.artifactId().value()),
-        entry(KEY_PACKAGE_NAME, pn.value()),
-        entry(KEY_BUILD_TOOL, bo.buildTool().name()),
-        entry(KEY_LANGUAGE, bo.language().name()),
-        entry(KEY_FRAMEWORK, bo.framework().name()),
+        entry(KEY_PACKAGE_NAME, pkg.value()),
+        entry(KEY_BUILD_TOOL, stack.buildTool().key()),
+        entry(KEY_LANGUAGE, stack.language().key()),
+        entry(KEY_FRAMEWORK, stack.framework().key()),
         entry(KEY_JAVA_VERSION, pt.java().asString()),
         entry(KEY_SPRING_BOOT_VERSION, pt.springBoot().defaultVersion()),
-        entry(KEY_DEPENDENCIES, dependencies));
+        entry(KEY_DEPENDENCIES, mappedDeps),
+        entry("hasHexSample", hex));
   }
 }

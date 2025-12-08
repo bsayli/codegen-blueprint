@@ -20,6 +20,14 @@ public enum ProjectLayout implements KeyedEnum {
     return KeyEnumParser.parse(ProjectLayout.class, rawKey, UNKNOWN);
   }
 
+  public boolean isHexagonal() {
+    return this == HEXAGONAL;
+  }
+
+  public boolean isStandard() {
+    return this == STANDARD;
+  }
+
   @Override
   public String key() {
     return key;

@@ -136,15 +136,15 @@ bootstrap    // Spring wiring & configuration
 
 ### What is included (1.0.0)
 
-| Capability                                     | Status             |
-| ---------------------------------------------- | ------------------ |
-| CLI‑based generation                           | ✔ Production‑ready |
-| Standard Spring Boot skeleton                  | ✔ Stable           |
-| Optional architecture layout (hexagonal‑basic) | ✔ Opt‑in           |
-| Spring Boot 3 / Java 21 / Maven support        | ✔                  |
-| Generated build + runtime artifacts            | ✔                  |
-| Built‑in main + test entrypoints               | ✔                  |
-| Open‑source licensing                          | ✔ MIT License      |
+| Capability                                    | Status             |
+| --------------------------------------------- | ------------------ |
+| CLI‑based generation                          | ✔ Production‑ready |
+| Standard Spring Boot skeleton                 | ✔ Stable           |
+| Optional architecture layout (hexagonal) | ✔ Opt‑in           |
+| Spring Boot 3 / Java 21 / Maven support       | ✔                  |
+| Generated build + runtime artifacts           | ✔                  |
+| Built‑in main + test entrypoints              | ✔                  |
+| Open‑source licensing                         | ✔ MIT License      |
 
 ### What is planned next
 
@@ -255,11 +255,14 @@ java -jar codegen-blueprint-1.0.0.jar \
   --cli \
   springboot \
   --group-id com.acme \
-  --artifact-id demo-app \
+  --artifact-id demo \
   --name "Demo App" \
   --description "Demo application for Acme" \
   --package-name com.acme.demo \
-  --dependency WEB
+  --layout hexagonal \   // optional architecture flag
+  --dependency web \
+  --dependency data_jpa \
+  --dependency validation
 ```
 
 **Output (simplified)**
@@ -281,12 +284,12 @@ demo/
 
 Roadmap themes:
 
-* Architecture variations (Hexagonal / Layered / CQRS)
-* Observability (metrics, tracing)
-* Security (OAuth2 / Keycloak)
-* Multi‑module support
-* Richer profile ecosystem (Gradle / Kotlin / Quarkus)
-* Developer UI → configuration → generation → download
+* 🧱 Hexagonal evolution kit (ports + adapters + CQRS)
+* 📈 Observability acceleration (metrics + tracing defaults)
+* 🔐 Enterprise-grade security (OAuth2 / Keycloak)
+* 🧩 Multi-module service composition
+* 🎯 Broader profile ecosystem (Gradle / Kotlin / Quarkus)
+* 💻 Developer UI → configure → generate → download
 
 > **Executable Architecture** for modern service development.
 

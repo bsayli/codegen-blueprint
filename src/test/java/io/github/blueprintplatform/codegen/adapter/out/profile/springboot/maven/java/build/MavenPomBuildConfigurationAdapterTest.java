@@ -119,7 +119,7 @@ class MavenPomBuildConfigurationAdapterTest {
         .containsEntry("artifactId", "demo-app")
         .containsEntry("javaVersion", "21")
         .containsEntry("springBootVersion", "3.5.8")
-        .containsEntry("projectName", "demo-app")
+        .containsEntry("projectName", "Demo App")
         .containsEntry("projectDescription", "Sample Project");
 
     assertThat(mapper.capturedDependencies).isSameAs(blueprint.getDependencies());

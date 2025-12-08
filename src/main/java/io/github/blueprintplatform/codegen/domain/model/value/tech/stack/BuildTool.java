@@ -19,6 +19,7 @@ public enum BuildTool implements KeyedEnum {
     return KeyEnumParser.parse(BuildTool.class, raw, UNKNOWN);
   }
 
+  @Override
   public String key() {
     return key;
   }

@@ -72,6 +72,6 @@ class ApplicationYamlAdapterTest {
 
     assertThat(renderer.capturedOutPath).isEqualTo(relativePath);
     assertThat(renderer.capturedTemplateName).isEqualTo(BASE_PATH + "application-yaml.ftl");
-    assertThat(renderer.capturedModel).isNotNull().containsEntry("projectName", "demo-app");
+    assertThat(renderer.capturedModel).isNotNull().containsEntry("projectName", "Demo App");
   }
 }

@@ -18,26 +18,27 @@ public enum SpringBootDependencyAlias {
     this.artifactId = artifactId;
   }
 
-  public static SpringBootDependencyAlias fromKey(String raw) {
-    if (raw == null || raw.isBlank()) {
-      throw new InvalidDependencyAliasException(String.valueOf(raw));
-    }
-
-    String normalized = raw.trim().toUpperCase();
-
-    try {
-      return SpringBootDependencyAlias.valueOf(normalized);
-    } catch (IllegalArgumentException ex) {
-      throw new InvalidDependencyAliasException(raw);
-    }
-  }
-
   public String groupId() {
     return groupId;
   }
 
   public String artifactId() {
     return artifactId;
+  }
+
+  public static SpringBootDependencyAlias fromKey(String raw) {
+    if (raw == null || raw.isBlank()) {
+      throw new InvalidDependencyAliasException(String.valueOf(raw));
+    }
+
+    String normalized = raw.trim();
+
+    for (SpringBootDependencyAlias alias : values()) {
+      if (alias.name().equalsIgnoreCase(normalized)) {
+        return alias;
+      }
+    }
+    throw new InvalidDependencyAliasException(raw);
   }
 
   private static class Constants {

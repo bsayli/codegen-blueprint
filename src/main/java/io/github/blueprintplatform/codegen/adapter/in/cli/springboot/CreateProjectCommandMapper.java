@@ -19,11 +19,11 @@ import java.util.List;
 public class CreateProjectCommandMapper {
 
   public CreateProjectCommand from(
-          CliProjectRequest request,
-          BuildTool buildTool,
-          Language language,
-          JavaVersion javaVersion,
-          SpringBootVersion bootVersion) {
+      CliProjectRequest request,
+      BuildTool buildTool,
+      Language language,
+      JavaVersion javaVersion,
+      SpringBootVersion bootVersion) {
 
     TechStack techStack = new TechStack(Framework.SPRING_BOOT, buildTool, language);
     PlatformTarget platformTarget = new SpringBootJvmTarget(javaVersion, bootVersion);
@@ -31,16 +31,16 @@ public class CreateProjectCommandMapper {
     List<DependencyInput> inputs = toDependencyInputs(request.dependencies());
 
     return new CreateProjectCommand(
-            request.groupId(),
-            request.artifactId(),
-            request.name(),
-            request.description(),
-            request.packageName(),
-            techStack,
-            layout,
-            platformTarget,
-            inputs,
-            request.targetDirectory());
+        request.groupId(),
+        request.artifactId(),
+        request.name(),
+        request.description(),
+        request.packageName(),
+        techStack,
+        layout,
+        platformTarget,
+        inputs,
+        request.targetDirectory());
   }
 
   private List<DependencyInput> toDependencyInputs(List<String> aliases) {
@@ -57,12 +57,7 @@ public class CreateProjectCommandMapper {
 
       SpringBootDependencyAlias alias = SpringBootDependencyAlias.fromKey(raw);
 
-      result.add(
-              new DependencyInput(
-                      alias.groupId(),
-                      alias.artifactId(),
-                      null,
-                      null));
+      result.add(new DependencyInput(alias.groupId(), alias.artifactId(), null, null));
     }
 
     return List.copyOf(result);

@@ -348,26 +348,26 @@
 
         <div class="subtitle">
           Profile-driven project generator with <strong>architecture options</strong> —
-          clean Spring Boot scaffolding plus <strong>hexagonal-ready layout paths</strong>,
-          ready to extend and standardize across teams.
+          standardized Spring Boot scaffolding plus <strong>hexagonal-ready layout paths</strong>,
+          built for scalable reuse across teams.
         </div>
 
         <div class="bullets">
           <div class="bullet">
             <div class="bullet-dot"></div>
-            <div>Standardized, ready-to-extend Spring Boot services from day zero.</div>
+            <div>Standardized, enterprise-ready Spring Boot services from day zero.</div>
           </div>
           <div class="bullet">
             <div class="bullet-dot"></div>
-            <div>Hexagonal-ready layout path for domain-centric, framework-free design.</div>
+            <div>Hexagonal-ready layout for domain-centric, framework-independent design.</div>
           </div>
           <div class="bullet">
             <div class="bullet-dot"></div>
-            <div>Profiles capture your stack: Spring Boot, Maven, Java 21 — and beyond.</div>
+            <div>Profiles capture your stack — Spring Boot, Maven, Java 21 and beyond.</div>
           </div>
           <div class="bullet">
             <div class="bullet-dot"></div>
-            <div>Built for “Architecture as a Product” — not just folder scaffolding.</div>
+            <div>Architecture as a Product — automation that enforces best practices.</div>
           </div>
         </div>
 
@@ -378,10 +378,10 @@
           </div>
           <div class="badge">
             <span class="badge-label">Framework</span>
-            <span class="badge-value">Spring&nbsp;Boot&nbsp;3.x</span>
+            <span class="badge-value">Spring&nbsp;Boot&nbsp;3.5+</span>
           </div>
           <div class="badge">
-            <span class="badge-label">Build</span>
+            <span class="badge-label">Build Tool</span>
             <span class="badge-value">Maven</span>
           </div>
           <div class="badge">
@@ -392,11 +392,11 @@
       </div>
 
       <div class="footer">
-        <div>Executable architectural standards — starting with <strong>springboot-maven-java</strong>.</div>
+        <div>Executable architecture — powered by <strong>springboot-maven-java</strong></div>
         <div>
-            <span class="pill">
-              <span>github.com/blueprint-platform/codegen-blueprint</span>
-            </span>
+          <a class="pill" href="https://github.com/blueprint-platform/codegen-blueprint" target="_blank">
+            github.com/blueprint-platform/codegen-blueprint
+          </a>
         </div>
       </div>
     </div>
@@ -408,8 +408,9 @@
           <div class="code-header-dot"></div>
           <span>Generate a new service</span>
         </div>
-        <span>CLI profile: springboot-maven-java</span>
+        <span>CLI profile · springboot-maven-java</span>
       </div>
+
       <div class="code-window">
         <div class="code-line code-muted">// Architecture-aware scaffolding</div>
 
@@ -420,22 +421,23 @@
         <div class="code-line code-cmd">--artifact-id <span class="code-str">demo-service</span> \</div>
         <div class="code-line code-cmd">--name <span class="code-str">"Demo Service"</span> \</div>
         <div class="code-line code-cmd">--description <span class="code-str">"Demo service for Acme"</span> \</div>
-        <div class="code-line code-cmd">--package-name <span class="code-str">com.example.demo</span></div>
+        <div class="code-line code-cmd">--package-name <span class="code-str">com.example.demo</span> \</div>
 
-        <div class="code-line code-muted" style="margin-top: 8px;">// Optional: hexagonal layout</div>
-        <div class="code-line code-cmd">--layout <span class="code-str">hexagonal-basic</span></div>
+        <div class="code-line code-sep">// Optional flags</div>
+        <div class="code-line code-cmd">--layout <span class="code-str">hexagonal</span> \</div>
+        <div class="code-line code-cmd">--dependency <span class="code-str">web</span> \</div>
+        <div class="code-line code-cmd">--dependency <span class="code-str">data_jpa</span> \</div>
+        <div class="code-line code-cmd">--dependency <span class="code-str">validation</span></div>
 
-        <div class="code-line code-muted" style="margin-top: 8px;">// Optional: add Spring Boot dependencies</div>
-        <div class="code-line code-cmd">--dependency <span class="code-str">WEB</span></div>
+        <div class="code-line code-muted" style="margin-top: 8px;">// Defaults → maven · java · Java 21 · Spring Boot 3.5.x</div>
+        <div class="code-line code-muted">// Generated structure (simplified)</div>
 
-        <div class="code-line code-muted" style="margin-top: 8px;">// Generated structure (simplified)</div>
         <div class="code-line">demo-service/</div>
         <div class="code-line">├─ pom.xml</div>
         <div class="code-line">├─ src/main/java/com/example/demo/DemoServiceApplication.java</div>
         <div class="code-line">├─ src/test/java/com/example/demo/DemoServiceApplicationTests.java</div>
         <div class="code-line">└─ src/main/resources/application.yml</div>
       </div>
-
     </div>
   </div>
 </div>

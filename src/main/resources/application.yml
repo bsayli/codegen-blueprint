@@ -3,6 +3,11 @@ spring:
     name: codegen-blueprint
 
 codegen:
+  samples:
+    standard: sample/standard
+    hexagonal: sample/hexagonal
+    basic-dir-name: basic
+    rich-dir-name: rich
   profiles:
     springboot-maven-java:
       template-base-path: springboot/maven/java/
@@ -15,6 +20,7 @@ codegen:
         - app-config
         - main-source-entrypoint
         - test-source-entrypoint
+        - sample-code
         - project-documentation
 
       artifacts:
@@ -50,6 +56,9 @@ codegen:
           templates:
             - template: MainClassTests.java.ftl
               output-path: src/test/java
+
+        sample-code:
+          templates: [ ]
 
         project-documentation:
           templates:

@@ -1,4 +1,4 @@
-package io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.docs;
+package io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.doc;
 
 import static java.util.Map.entry;
 

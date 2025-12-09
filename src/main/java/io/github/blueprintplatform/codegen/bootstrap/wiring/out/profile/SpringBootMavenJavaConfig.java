@@ -6,8 +6,9 @@ import io.github.blueprintplatform.codegen.adapter.out.profile.ProfileType;
 import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.SpringBootMavenJavaArtifactsAdapter;
 import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.build.MavenPomBuildConfigurationAdapter;
 import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.config.ApplicationYamlAdapter;
-import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.docs.ProjectDocumentationAdapter;
+import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.doc.ProjectDocumentationAdapter;
 import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.ignore.GitIgnoreAdapter;
+import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.sample.SampleCodeAdapter;
 import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.source.MainSourceEntrypointAdapter;
 import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.source.SourceLayoutAdapter;
 import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.source.TestSourceEntrypointAdapter;
@@ -15,8 +16,7 @@ import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.
 import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
 import io.github.blueprintplatform.codegen.adapter.shared.naming.StringCaseFormatter;
 import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifactsPort;
-import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
-import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactPort;
+import io.github.blueprintplatform.codegen.application.port.out.artifact.*;
 import io.github.blueprintplatform.codegen.bootstrap.config.ArtifactDefinition;
 import io.github.blueprintplatform.codegen.bootstrap.config.CodegenProfilesProperties;
 import io.github.blueprintplatform.codegen.bootstrap.error.exception.ProfileConfigurationException;
@@ -31,7 +31,7 @@ import org.springframework.context.annotation.Configuration;
 public class SpringBootMavenJavaConfig {
 
   @Bean
-  MavenPomBuildConfigurationAdapter springBootMavenJavaMavenPomBuildConfigurationAdapter(
+  BuildConfigurationPort springBootMavenJavaMavenPomBuildConfigurationAdapter(
       TemplateRenderer renderer,
       CodegenProfilesProperties profiles,
       PomDependencyMapper pomDependencyMapper) {
@@ -41,7 +41,7 @@ public class SpringBootMavenJavaConfig {
   }
 
   @Bean
-  MavenWrapperBuildToolFilesAdapter springBootMavenJavaMavenWrapperBuildToolFilesAdapter(
+  BuildToolFilesPort springBootMavenJavaMavenWrapperBuildToolFilesAdapter(
       TemplateRenderer renderer, CodegenProfilesProperties profiles) {
     ArtifactDefinition props =
         profiles.artifact(ProfileType.SPRINGBOOT_MAVEN_JAVA, ArtifactKey.BUILD_TOOL_METADATA);
@@ -49,7 +49,7 @@ public class SpringBootMavenJavaConfig {
   }
 
   @Bean
-  GitIgnoreAdapter springBootMavenJavaGitIgnoreAdapter(
+  IgnoreRulesPort springBootMavenJavaGitIgnoreAdapter(
       TemplateRenderer renderer, CodegenProfilesProperties profiles) {
     ArtifactDefinition props =
         profiles.artifact(ProfileType.SPRINGBOOT_MAVEN_JAVA, ArtifactKey.IGNORE_RULES);
@@ -57,12 +57,12 @@ public class SpringBootMavenJavaConfig {
   }
 
   @Bean
-  SourceLayoutAdapter springBootMavenJavaSourceLayoutAdapter() {
+  SourceLayoutPort springBootMavenJavaSourceLayoutAdapter() {
     return new SourceLayoutAdapter();
   }
 
   @Bean
-  ApplicationYamlAdapter springBootMavenJavaApplicationYamlAdapter(
+  ApplicationConfigurationPort springBootMavenJavaApplicationYamlAdapter(
       TemplateRenderer renderer, CodegenProfilesProperties profiles) {
     ArtifactDefinition props =
         profiles.artifact(ProfileType.SPRINGBOOT_MAVEN_JAVA, ArtifactKey.APP_CONFIG);
@@ -70,7 +70,7 @@ public class SpringBootMavenJavaConfig {
   }
 
   @Bean
-  MainSourceEntrypointAdapter springBootMavenJavaMainSourceEntrypointAdapter(
+  MainSourceEntrypointPort springBootMavenJavaMainSourceEntrypointAdapter(
       TemplateRenderer renderer,
       CodegenProfilesProperties profiles,
       StringCaseFormatter stringCaseFormatter) {
@@ -80,7 +80,7 @@ public class SpringBootMavenJavaConfig {
   }
 
   @Bean
-  TestSourceEntrypointAdapter springBootMavenJavaTestSourceEntrypointAdapter(
+  TestSourceEntrypointPort springBootMavenJavaTestSourceEntrypointAdapter(
       TemplateRenderer renderer,
       CodegenProfilesProperties profiles,
       StringCaseFormatter stringCaseFormatter) {
@@ -90,7 +90,15 @@ public class SpringBootMavenJavaConfig {
   }
 
   @Bean
-  ProjectDocumentationAdapter springBootMavenJavaProjectDocumentationAdapter(
+  SampleCodePort springBootMavenJavaSampleCodeAdapter(
+      TemplateRenderer renderer, CodegenProfilesProperties profiles) {
+    ArtifactDefinition props =
+        profiles.artifact(ProfileType.SPRINGBOOT_MAVEN_JAVA, ArtifactKey.PROJECT_DOCUMENTATION);
+    return new SampleCodeAdapter(renderer, props, profiles.samples());
+  }
+
+  @Bean
+  ProjectDocumentationPort springBootMavenJavaProjectDocumentationAdapter(
       TemplateRenderer renderer,
       CodegenProfilesProperties profiles,
       PomDependencyMapper pomDependencyMapper) {
@@ -101,14 +109,15 @@ public class SpringBootMavenJavaConfig {
 
   @Bean
   Map<ArtifactKey, ArtifactPort> springBootMavenJavaArtifactRegistry(
-      MavenPomBuildConfigurationAdapter springBootMavenJavaMavenPomBuildConfigurationAdapter,
-      MavenWrapperBuildToolFilesAdapter springBootMavenJavaMavenWrapperBuildToolFilesAdapter,
-      GitIgnoreAdapter springBootMavenJavaGitIgnoreAdapter,
-      SourceLayoutAdapter springBootMavenJavaSourceLayoutAdapter,
-      ApplicationYamlAdapter springBootMavenJavaApplicationYamlAdapter,
-      MainSourceEntrypointAdapter springBootMavenJavaMainSourceEntrypointAdapter,
-      TestSourceEntrypointAdapter springBootMavenJavaTestSourceEntrypointAdapter,
-      ProjectDocumentationAdapter springBootMavenJavaProjectDocumentationAdapter) {
+      BuildConfigurationPort springBootMavenJavaMavenPomBuildConfigurationAdapter,
+      BuildToolFilesPort springBootMavenJavaMavenWrapperBuildToolFilesAdapter,
+      IgnoreRulesPort springBootMavenJavaGitIgnoreAdapter,
+      SourceLayoutPort springBootMavenJavaSourceLayoutAdapter,
+      ApplicationConfigurationPort springBootMavenJavaApplicationYamlAdapter,
+      MainSourceEntrypointPort springBootMavenJavaMainSourceEntrypointAdapter,
+      TestSourceEntrypointPort springBootMavenJavaTestSourceEntrypointAdapter,
+      SampleCodePort springBootMavenJavaSampleCodeAdapter,
+      ProjectDocumentationPort springBootMavenJavaProjectDocumentationAdapter) {
 
     Map<ArtifactKey, ArtifactPort> registry = new EnumMap<>(ArtifactKey.class);
     registry.put(ArtifactKey.BUILD_CONFIG, springBootMavenJavaMavenPomBuildConfigurationAdapter);
@@ -121,6 +130,7 @@ public class SpringBootMavenJavaConfig {
         ArtifactKey.MAIN_SOURCE_ENTRY_POINT, springBootMavenJavaMainSourceEntrypointAdapter);
     registry.put(
         ArtifactKey.TEST_SOURCE_ENTRY_POINT, springBootMavenJavaTestSourceEntrypointAdapter);
+    registry.put(ArtifactKey.SAMPLE_CODE, springBootMavenJavaSampleCodeAdapter);
     registry.put(ArtifactKey.PROJECT_DOCUMENTATION, springBootMavenJavaProjectDocumentationAdapter);
     return Collections.unmodifiableMap(registry);
   }

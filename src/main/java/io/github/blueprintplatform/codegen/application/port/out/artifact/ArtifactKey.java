@@ -11,6 +11,7 @@ public enum ArtifactKey {
   APP_CONFIG("app-config"),
   MAIN_SOURCE_ENTRY_POINT("main-source-entrypoint"),
   TEST_SOURCE_ENTRY_POINT("test-source-entrypoint"),
+  SAMPLE_CODE("sample-code"),
   PROJECT_DOCUMENTATION("project-documentation");
 
   private final String key;

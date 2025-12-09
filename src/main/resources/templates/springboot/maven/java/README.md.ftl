@@ -53,16 +53,16 @@ src
 <#-- Optional hexagonal showcase -->
 <#if hasHexSample?? && hasHexSample>
 
-    ---
+---
 
-    ## 🧱 Hexagonal Architecture Example
+## 🧱 Hexagonal Architecture Example
 
-    This project includes an example **domain → application → adapter** structure:
-    * Domain models and rules
-    * Application use cases
-    * CLI / Web / Persistence adapters
+This project includes an example **domain → application → adapter** structure:
+* Domain models and rules
+* Application use cases
+* CLI / Web / Persistence adapters
 
-    Modular & clean expansion ready! ✨
+Modular & clean expansion ready! ✨
 </#if>
 
 ---

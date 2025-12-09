@@ -32,7 +32,12 @@ class CodegenProfilesPropertiesTest {
         new ProfileProperties(
             "  ", List.of(ARTIFACT_KEY), Map.of(ARTIFACT_MAP_KEY, artifactDefinition));
 
-    return new CodegenProfilesProperties(Map.of(PROFILE_KEY, profileProperties));
+    return new CodegenProfilesProperties(
+        Map.of(PROFILE_KEY, profileProperties), defaultSamplesProperties());
+  }
+
+  private static SamplesProperties defaultSamplesProperties() {
+    return new SamplesProperties("standard/sample", "hexagonal/sample", "basic", "rich");
   }
 
   @Test
@@ -51,7 +56,8 @@ class CodegenProfilesPropertiesTest {
             Map.of(ARTIFACT_MAP_KEY, artifactDefinition));
 
     CodegenProfilesProperties properties =
-        new CodegenProfilesProperties(Map.of(PROFILE_KEY, profileProperties));
+        new CodegenProfilesProperties(
+            Map.of(PROFILE_KEY, profileProperties), defaultSamplesProperties());
 
     ArtifactDefinition result = properties.artifact(PROFILE, ARTIFACT_KEY);
 
@@ -63,7 +69,8 @@ class CodegenProfilesPropertiesTest {
   @DisplayName(
       "requireProfile() should throw ProfileConfigurationException when profile is missing")
   void requireProfile_shouldThrowWhenProfileMissing() {
-    CodegenProfilesProperties properties = new CodegenProfilesProperties(Map.of());
+    CodegenProfilesProperties properties =
+        new CodegenProfilesProperties(Map.of(), defaultSamplesProperties());
 
     assertThatThrownBy(() -> properties.requireProfile(PROFILE))
         .isInstanceOfSatisfying(
@@ -82,7 +89,8 @@ class CodegenProfilesPropertiesTest {
         new ProfileProperties(TEMPLATE_BASE_PATH, List.of(ARTIFACT_KEY), Map.of());
 
     CodegenProfilesProperties properties =
-        new CodegenProfilesProperties(Map.of(PROFILE_KEY, profileProperties));
+        new CodegenProfilesProperties(
+            Map.of(PROFILE_KEY, profileProperties), defaultSamplesProperties());
 
     assertThatThrownBy(() -> properties.artifact(PROFILE, ARTIFACT_KEY))
         .isInstanceOfSatisfying(

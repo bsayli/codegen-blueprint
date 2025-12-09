@@ -27,6 +27,7 @@ import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Languag
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.TechStack;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedTextResource;
+import io.github.blueprintplatform.codegen.testsupport.templating.NoopTemplateRenderer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -160,18 +161,8 @@ class SampleCodeAdapterTest {
         .allMatch(model -> BASE_PACKAGE.equals(model.get("projectPackageName")));
   }
 
-  private static final class NoopTemplateRenderer implements TemplateRenderer {
-
-    @Override
-    public GeneratedResource renderUtf8(
-        Path outPath, String templateName, Map<String, Object> model) {
-      return new GeneratedTextResource(outPath, "", StandardCharsets.UTF_8);
-    }
-  }
-
   private static final class RecordingTemplateRenderer implements TemplateRenderer {
 
-    private final List<Path> capturedOutPaths = new ArrayList<>();
     private final List<String> capturedTemplateNames = new ArrayList<>();
     private final List<Map<String, Object>> capturedModels = new ArrayList<>();
 
@@ -179,7 +170,6 @@ class SampleCodeAdapterTest {
     public GeneratedResource renderUtf8(
         Path outPath, String templateName, Map<String, Object> model) {
 
-      capturedOutPaths.add(outPath);
       capturedTemplateNames.add(templateName);
       capturedModels.add(model);
 

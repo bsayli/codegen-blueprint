@@ -18,6 +18,7 @@ public final class GeneratedBinaryResource implements GeneratedResource {
     this.bytes = Arrays.copyOf(bytes, bytes.length);
   }
 
+  @Override
   public Path relativePath() {
     return relativePath;
   }

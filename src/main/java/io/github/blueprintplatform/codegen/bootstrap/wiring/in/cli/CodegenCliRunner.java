@@ -1,21 +1,10 @@
 package io.github.blueprintplatform.codegen.bootstrap.wiring.in.cli;
 
-import io.github.blueprintplatform.codegen.adapter.in.cli.CodegenCliExceptionHandler;
-import io.github.blueprintplatform.codegen.adapter.in.cli.CodegenCommand;
-import io.github.blueprintplatform.codegen.adapter.in.cli.shared.KeyedEnumConverter;
-import io.github.blueprintplatform.codegen.adapter.in.cli.springboot.dependency.SpringBootDependencyAlias;
-import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
-import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeLevel;
-import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.JavaVersion;
-import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion;
-import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.BuildTool;
-import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Language;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
-import picocli.CommandLine;
 
 @Component
 public class CodegenCliRunner implements ApplicationRunner {
@@ -26,17 +15,10 @@ public class CodegenCliRunner implements ApplicationRunner {
 
   private static final List<String> FILTERED_PREFIXES = List.of("--spring.");
 
-  private final CodegenCommand codegenCommand;
-  private final CommandLine.IFactory factory;
-  private final CodegenCliExceptionHandler exceptionHandler;
+  private final CodegenCliExecutor cliExecutor;
 
-  public CodegenCliRunner(
-      CodegenCommand codegenCommand,
-      CommandLine.IFactory factory,
-      CodegenCliExceptionHandler exceptionHandler) {
-    this.codegenCommand = codegenCommand;
-    this.factory = factory;
-    this.exceptionHandler = exceptionHandler;
+  public CodegenCliRunner(CodegenCliExecutor cliExecutor) {
+    this.cliExecutor = cliExecutor;
   }
 
   @Override
@@ -45,24 +27,11 @@ public class CodegenCliRunner implements ApplicationRunner {
       return;
     }
 
-    var cliArgs = extractCliArgs(args.getSourceArgs());
+    String[] cliArgs = extractCliArgs(args.getSourceArgs());
 
-    var cmd =
-        new CommandLine(codegenCommand, factory)
-            .registerConverter(BuildTool.class, new KeyedEnumConverter<>(BuildTool::fromKey))
-            .registerConverter(Language.class, new KeyedEnumConverter<>(Language::fromKey))
-            .registerConverter(
-                ProjectLayout.class, new KeyedEnumConverter<>(ProjectLayout::fromKey))
-            .registerConverter(JavaVersion.class, new KeyedEnumConverter<>(JavaVersion::fromKey))
-            .registerConverter(
-                SpringBootVersion.class, new KeyedEnumConverter<>(SpringBootVersion::fromKey))
-            .registerConverter(
-                SampleCodeLevel.class, new KeyedEnumConverter<>(SampleCodeLevel::fromKey))
-            .registerConverter(SpringBootDependencyAlias.class, SpringBootDependencyAlias::fromKey);
+    int exitCode = cliExecutor.execute(cliArgs);
 
-    cmd.setExecutionExceptionHandler(exceptionHandler);
-
-    System.exit(cmd.execute(cliArgs));
+    System.exit(exitCode);
   }
 
   @SuppressWarnings("java:S135")

@@ -24,13 +24,11 @@ public interface ProjectWriterPort {
   default void write(Path projectRoot, GeneratedResource resource) {
     switch (resource) {
       case GeneratedTextResource text ->
-              writeText(projectRoot, text.relativePath(), text.content(), text.charset());
+          writeText(projectRoot, text.relativePath(), text.content(), text.charset());
       case GeneratedBinaryResource binary ->
-              writeBytes(projectRoot, binary.relativePath(), binary.bytes());
-      case GeneratedDirectory dir ->
-              createDirectories(projectRoot, dir.relativePath());
-      default ->
-              throw new IllegalArgumentException("Unsupported resource type: " + resource);
+          writeBytes(projectRoot, binary.relativePath(), binary.bytes());
+      case GeneratedDirectory dir -> createDirectories(projectRoot, dir.relativePath());
+      default -> throw new IllegalArgumentException("Unsupported resource type: " + resource);
     }
   }
 

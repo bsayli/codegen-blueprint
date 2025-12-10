@@ -17,7 +17,7 @@ class CodegenCliRunnerTest {
   @Test
   @DisplayName("--cli should be removed and remaining arguments preserved")
   void extractCliArgs_shouldRemoveCliFlag() throws Exception {
-    var runner = new CodegenCliRunner(dummyCommand(), dummyFactory(), dummyHandler());
+    var runner = new CodegenCliRunner(dummyExecutor());
 
     String[] source = {"--cli", "springboot", "--group-id", "com.acme"};
 
@@ -29,10 +29,10 @@ class CodegenCliRunnerTest {
   @Test
   @DisplayName("--spring.* option with inline value should be filtered out")
   void extractCliArgs_shouldFilterSpringOptionWithInlineValue() throws Exception {
-    var runner = new CodegenCliRunner(dummyCommand(), dummyFactory(), dummyHandler());
+    var runner = new CodegenCliRunner(dummyExecutor());
 
     String[] source = {
-      "--cli", "--spring.profiles.active=cli", "springboot", "--artifact-id", "demo-app"
+            "--cli", "--spring.profiles.active=cli", "springboot", "--artifact-id", "demo-app"
     };
 
     String[] result = invokeExtractCliArgs(runner, source);
@@ -43,15 +43,15 @@ class CodegenCliRunnerTest {
   @Test
   @DisplayName("--spring.* option with separate value should skip both option and value")
   void extractCliArgs_shouldFilterSpringOptionWithSeparateValue() throws Exception {
-    var runner = new CodegenCliRunner(dummyCommand(), dummyFactory(), dummyHandler());
+    var runner = new CodegenCliRunner(dummyExecutor());
 
     String[] source = {
-      "--cli",
-      "--spring.config.location",
-      "application-test.yml",
-      "springboot",
-      "--group-id",
-      "com.acme"
+            "--cli",
+            "--spring.config.location",
+            "application-test.yml",
+            "springboot",
+            "--group-id",
+            "com.acme"
     };
 
     String[] result = invokeExtractCliArgs(runner, source);
@@ -62,22 +62,26 @@ class CodegenCliRunnerTest {
   @Test
   @DisplayName("Non-filtered options should pass through unchanged")
   void extractCliArgs_shouldKeepNonFilteredOptions() throws Exception {
-    var runner = new CodegenCliRunner(dummyCommand(), dummyFactory(), dummyHandler());
+    var runner = new CodegenCliRunner(dummyExecutor());
 
     String[] source = {
-      "--cli", "springboot", "--group-id", "com.acme", "--artifact-id", "demo-app"
+            "--cli", "springboot", "--group-id", "com.acme", "--artifact-id", "demo-app"
     };
 
     String[] result = invokeExtractCliArgs(runner, source);
 
     assertThat(result)
-        .containsExactly("springboot", "--group-id", "com.acme", "--artifact-id", "demo-app");
+            .containsExactly("springboot", "--group-id", "com.acme", "--artifact-id", "demo-app");
   }
 
   private String[] invokeExtractCliArgs(CodegenCliRunner runner, String[] source) throws Exception {
     Method m = CodegenCliRunner.class.getDeclaredMethod("extractCliArgs", String[].class);
     m.setAccessible(true);
     return (String[]) m.invoke(runner, new Object[] {source});
+  }
+
+  private CodegenCliExecutor dummyExecutor() {
+    return new CodegenCliExecutor(dummyCommand(), dummyFactory(), dummyHandler());
   }
 
   private CodegenCommand dummyCommand() {

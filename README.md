@@ -102,7 +102,23 @@ Outputs include:
 
 ## 🧱 Architecture Overview
 
-> Domain stays clean — Ports and adapters connect everything else.
+Architecture isn’t only drawn — it executes here ⬇
+
+📌 Want the architectural deep dive?
+
+- 🔒 **Executable Architecture Scope (1.0.0 GA)**  
+  Defines what is *strictly enforced today* and output guarantees  
+  → [docs/architecture/executable-architecture-scope.md](docs/architecture/executable-architecture-scope.md)
+
+---
+
+- 🧭 **How to Explore This Codebase (Hexagonal Guide)**  
+  Understand ports/adapters, profiles, boundaries  
+  → [docs/guides/how-to-explore-hexagonal-architecture.md](docs/guides/how-to-explore-hexagonal-architecture.md)
+
+<br/>
+
+> **Domain stays clean — Ports and adapters connect everything else.**
 
 ```
 domain       // business logic only

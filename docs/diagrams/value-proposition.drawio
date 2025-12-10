@@ -4,21 +4,27 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="consumers" value="&lt;p class=&quot;p1&quot;&gt;&lt;b&gt;Who Benefits&lt;/b&gt;&lt;/p&gt;• Developers&lt;br&gt;• Platform Engineering&lt;br&gt;• Lead Architects" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;" parent="1" vertex="1">
+        <!-- Who benefits -->
+        <mxCell id="consumers" value="&lt;p class=&quot;p1&quot;&gt;&lt;b&gt;Who benefits&lt;/b&gt;&lt;/p&gt;• Developers&lt;br&gt;• Platform Engineering&lt;br&gt;• Lead Architects&lt;br&gt;• New Team Members" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;" parent="1" vertex="1">
           <mxGeometry x="40" y="200" width="210" height="140" as="geometry" />
         </mxCell>
-        <mxCell id="engine" value="&lt;b&gt;Codegen Blueprint Engine&lt;/b&gt;&lt;br&gt;&lt;br&gt;• Profile-driven project generator&lt;br&gt;• Architecture options &amp;amp; layouts&lt;br&gt;• Executable standards (&lt;b&gt;governance as code&lt;/b&gt;)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;" parent="1" vertex="1">
+        <!-- Engine -->
+        <mxCell id="engine" value="&lt;b&gt;Codegen Blueprint engine&lt;/b&gt;&lt;br&gt;&lt;br&gt;• Profile-driven project generator&lt;br&gt;• Architecture options &amp;amp; hexagonal-ready layouts&lt;br&gt;• Executable standards (&lt;b&gt;Architecture as a Product&lt;/b&gt;)&lt;br&gt;• Framework-agnostic core domain" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;" parent="1" vertex="1">
           <mxGeometry x="300" y="160" width="300" height="200" as="geometry" />
         </mxCell>
-        <mxCell id="profiles" value="&lt;b&gt;Profiles &amp;amp; Templates&lt;/b&gt;&lt;br&gt;(YAML + FreeMarker)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=13;" parent="1" vertex="1">
+        <!-- Profiles & templates -->
+        <mxCell id="profiles" value="&lt;b&gt;Profiles &amp;amp; templates&lt;/b&gt;&lt;br&gt;(YAML + FreeMarker)&lt;br&gt;• &lt;code&gt;springboot-maven-java&lt;/code&gt; profile&lt;br&gt;• Stack + conventions encoded as rules" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=13;" parent="1" vertex="1">
           <mxGeometry x="340" y="390" width="220" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="generated" value="&lt;b&gt;Generated services&lt;/b&gt;&lt;br&gt;&lt;div&gt;• Clean, consistent starting point&lt;/div&gt;&lt;div&gt;• Optional hexagonal layout&lt;/div&gt;&lt;div&gt;• Standardized service foundations&amp;nbsp;&lt;/div&gt;&lt;div&gt;(first: Spring Boot)&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" parent="1" vertex="1">
+        <!-- Generated services -->
+        <mxCell id="generated" value="&lt;b&gt;Generated services&lt;/b&gt;&lt;br&gt;&lt;div&gt;• Clean, consistent Spring Boot starting point&lt;/div&gt;&lt;div&gt;• Optional hexagonal layout&lt;/div&gt;&lt;div&gt;• Standardized service foundations&lt;/div&gt;&lt;div&gt;• Testable, evolvable from day zero&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" parent="1" vertex="1">
           <mxGeometry x="650" y="190" width="260" height="160" as="geometry" />
         </mxCell>
-        <mxCell id="titleBand" value="&lt;p class=&quot;p1&quot;&gt;Value Proposition: Why Codegen Blueprint Exists&lt;/p&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#b3b3b3;fontStyle=1;fontSize=14;align=center;verticalAlign=middle;" parent="1" vertex="1">
+        <!-- Title band -->
+        <mxCell id="titleBand" value="&lt;p class=&quot;p1&quot;&gt;Value Proposition — Why Codegen Blueprint exists&lt;/p&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#b3b3b3;fontStyle=1;fontSize=14;align=center;verticalAlign=middle;" parent="1" vertex="1">
           <mxGeometry x="20" y="60" width="900" height="60" as="geometry" />
         </mxCell>
+        <!-- Edges -->
         <mxCell id="edge_consumers_engine" style="endArrow=block;html=1;rounded=0;strokeColor=#6c8ebf;" parent="1" source="consumers" target="engine" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="260" y="270" as="sourcePoint" />

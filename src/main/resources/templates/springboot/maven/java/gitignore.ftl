@@ -1,21 +1,20 @@
 # Compiled source #
 ###################
-*.com
 *.class
-*.dll
-*.exe
 *.o
 *.so
+*.dll
+*.exe
+*.com
 
 # Packages #
 ############
-# it's better to unpack these files and commit the raw source
-# git has its own built in compression methods
+# It's better to unpack archives and commit the raw sources.
+# Git has its own built-in compression.
 *.7z
 *.dmg
 *.gz
 *.iso
-*.jar
 *.rar
 *.tar
 
@@ -36,7 +35,7 @@ ehthumbs.db
 Thumbs.db
 
 # Eclipse / IntelliJ / VSCode IDE #
-##################################
+###################################
 .classpath
 .project
 .settings/
@@ -44,6 +43,7 @@ Thumbs.db
 *.iws
 *.iml
 *.ipr
+.vscode/
 
 # Build directories #
 #####################
@@ -61,7 +61,6 @@ pom.xml.bak
 release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
-.mvn/
 
 # Generated source folders #
 ############################
@@ -70,7 +69,7 @@ generated-classes/
 
 # Add placeholders for project-specific ignores (optional)
 <#if ignoreList?has_content && ignoreList?size gt 0>
-    <#list ignoreList as pattern>
-        ${pattern}
-    </#list>
+<#list ignoreList as pattern>
+${pattern}
+</#list>
 </#if>

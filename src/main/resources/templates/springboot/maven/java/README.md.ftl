@@ -8,23 +8,23 @@ ${projectDescription}
 
 ## 🔧 Tech Stack
 
-| Category | Value |
-|---------|------|
-| **Framework** | ${framework} |
-| **Language** | ${language} |
-| **Build Tool** | ${buildTool} |
-| **Java** | ${javaVersion} |
+| Category      | Value                 |
+|---------------|-----------------------|
+| **Framework** | ${framework}          |
+| **Language**  | ${language}           |
+| **Build Tool**| ${buildTool}         |
+| **Java**      | ${javaVersion}        |
 | **Spring Boot** | ${springBootVersion} |
 
 ---
 
 ## 📦 Coordinates
 
-| Key | Value |
-|-----|------|
-| `groupId` | `${groupId}` |
-| `artifactId` | `${artifactId}` |
-| `package` | `${packageName}` |
+| Key           | Value        |
+|---------------|--------------|
+| `groupId`     | `${groupId}` |
+| `artifactId`  | `${artifactId}` |
+| `package`     | `${packageName}` |
 
 ---
 
@@ -41,7 +41,7 @@ ${projectDescription}
 
 ## 📁 Project Layout
 
-```
+```text
 src
 ├─ main
 │  ├─ java/${packageName?replace('.', '/')}
@@ -104,10 +104,10 @@ You can use this sample in two ways:
 | Dependency | Scope |
 |-----------|-------|
 <#list dependencies as d>
-| `${d.groupId}:${d.artifactId}`<#if d.version?? && d.version?has_content>:`${d.version}`</#if> | <#if d.scope?? && d.scope?has_content>${d.scope}<#else>default</#if> |
+    | `${d.groupId}:${d.artifactId}`<#if d.version?? && d.version?has_content>:`${d.version}`</#if> | <#if d.scope?? && d.scope?has_content>${d.scope}<#else>default</#if> |
 </#list>
 <#else>
-> No additional dependencies were selected.
+    > No additional dependencies were selected.
 </#if>
 
 ---

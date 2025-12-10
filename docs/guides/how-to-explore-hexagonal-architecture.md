@@ -1,145 +1,109 @@
-# 🚀 Codegen-Blueprint — Hexagonal Architecture Deep Dive
+# 🚀 Codegen Blueprint — Hexagonal Architecture Deep Dive
 
-Welcome! This guide shows how **Hexagonal Architecture (Ports & Adapters)** is applied to a **real, production-grade project generation engine** — with strict boundaries and full test coverage.
+**Executable Architecture in Action — A Production‑Grade Reference**
 
-This repository demonstrates **Executable Architecture** in action:
+This deep‑dive explains **exactly how Hexagonal Architecture (Ports & Adapters)** is enforced in Codegen Blueprint — not as documentation, but **as behavior**.
 
-* Architecture rules **enforced by the engine**, not left to individuals
-* Domain remains **pure and framework-agnostic**
-* Technology choices are **plug-replaceable** — without core changes
+Architecture decisions are **compiled into the generator itself**:
 
-> Build a scalable ecosystem of services —  
-> **without losing architectural consistency over time**.
+* Domain stays 🔒 framework‑free
+* Technology swaps 🔁 without core changes
+* Best practices 🚧 enforced automatically
+* Generated services 🧱 inherit structure by design
 
-*Hexagonal Architecture — not just documented, but executed.*
-
----
-
-## 📚 Table of Contents
-
-* [🧱 Architectural Overview](#-architectural-overview)
-* [🔌 Ports & Adapters](#-ports--adapters)
-    * [💼 Domain → Outbound Ports](#-domain--outbound-ports)
-    * [🧩 Application → Artifact Generation Ports](#-application--artifact-generation-ports)
-    * [🛠️ Technology Adapters](#-technology-adapters)
-* [📦 Profiles: Externalized Architecture Rules](#-profiles-externalized-architecture-rules)
-* [🧱 Source Layout Generation](#-source-layout-generation)
-* [📄 Resource Model — Stronger than “Files”](#-resource-model--stronger-than-files)
-* [🧪 Testing Strategy](#-testing-strategy)
-* [🎯 What You Can Learn Here](#-what-you-can-learn-here)
-* [🎮 Try It — CLI Adapter](#-try-it--cli-adapter)
-* [🔍 Start Here](#-start-here)
-* [⭐ Final Thoughts](#-final-thoughts)
+> **Architecture is not a guideline — it executes.**
 
 ---
 
-## 🧱 Architectural Overview
+## 🧭 Why Hexagonal Here?
 
-Codegen Blueprint applies **strict inward dependency flow** — ensuring the **domain stays pure** and fully independent of frameworks:
+Most project templates generate: **folders**.
+Blueprint generates: **architectural intent**.
+
+Hexagonal was chosen because it delivers:
+
+| Principle                   | Value Delivered                  |
+| --------------------------- | -------------------------------- |
+| Strict dependency direction | Pure, independent domain model   |
+| Ports define contract       | Tech swap without refactor       |
+| Adapter isolation           | Framework choice does not leak   |
+| Test‑first boundaries       | Faster evolution with confidence |
+
+> The output already **protects the future architecture** of your service.
+
+---
+
+## 🧱 Layered Execution Flow
+
+Strict inward dependency:
 
 ```
-bootstrap   // Spring & runtime wiring only
-↓
-adapter     // technology-specific implementations (CLI, File, Templating…)
-↓
-application // orchestration, profiles, generation rules
-↓
-domain      // core business rules — no external dependencies
+adapter (delivery + tech)
+        ↓
+application (use cases, orchestration)
+        ↓
+domain (business rules only)
 ```
 
-### Key Principles
+Runtime wiring is delivered via `bootstrap` (Spring only at the edges).
 
-* **Domain-centric** — business logic remains framework-free
-* **Replaceable adapters** — switch technology with no core changes
-* **Independent testing** — every layer testable on its own
-* **Evolution-ready** — new profiles or stacks plug in without refactor
+📌 No Spring inside `domain`
+📌 No FreeMarker inside `domain` or `application`
+📌 No file system assumptions inside business logic
 
-> Architecture is not a *guideline* here —  
-> **it is enforced by design**
+<p align="center"><em>See also: Architecture Overview diagram</em></p>
 
 ---
 
-## 🔌 Ports & Adapters
+## 🔌 Ports & Adapters — Where the Power Lives
 
-The engine is **driven by ports (interfaces)** — fully decoupled from frameworks.
+Ports define all allowed interactions.
+Adapters implement them — nothing more.
 
----
+### Domain → Outbound Ports
 
-### 💼 Domain → Outbound Ports
+| Port                  | Purpose                                          |
+| --------------------- | ------------------------------------------------ |
+| `ProjectRootPort`     | Prepare target output structure                  |
+| `ProjectWriterPort`   | Persist generated resources                      |
+| `ProjectArchiverPort` | Package delivery output (ZIP, future OCI images) |
 
-These ports allow the **application layer** to perform external actions  
-**without** depending on external technology:
-
-| Port                  | Responsibility                                        |
-| --------------------- | ----------------------------------------------------- |
-| `ProjectRootPort`     | Resolve and prepare the output project directory      |
-| `ProjectWriterPort`   | Persist generated resources (text / binary / folders) |
-| `ProjectArchiverPort` | Bundle project for delivery (e.g., ZIP packaging)     |
-
-> Same domain → multiple tech stacks → zero changes to business rules
+➡ Domain never touches IO.
 
 ---
 
-### 🧩 Application → Artifact Generation Ports
+### Application → Artifact Generation Ports
 
-Each artifact in the produced project has a **dedicated generation port**:
+Each generated output has a **dedicated port**:
 
-| Port                           | Output artifact                                        |
-| ------------------------------ | ------------------------------------------------------ |
-| `SourceLayoutPort`             | Java package structure & source folders                |
-| `MainSourceEntrypointPort`     | Main application class                                 |
-| `TestSourceEntrypointPort`     | Test bootstrap                                         |
-| `ApplicationConfigurationPort` | Runtime configuration (`application.yml`)              |
-| `BuildConfigurationPort`       | Build descriptor (`pom.xml`)                           |
-| `BuildToolFilesPort`           | Wrapper + tool metadata (`mvnw`, `.mvn/`)              |
-| `IgnoreRulesPort`              | `.gitignore` + VCS hygiene                             |
-| `ProjectDocumentationPort`     | Generated project README                               |
-| `SampleCodePort`               | Optional greeting sample (domain + ports + REST demo)  |
+| Port                           | Generated Output                         |
+| ------------------------------ | ---------------------------------------- |
+| `BuildConfigurationPort`       | `pom.xml`                                |
+| `BuildToolFilesPort`           | Maven wrapper + tooling                  |
+| `SourceLayoutPort`             | Package + directory conventions          |
+| `MainSourceEntrypointPort`     | Main application bootstrap               |
+| `TestSourceEntrypointPort`     | Test conventions                         |
+| `ApplicationConfigurationPort` | `application.yml`                        |
+| `IgnoreRulesPort`              | `.gitignore`                             |
+| `ProjectDocumentationPort`     | README inside generated project          |
+| `SampleCodePort`               | Optional greeting service + REST adapter |
 
-Supporting the pipeline:
+Execution engine:
 
-| Component                  | Role                                                |
-| -------------------------- | --------------------------------------------------- |
-| `ProjectArtifactsPort`     | Executes artifacts in correct architectural order   |
-| `ProjectArtifactsSelector` | Chooses implementation based on selected TechStack  |
+| Component                  | Responsibility                              |
+| -------------------------- | ------------------------------------------- |
+| `ProjectArtifactsSelector` | Selects stack profile                       |
+| `ProjectArtifactsPort`     | Executes ports in exact architectural order |
 
-> Every artifact is intentional → nothing accidental is generated
-
----
-
-### 🛠️ Technology Adapters
-
-Adapters **implement ports using real world tooling**:
-
-* File system access
-* FreeMarker-based resource templating
-* Maven build metadata
-
-Designed for evolution:
-
-* Gradle
-* Kotlin
-* Quarkus
-* REST delivery
-
-⬆ All can be added **without touching domain or application code**
+> Nothing is generated accidentally — every artifact is **intentional**.
 
 ---
 
-> **Ports define the architecture**  
-> **Adapters only enable execution**
+## 🧩 Profiles — The Architecture Contract
 
----
+Profiles externalize **what** is generated and **in which order**.
 
-## 📦 Profiles: Externalized Architecture Rules
-
-Profiles define what artifacts are generated, in what order, and under which architecture rules:
-
-* Template namespace (profile defines rendering folders)
-* Enabled artifacts per stack
-* Strict generation ordering — architecture enforcement
-
-📍 Example — `springboot-maven-java` 1.0.0 pipeline
+Example — `springboot‑maven‑java` profile pipeline:
 
 ```
 build-config → build-tool-files → ignore-rules
@@ -149,16 +113,21 @@ build-config → build-tool-files → ignore-rules
 → project-documentation
 ```
 
-> Profiles ensure **hexagonal evolution** does not require code changes — only configuration.
-</br>
+Profiles are:
+
+✔ Organizational **architecture standards**
+✔ Reusable across **many products**
+✔ Extensible with **zero core refactor**
+
+> Architecture governance, expressed as configuration.
 
 ---
 
-## 🧱 Source Layout Generation
+## 📐 Source Layout Enforcement
 
-`SOURCE_LAYOUT` adapter now generates:
+Two evolution paths:
 
-### Standard Layout
+### Standard
 
 ```
 src/main/java/<basepkg>/
@@ -167,92 +136,70 @@ src/test/java/<basepkg>/
 src/test/resources/
 ```
 
-### Hexagonal layout (opt-in an evolution path)
+### Hexagonal (opt‑in evolution kit)
 
 ```
-src/main/java/<basepkg>/
-├─ domain/
-├─ application/
-├─ adapter/
-│   ├─ in/
-│   └─ out/
-└─ bootstrap/
+adapter/
+  ├─ in/
+  └─ out/
+application/
+domain/
+bootstrap/
 ```
 
-If `--sample-code basic` is enabled:
-
-```
-adapter/in/rest/
-adapter/out/ (future)
-domain/greeting/
-application/greeting/
-```
-
-> Directories are **intentional artifacts** → not side effects.
+> Directories are treated as **domain objects** — guaranteed correctness.
 
 ---
 
-## 📄 Resource Model — Stronger than “Files”
+## 📂 Resource Model — Better than "Just Files"
 
-Generated assets are modeled as first-class domain concepts:
+Every output is represented in the domain as:
 
-| Type      | Model                      | Purpose                        |
-| --------- | -------------------------- | ------------------------------ |
-| Directory | `GeneratedDirectory`       | Ensure structural correctness  |
-| Text      | `GeneratedTextResource`    | Java, YAML, README, etc.       |
-| Binary    | `GeneratedBinaryResource`  | Maven wrapper, future assets   |
+| Type      | Domain Model              | Why                              |
+| --------- | ------------------------- | -------------------------------- |
+| Directory | `GeneratedDirectory`      | Structure is validated           |
+| Text      | `GeneratedTextResource`   | Safe content models              |
+| Binary    | `GeneratedBinaryResource` | Maven wrapper + future artifacts |
 
-Capability highlights:
-
-* Template-driven & template-less generation
-* Supports future binary artifacts (zip, images)
-* Perfect fit for multi-artifact pipelines
-
+Supports: templates, non‑template content, binary, ZIP, future OCI.
 
 ---
 
-## 🧪 Testing Strategy
+## 🧪 Verified Architecture — Testing Strategy
 
-| Test Type                | Validates                                          |
-| ------------------------ | ------------------------------------------------- |
-| **Unit Tests**           | Domain rules + adapter logic                      |
-| **Integration Tests**    | Spring wiring + ordered artifact pipeline         |
-| **E2E CLI Tests**        | Full generation → ZIP structure correctness       |
-| **Template Coverage**    | Sample code, structure, placeholders, UTF-8 model |
+| Test Type            | Ensures                                    |
+| -------------------- | ------------------------------------------ |
+| Unit                 | Rule enforcement inside domain/application |
+| Integration (Spring) | Correct wiring + ordered pipelines         |
+| E2E CLI tests        | Project structure validity post‑generation |
+| Template tests       | Token correctness + UTF‑8 + placeholders   |
 
-CI includes:
+CI Quality:
 
-* 🧩 Contract tests for every port + adapter pair
-* 📊 Codecov tracking — full pipeline validation
-* 🔐 CodeQL security scanning
-* ✔ Architectural test gates planned (`ArchUnit`)
+* CodeQL security scanning
+* Codecov coverage
+* Contract test discipline
+* **ArchUnit architectural guards — coming soon**
 
-### Summary
-
-* Profiles externalize **architecture rules**
-* Layout generation enforces **predictability**
-* Resource model prevents **accidental drift**
-* Tests safeguard **contract integrity**
+> Tests protect **architecture**, not just syntax.
 
 ---
 
-## 🎯 What You Can Learn Here
+## 🎯 What You Learn from This Repo
 
-| Capability You’ll Gain     | How This Repo Enables It                                  |
-|---------------------------|-----------------------------------------------------------|
-| Hexagonal architecture    | Strict boundaries, port-driven domain isolation           |
-| Code generation engines   | Profile-driven, ordered artifact pipelines                |
-| Enterprise maintainability| Add new stacks w/o modifying core engine                 |
-| CI-First delivery         | Coverage, contract tests, secure pipelines               |
-| Architecture automation   | Enforce structure from day zero — “Executable Architecture” |
+| Skill                    | How This Repo Teaches It            |
+| ------------------------ | ----------------------------------- |
+| Hexagonal mastery        | True isolation + enforced contracts |
+| Maintainable scaffolding | Evolution paths from day zero       |
+| Architecture automation  | "Governance as Code" patterns       |
+| Multi‑stack enablement   | Add stacks without core edits       |
+| Testing for architecture | Contract + pipeline validation      |
 
-This is a **real production reference**, not a conceptual demo.
+This is a **production reference architecture**, not a classroom demo.
 
 ---
 
-## 🎮 Try It — CLI Adapter
-
-Here’s the **springboot-maven-java** profile with **hexagonal** layout and **sample greeting** included:
+## 🎮 Try It — CLI Delivery Adapter
 
 ```bash
 java -jar codegen-blueprint-1.0.0.jar \
@@ -269,51 +216,45 @@ java -jar codegen-blueprint-1.0.0.jar \
   --dependency data_jpa
 ```
 
-This produces a ready-to-run service with a REST greeting endpoint:
-
 ```bash
-GET /api/v1/sample/greetings/default
-
-→ 200 OK: "Hello from hexagonal sample!"
-```
-
-
-Run instantly:
 cd greeting-service
 ./mvnw spring-boot:run
+```
+
+➡ Fully working REST sample included
+GET `/api/v1/sample/greetings/default`
 
 ---
 
-## 🔍 Start Here
-
-Follow the architecture execution path:
+## 🔍 Architecture Execution Path (Mental Model)
 
 ```
-[ CLI input ] 
-      ↓
+CLI input
+ ↓
 ProjectBlueprint
-      ↓
-ProjectArtifactsSelector  // chooses profile implementation
-      ↓
-ProjectArtifactsPort      // executes ordered ports
-      ↓
-ProjectWriterPort         // writes physical output (FS/ZIP)
+ ↓
+ProjectArtifactsSelector (selects profile)
+ ↓
+ProjectArtifactsPort (executes ordered ports)
+ ↓
+ProjectWriterPort (physical output)
 ```
 
-You are watching architecture → compiled and executed.
+> Architecture → compiled → executed.
 
 ---
 
 ## ⭐ Final Thoughts
 
-Executable Architecture means:
-* 🚫 No framework leaking into domain logic
-* 🧠 Architecture intent is automated, not “documented & forgotten”
-* ♻️ Adaptable tech stacks w/o core rewrites
-* 🧪 Full test enforcement from pipeline to template
+**Executable Architecture** means:
 
-Built for teams who believe:
+* Architecture cannot drift accidentally
+* Domain is always protected
+* Tech can evolve independently
+* Standards are repeatable across the organization
 
-“Architecture isn’t a diagram — it’s a behavior that must execute.”
+For teams who believe:
 
-Happy generating! 🚀✨
+> "Architecture isn't a diagram — it's a behavior."
+
+🚀 Happy generating with Codegen Blueprint! ✨

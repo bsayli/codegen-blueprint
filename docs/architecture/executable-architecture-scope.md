@@ -2,19 +2,11 @@
 
 > This unified document defines what the **Codegen Blueprint engine enforces today (1.0.0 GA)** and what the **generated project guarantees at output** — a single reference point for architectural truth.
 
----
-
 ## 📚 Table of Contents
 
 * [1 Purpose](#1-purpose)
 * [2 Core Mental Model](#2-core-mental-model)
 * [3 Engine Enforcement Guarantees (1.0.0 GA)](#3-engine-enforcement-guarantees-100-ga)
-  * [3.1 Deterministic Project Layout](#31-deterministic-project-layout)
-  * [3.2 Naming & Identity Enforcement](#32-naming--identity-enforcement)
-  * [3.3 Spring Boot Minimal Runtime Baseline](#33-spring-boot-minimal-runtime-baseline)
-  * [3.4 Test-Ready Project](#34-test-ready-project)
-  * [3.5 Separation of Engine & Templates](#35-separation-of-engine--templates)
-  * [3.6 Profile‑Driven Execution](#36-profile-driven-execution)
 * [4 Generated Project Scope (Output Contract)](#4-generated-project-scope-output-contract)
 * [5 Explicitly Not Enforced (Yet)](#5-explicitly-not-enforced-yet)
 * [6 Intentional Scope Constraints](#6-intentional-scope-constraints)
@@ -27,9 +19,9 @@
 
 Ensure that:
 
-* README **claims** match **actual engine guarantees**
-* Teams get a **predictable**, **testable**, **clean** project every time
-* Foundations are in place for **strict boundary enforcement** later
+* README **claims** match **engine guarantees**
+* Output is **predictable**, **testable**, and **clean**
+* The foundation enables **strict enforcement** as we evolve
 
 > 🧠 If we promise it, we enforce it.
 
@@ -37,25 +29,25 @@ Ensure that:
 
 ## 2️⃣ Core Mental Model
 
-| Concept        | Description                                          |
-| -------------- | ---------------------------------------------------- |
-| **Engine**     | CLI‑driven generator applying architectural profiles |
-| **Profile**    | Defines language + build tool + architecture layout  |
-| **Blueprints** | Artifact templates (POM, YAML, sources, docs)        |
+| Concept       | Description                                         |
+| ------------- | --------------------------------------------------- |
+| **Engine**    | CLI‑driven executor applying architectural profiles |
+| **Profiles**  | Architecture + runtime stack + generation rules     |
+| **Artifacts** | Generated project assets (structured + validated)   |
 
 📌 The engine today:
 
-> Generates clean, production‑viable Spring Boot services — with architecture *prepared* for enforcement.
+> Generates clean, production‑viable Spring Boot services — with **architecture‑aware** and **test‑ready** output.
 
 ---
 
 ## 3️⃣ Engine Enforcement Guarantees (1.0.0 GA)
 
-These are **strict contracts** validated through automated tests.
+All items validated via automated tests.
 
-### 3.1 Deterministic Project Layout
+### ✔ 3.1 Deterministic Layout
 
-Generated structure **must** follow:
+Always **single‑module** + buildable output:
 
 ```
 <artifactId>/
@@ -67,138 +59,109 @@ Generated structure **must** follow:
  └─ README.md
 ```
 
-Always **single‑module**.
+### ✔ 3.2 Identity & Naming Enforcement
 
----
-
-### 3.2 Naming & Identity Enforcement
-
-Engine **normalizes + validates**:
+Engine validates **consistency & correctness**:
 
 * groupId
 * artifactId
-* package name
-* application name
-
-Main class rule:
-
-```
-<PascalCasedArtifact>Application
-```
+* base package
+* PascalCase main class → `<Artifact>Application`
 
 > ❌ Invalid identifiers → **fail fast**
 
----
-
-### 3.3 Spring Boot Minimal Runtime Baseline
+### ✔ 3.3 Minimal Runtime Baseline
 
 Project must:
 
-* ✔ compile + run instantly
-* ✔ use explicitly provided dependencies only
-* ✔ bootstrap through SpringApplication.run(...)
+* Compile + run instantly
+* Include only explicit dependencies
+* Boot through SpringApplication.run()
 
 📌 No accidental demo code.
 
----
-
-### 3.4 Test Ready Project
+### ✔ 3.4 Test‑Ready Output
 
 Generated project must:
 
-* contain test execution entrypoint via `@SpringBootTest`
-* pass `mvn verify` right after generation
+* Contain test bootstrap (`@SpringBootTest`)
+* Pass `mvn verify` immediately after creation
 
-Testing is not optional.
+Testing == required.
 
----
-
-### 3.5 Separation of Engine & Templates
+### ✔ 3.5 Engine–Template Separation
 
 Engine **does not depend on**:
 
 * Spring
 * File system
-* Maven internals
+* Build systems (Maven, Gradle…)
 
-All tech‑specific logic lives in **adapters + profiles**.
+Technology lives in **adapters + profiles**.
 
-> Enables Gradle, Kotlin, Quarkus… with **zero** engine refactor.
+> Enables Gradle/Kotlin/Quarkus — **zero** engine refactor.
 
----
-
-### 3.6 Profile Driven Execution
-
-```bash
-java -jar codegen-blueprint.jar \
-  --cli \
-  springboot \
-  --group-id com.acme \
-  --artifact-id order-service \
-  --name "Order Service" \
-  --package-name com.acme.order \
-  --layout hexagonal \
-  --dependency web
-```
+### ✔ 3.6 Profile‑Defined Execution
 
 Profile determines:
 
-* templates
-* structure
-* tech behavior
+* Artifact ordering
+* Template namespace
+* Architecture boundaries
+
+Example:
+
+```bash
+java -jar codegen-blueprint.jar --cli springboot ...
+```
 
 ---
 
 ## 4️⃣ Generated Project Scope (Output Contract)
 
-### Standard Profile
+### Active Stack (GA)
 
 ```
 springboot-maven-java
 ```
 
-### Output requirements
+Output must include:
 
 ```
 <artifactId>/
- ├── pom.xml
- ├── src/main/java/<basePackage>/Application.java
- ├── src/test/java/<basePackage>/ApplicationTests.java
- ├── src/main/resources/application.yml
- ├── .gitignore
- └── README.md
+ ├─ pom.xml
+ ├─ src/main/java/<basePackage>/Application.java
+ ├─ src/test/java/<basePackage>/ApplicationTests.java
+ ├─ src/main/resources/application.yml
+ ├─ .gitignore
+ └─ README.md
 ```
 
-### Architecture Option (OPT‑IN)
+### Optional Layout — Hexagonal
 
-```bash
+```
 --layout hexagonal
 ```
 
-Produces structured boundaries:
+Adds enforceable boundaries:
 
 ```
-├── domain/        # business rules only
-├── application/   # orchestrates ports
-├── adapters/      # inbound + outbound
-└── bootstrap/     # wiring + config
+adapter/    # tech surfaces
+application # orchestration
+domain      # business rules
+bootstrap   # wiring
 ```
 
-### Sample Code Option (OPT‑IN)
+### Optional Teaching Example — Sample Code
 
-```bash
+```
 --sample-code basic
 ```
 
-Provides ready‑to‑run teaching example:
+Produces:
 
-```bash
-GET /api/v1/sample/greetings/default
-→ 200 OK
-{
-  "text": "Hello from hexagonal sample!"
-}
-```
+* REST greeting endpoint
+* Domain‑driven reference
 
 Run instantly:
 
@@ -206,60 +169,66 @@ Run instantly:
 ./mvnw spring-boot:run
 ```
 
+> Clean. Runnable. Understandable.
+
 ---
 
 ## 5️⃣ Explicitly Not Enforced (Yet)
 
-| Item                      | Reason                            |
-| ------------------------- | --------------------------------- |
-| Hexagonal by default      | Avoid adoption friction           |
-| Policy engine             | Requires architectural DSL        |
-| ArchUnit rules generation | Depends on next milestone         |
-| Org‑wide governance       | Future platform-level enforcement |
+We **intentionally** do not enforce:
 
-> Architecture‑aware today → architecture‑policing tomorrow
+| Item                    | Why                             |
+| ----------------------- | ------------------------------- |
+| Hexagonal by default    | Zero‑friction adoption          |
+| Policy engine           | Requires DSL + governance model |
+| Architecture test rules | Next stage of enforceability    |
+| Org‑wide standards      | Platform‑level roadmap          |
+
+> Today: architecture‑aware → Tomorrow: architecture‑policed
 
 ---
 
 ## 6️⃣ Intentional Scope Constraints
 
-* 🚫 No bloated features
-* 🚫 No silent opinionated defaults
+* 🚫 No bloated opinions
+* 🚫 No magical side‑effects
+* 🚫 No drift from contract
 * 🎯 Precision > volume
-* ♻️ Upgrade without core rewrites
 
-> Narrow now → **massively scalable later**
+> Narrow now → **explosive ecosystem later**
 
 ---
 
 ## 7️⃣ Path Toward Executable Architecture
 
-| Stage | Capability                   | Benefit                          |
-| ----- | ---------------------------- | -------------------------------- |
-| v1.1+ | Layout‑aware hex scaffolding | Real boundaries in code output   |
-| v1.2+ | Auto‑architecture tests      | Prevent drift at compile/CI time |
-| v1.3+ | Policy DSL                   | Architecture as CI quality gate  |
-| v2.0  | Org profiles                 | Governance at organization scale |
+| Stage | Capability                   | Value                            |
+| ----: | ---------------------------- | -------------------------------- |
+|  v1.1 | Layout enforcement gates     | Real boundaries in code output   |
+|  v1.2 | Auto‑architecture validation | CI fails on drift                |
+|  v1.3 | Policy DSL                   | Governance as code               |
+|  v2.0 | Org‑wide profiles            | Team‑scale compliance automation |
+
+> Best practices must **execute — not be suggestions**
 
 ---
 
 ## 8️⃣ Review Guidance
 
-Every change touching architectural behavior must answer:
+Any change touching architecture must ask:
 
 > ❓ Does this change **claim** enforcement?
 
-If YES → update this document.
-If NO → update README roadmap (only).
+If **yes** → update this document
+If **no** → adjust README only
 
 ---
 
 ### Final Statement
 
-**Codegen Blueprint 1.0.0 GA** generates:
+**Codegen Blueprint 1.0.0 GA generates:**
 
-* Clean & testable projects
+* Clean & testable services
 * Architecture‑aware structure
-* Predictable foundations for future enforcement
+* Predictable foundations for evolution
 
-> **Executable Architecture begins here.** 🚀
+> 🚀 **Executable Architecture begins here.**

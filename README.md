@@ -9,6 +9,7 @@
 [![Maven](https://img.shields.io/badge/Maven-3.9-blue?logo=apachemaven)](https://maven.apache.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
+* 🤝 [Contributing](#-contributing)
 > 🚀 Executable Architecture Generator — Enforced by Design. Scalable by Default.  
 🔗 Part of the **Blueprint Platform** → https://github.com/blueprint-platform
 
@@ -66,6 +67,35 @@ Most project generators create a folder structure and disappear.
 | Profile‑driven evolution | ⚠️                           | **✔**             |
 | Anti‑drift roadmap       | ❌                            | **✔**             |
 
+---
+
+### 🧩 Generate vs Enforce (Cross‑Cutting Concerns)
+
+Most generators **generate code** for cross‑cutting concerns.
+That approach does not scale.
+
+**Codegen Blueprint makes a clear distinction:**
+
+| Approach              | What happens                                               | Long‑term effect                             |
+| --------------------- | ---------------------------------------------------------- | -------------------------------------------- |
+| Generate code         | Copies security, logging, error handling into each service | ❌ Drift, copy‑paste, painful upgrades        |
+| Enforce via libraries | Centralized, versioned, opt‑in behavior                    | **✔ Consistency, easy upgrades, governance** |
+
+> **Not everything should be generated.**
+> Cross‑cutting concerns should be **enforced**, not duplicated.
+
+With Blueprint Platform:
+
+* Architecture is generated once
+* Behavior is enforced via **shared libraries / BOMs**
+* Upgrades happen in **one place**, not 50 microservices
+
+This is why Blueprint is not a template collection.
+
+> **It is architecture as an executable product.**
+
+---
+
 > 🧩 Same simplicity — **better long‑term alignment**
 
 ---
@@ -79,7 +109,6 @@ Most project generators create a folder structure and disappear.
 * 🔄 [CLI Usage](#-cli-usage)
 * 🧪 [Testing & CI](#-testing--ci)
 * 🚀 [Vision & Roadmap](#-vision--roadmap)
-* 🤝 [Contributing](#-contributing)
 * ⭐ [Support](#-support)
 * 🛡 [License](#-license)
 

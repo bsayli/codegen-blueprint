@@ -29,14 +29,7 @@ class CodegenProfilesPropertiesTest {
         new ProfileProperties(
             "  ", List.of(ARTIFACT_KEY), Map.of(ARTIFACT_MAP_KEY, artifactDefinition));
 
-    return new CodegenProfilesProperties(
-        Map.of(PROFILE_KEY, profileProperties), defaultSamplesProperties());
-  }
-
-  private static SampleCodeProperties defaultSamplesProperties() {
-    return new SampleCodeProperties(
-        new SampleCodeProperties.Roots("standard/sample", "hexagonal/sample"),
-        new SampleCodeProperties.Levels("basic", "rich"));
+    return new CodegenProfilesProperties(Map.of(PROFILE_KEY, profileProperties));
   }
 
   @Test
@@ -54,8 +47,7 @@ class CodegenProfilesPropertiesTest {
             Map.of(ARTIFACT_MAP_KEY, artifactDefinition));
 
     CodegenProfilesProperties properties =
-        new CodegenProfilesProperties(
-            Map.of(PROFILE_KEY, profileProperties), defaultSamplesProperties());
+        new CodegenProfilesProperties(Map.of(PROFILE_KEY, profileProperties));
 
     ArtifactDefinition result = properties.artifact(PROFILE_KEY, ARTIFACT_KEY);
 
@@ -67,8 +59,7 @@ class CodegenProfilesPropertiesTest {
   @DisplayName(
       "requireProfile() should throw ProfileConfigurationException when profile is missing")
   void requireProfile_shouldThrowWhenProfileMissing() {
-    CodegenProfilesProperties properties =
-        new CodegenProfilesProperties(Map.of(), defaultSamplesProperties());
+    CodegenProfilesProperties properties = new CodegenProfilesProperties(Map.of());
 
     assertThatThrownBy(() -> properties.requireProfile(PROFILE_KEY))
         .isInstanceOfSatisfying(
@@ -87,8 +78,7 @@ class CodegenProfilesPropertiesTest {
         new ProfileProperties(TEMPLATE_BASE_PATH, List.of(ARTIFACT_KEY), Map.of());
 
     CodegenProfilesProperties properties =
-        new CodegenProfilesProperties(
-            Map.of(PROFILE_KEY, profileProperties), defaultSamplesProperties());
+        new CodegenProfilesProperties(Map.of(PROFILE_KEY, profileProperties));
 
     assertThatThrownBy(() -> properties.artifact(PROFILE_KEY, ARTIFACT_KEY))
         .isInstanceOfSatisfying(

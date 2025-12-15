@@ -69,7 +69,7 @@ generated-classes/
 
 # Add placeholders for project-specific ignores (optional)
 <#if ignoreList?has_content && ignoreList?size gt 0>
-<#list ignoreList as pattern>
-${pattern}
-</#list>
+    <#list ignoreList as pattern>
+        ${pattern}
+    </#list>
 </#if>

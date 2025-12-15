@@ -40,32 +40,32 @@ ${projectDescription}
 <#-- Auto-config hints based on selected dependencies -->
 <#if (hasH2!false) || (hasActuator!false) || (hasSecurity!false)>
 
----
+    ---
 
-## ⚙️ Auto Configuration Notes
+    ## ⚙️ Auto Configuration Notes
 
-<#if hasH2!false>
-    ### H2 (for JPA)
-    This project includes an **in-memory H2 database** configuration because `spring-boot-starter-data-jpa` was selected.
+    <#if hasH2!false>
+        ### H2 (for JPA)
+        This project includes an **in-memory H2 database** configuration because `spring-boot-starter-data-jpa` was selected.
 
-    - JDBC URL: `jdbc:h2:mem:${artifactId}`
-    - Console: `/h2-console` (if enabled)
+        - JDBC URL: `jdbc:h2:mem:${artifactId}`
+        - Console: `/h2-console` (if enabled)
 
-</#if>
+    </#if>
 
-<#if hasActuator!false>
-    ### Actuator
-    Basic actuator exposure is enabled:
+    <#if hasActuator!false>
+        ### Actuator
+        Basic actuator exposure is enabled:
 
-    - `/actuator/health`
-    - `/actuator/info`
+        - `/actuator/health`
+        - `/actuator/info`
 
-</#if>
+    </#if>
 
-<#if hasSecurity!false>
-    ### Security
-    `spring-boot-starter-security` is included. Endpoints may require authentication depending on defaults and your configuration.
-</#if>
+    <#if hasSecurity!false>
+        ### Security
+        `spring-boot-starter-security` is included. Endpoints may require authentication depending on defaults and your configuration.
+    </#if>
 
 </#if>
 
@@ -82,49 +82,62 @@ src
 └─ java/${packageName?replace('.', '/')}
 ```
 
-<#-- Optional hexagonal showcase -->
-<#if hasHexSample?? && hasHexSample>
 ---
 
-## 🧱 Hexagonal Architecture Example
+## 🧩 Layout Semantics
 
-This project was generated with the optional **hexagonal layout**:
+| Layout | Description |
+|-------|-------------|
+| `standard` | Layered packages: `controller`, `service`, `repository`, `domain`, `config` |
+| `hexagonal` | Ports & Adapters structure: `domain`, `application`, `adapter`, `bootstrap` |
 
-```bash
---layout hexagonal
-```
+> The selected layout defines both the **package structure** and the **architecture governance level** applied to the project.
 
-With this flag, your `src/main/java/${packageName?replace('.', '/')}` tree is structured for:
+---
 
-* `domain` – core business rules (no Spring dependencies)
-* `application` – use cases orchestrating ports
-* `adapter` – inbound & outbound adapters
-* `bootstrap` – configuration and wiring
+<#-- Optional hexagonal showcase -->
+<#if hasHexSample?? && hasHexSample>
+    ---
 
-If you also enabled **sample code**:
+    ## 🧱 Hexagonal Architecture Example
 
-```bash
---sample-code basic
-```
+    This project was generated with the optional **hexagonal layout**:
 
-then the project includes a minimal but complete **greeting flow** wired end-to-end:
+    ```bash
+    --layout hexagonal
+    ```
 
-* **Domain & ports** – greeting model and port contracts
-* **Application** – greeting use case orchestration
-* **REST adapter** – sample controller exposing:
+    With this flag, your `src/main/java/${packageName?replace('.', '/')}` tree is structured for:
 
-```bash
-GET /api/v1/sample/greetings/default
-→ 200 OK
-{
-"text": "Hello from hexagonal sample!"
-}
-```
+    * `domain` – core business rules (no Spring dependencies)
+    * `application` – use cases orchestrating ports
+    * `adapter` – inbound & outbound adapters
+    * `bootstrap` – configuration and wiring
 
-You can use this sample in two ways:
+    If you also enabled **sample code**:
 
-* As a **teaching reference** for hexagonal structure in this codebase
-* As a **starting slice** to evolve into your real business modules
+    ```bash
+    --sample-code basic
+    ```
+
+    then the project includes a minimal but complete **greeting flow** wired end-to-end:
+
+    * **Domain & ports** – greeting model and port contracts
+    * **Application** – greeting use case orchestration
+    * **REST adapter** – sample controller exposing:
+
+    ```bash
+    GET /api/v1/sample/greetings/default
+    → 200 OK
+    {
+    "text": "Hello from hexagonal sample!"
+    }
+    ```
+
+    You can use this sample in two ways:
+
+    * As a **teaching reference** for hexagonal structure in this codebase
+    * As a **starting slice** to evolve into your real business modules
 
 </#if>
 
@@ -133,11 +146,11 @@ You can use this sample in two ways:
 ## 📚 Selected Dependencies
 
 <#if dependencies?has_content>
-| Dependency | Scope |
-|-----------|-------|
-<#list dependencies as d>
-    | `${d.groupId}:${d.artifactId}`<#if d.version?? && d.version?has_content>:`${d.version}`</#if> | <#if d.scope?? && d.scope?has_content>${d.scope}<#else>default</#if> |
-</#list>
+    | Dependency | Scope |
+    |-----------|-------|
+    <#list dependencies as d>
+        | `${d.groupId}:${d.artifactId}`<#if d.version?? && d.version?has_content>:`${d.version}`</#if> | <#if d.scope?? && d.scope?has_content>${d.scope}<#else>default</#if> |
+    </#list>
 <#else>
     > No additional dependencies were selected.
 </#if>

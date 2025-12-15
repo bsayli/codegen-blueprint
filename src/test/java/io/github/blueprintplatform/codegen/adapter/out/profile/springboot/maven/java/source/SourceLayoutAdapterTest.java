@@ -82,33 +82,44 @@ class SourceLayoutAdapterTest {
   }
 
   @Test
-  @DisplayName("generate() with STANDARD layout should create base and package directories only")
-  void generate_standardLayout_shouldCreateBaseAndPackageDirsOnly() {
+  @DisplayName(
+      "generate() with STANDARD layout should create base/package directories and layered sub-packages")
+  void generate_standardLayout_shouldCreateLayeredSubPackages() {
     SourceLayoutAdapter adapter = new SourceLayoutAdapter();
     ProjectBlueprint blueprint = blueprint(ProjectLayout.STANDARD);
 
     Iterable<? extends GeneratedResource> resources = adapter.generate(blueprint);
     List<Path> paths = toRelativePaths(resources);
 
+    Path mainBase = Path.of("src/main/java").resolve(BASE_PACKAGE_PATH);
+    Path testBase = Path.of("src/test/java").resolve(BASE_PACKAGE_PATH);
+
     List<Path> expected =
         List.of(
+            // common dirs
             Path.of("src/main/java"),
             Path.of("src/test/java"),
             Path.of("src/main/resources"),
             Path.of("src/test/resources"),
-            Path.of("src/main/java").resolve(BASE_PACKAGE_PATH),
-            Path.of("src/test/java").resolve(BASE_PACKAGE_PATH));
+            // base package dirs
+            mainBase,
+            testBase,
+            // standard layered sub-packages (under main base package only)
+            mainBase.resolve("controller"),
+            mainBase.resolve("service"),
+            mainBase.resolve("repository"),
+            mainBase.resolve("config"),
+            mainBase.resolve("domain"),
+            mainBase.resolve(Path.of("domain", "model")));
 
-    assertThat(paths).containsExactlyInAnyOrderElementsOf(expected).hasSize(expected.size());
-
-    // Hexagonal’a özel alt dizinler olmamalı
     assertThat(paths)
+        .containsExactlyInAnyOrderElementsOf(expected)
+        .hasSize(expected.size())
         .noneMatch(
             p ->
                 p.toString().endsWith("/adapter")
                     || p.toString().endsWith("/application")
-                    || p.toString().endsWith("/bootstrap")
-                    || p.toString().endsWith("/domain"));
+                    || p.toString().endsWith("/bootstrap"));
   }
 
   @Test
@@ -126,20 +137,29 @@ class SourceLayoutAdapterTest {
 
     List<Path> expected =
         List.of(
-            // base source/resources dizinleri
+            // common dirs
             Path.of("src/main/java"),
             Path.of("src/test/java"),
             Path.of("src/main/resources"),
             Path.of("src/test/resources"),
-            // base package dizinleri
+            // base package dirs
             mainBase,
             testBase,
-            // hexagonal alt paketleri
+            // hexagonal sub-packages (under main base package only)
             mainBase.resolve("adapter"),
             mainBase.resolve("application"),
             mainBase.resolve("bootstrap"),
             mainBase.resolve("domain"));
 
-    assertThat(paths).containsExactlyInAnyOrderElementsOf(expected).hasSize(expected.size());
+    assertThat(paths)
+        .containsExactlyInAnyOrderElementsOf(expected)
+        .hasSize(expected.size())
+        .noneMatch(
+            p ->
+                p.toString().endsWith("/controller")
+                    || p.toString().endsWith("/service")
+                    || p.toString().endsWith("/repository")
+                    || p.toString().endsWith("/config")
+                    || p.toString().endsWith("/domain/model"));
   }
 }

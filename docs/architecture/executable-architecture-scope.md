@@ -115,19 +115,27 @@ Example:
 java -jar codegen-blueprint.jar --cli springboot ...
 ```
 
-### ✔ 3.7 Generator Architecture Enforcement (Internal)
+### ✔ 3.7 Generator & Generated Project Architecture Enforcement
 
-The Codegen Blueprint engine itself enforces its own architectural boundaries
+The Codegen Blueprint engine enforces its **own architectural boundaries**
 using automated architecture tests (ArchUnit).
 
-This guarantees:
+This guarantees, inside the generator codebase:
 
-* domain purity inside the generator
+* domain purity
 * strict dependency direction
 * adapter and port isolation
 
-⚠️ This enforcement applies to the **generator codebase itself** —
-not to generated projects (yet).
+In addition, the engine can **optionally generate architecture tests**
+inside the produced project.
+
+Generated project enforcement characteristics:
+
+* ArchUnit tests are generated **only when enabled by profile / enforcement mode**
+* Enforcement applies to **structural boundaries** (e.g. hexagonal layers)
+* Rules are **executable and test-driven**, not documentation-only
+
+⚠️ Generated-project enforcement is **opt-in**, not mandatory in 1.0.0 GA.
 
 ---
 

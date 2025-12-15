@@ -43,29 +43,33 @@ class SpringBootHexagonalBasicCliIT {
 
   @Test
   @DisplayName(
-      "CLI springboot hexagonal basic (web + data_jpa) should generate project archive with core files and expected content")
+      "CLI springboot hexagonal basic (web + data_jpa + actuator, enforcement basic) should generate project archive with core files and expected content")
   void cli_springboot_hexagonal_basic_shouldGenerateProjectArchive() throws IOException {
     // given
     String[] args = {
       "springboot",
       "--group-id",
-      "io.github.blueprintplatform.samples",
+      "io.github.blueprintplatform",
       "--artifact-id",
-      "greeting-service",
+      "greeting",
       "--name",
-      "Greeting Service",
+      "Greeting",
       "--description",
-      "Sample Greeting Service project",
+      "Greeting sample built with hexagonal architecture",
       "--package-name",
-      "io.github.blueprintplatform.samples.greeting",
+      "io.github.blueprintplatform.greeting",
       "--layout",
       "hexagonal",
+      "--enforcement",
+      "basic",
       "--sample-code",
       "basic",
       "--dependency",
       "web",
       "--dependency",
       "data_jpa",
+      "--dependency",
+      "actuator",
       "--target-dir",
       tempDir.toString()
     };
@@ -76,62 +80,60 @@ class SpringBootHexagonalBasicCliIT {
     // then
     assertThat(exitCode).isZero();
 
-    Path archivePath = tempDir.resolve("greeting-service.zip");
+    Path archivePath = tempDir.resolve("greeting.zip");
     assertThat(Files.exists(archivePath))
-        .as("Archive should be created at target-dir/greeting-service.zip")
+        .as("Archive should be created at target-dir/greeting.zip")
         .isTrue();
 
     try (ZipFile zipFile = new ZipFile(archivePath.toFile())) {
       List<String> entryNames = zipEntries(zipFile);
 
-      assertThat(entryNames).contains("greeting-service/");
+      assertThat(entryNames).contains("greeting/");
 
       assertThat(entryNames)
           .as("pom.xml should be present at root of project")
-          .contains("greeting-service/pom.xml");
+          .contains("greeting/pom.xml");
       assertThat(entryNames)
           .as("application.yml should be present under src/main/resources")
-          .contains("greeting-service/src/main/resources/application.yml");
+          .contains("greeting/src/main/resources/application.yml");
       assertThat(entryNames)
           .as("README.md should be present at root of project")
-          .contains("greeting-service/README.md");
+          .contains("greeting/README.md");
 
       assertThat(entryNames)
           .anySatisfy(
               name ->
                   assertThat(name)
-                      .startsWith(
-                          "greeting-service/src/main/java/io/github/blueprintplatform/samples/greeting/")
+                      .startsWith("greeting/src/main/java/io/github/blueprintplatform/greeting/")
                       .endsWith("Application.java"));
 
       assertThat(entryNames)
           .anySatisfy(
               name ->
                   assertThat(name)
-                      .startsWith(
-                          "greeting-service/src/test/java/io/github/blueprintplatform/samples/greeting/")
+                      .startsWith("greeting/src/test/java/io/github/blueprintplatform/greeting/")
                       .endsWith("ApplicationTests.java"));
 
       assertThat(entryNames)
           .contains(
-              "greeting-service/src/main/java/io/github/blueprintplatform/samples/greeting/adapter/sample/greeting/in/rest/GreetingController.java");
+              "greeting/src/main/java/io/github/blueprintplatform/greeting/adapter/sample/in/rest/GreetingController.java");
 
-      ZipEntry pomEntry = zipFile.getEntry("greeting-service/pom.xml");
+      ZipEntry pomEntry = zipFile.getEntry("greeting/pom.xml");
       assertThat(pomEntry).isNotNull();
       String pomXml = readTextEntry(zipFile, pomEntry);
 
       assertThat(pomXml)
-          .contains("<groupId>io.github.blueprintplatform.samples</groupId>")
-          .contains("<artifactId>greeting-service</artifactId>");
+          .contains("<groupId>io.github.blueprintplatform</groupId>")
+          .contains("<artifactId>greeting</artifactId>");
 
       assertThat(pomXml)
           .contains("spring-boot-starter")
           .contains("spring-boot-starter-web")
           .contains("spring-boot-starter-data-jpa")
+          .contains("spring-boot-starter-actuator")
           .contains("spring-boot-starter-test");
 
-      ZipEntry appYamlEntry =
-          zipFile.getEntry("greeting-service/src/main/resources/application.yml");
+      ZipEntry appYamlEntry = zipFile.getEntry("greeting/src/main/resources/application.yml");
       assertThat(appYamlEntry).isNotNull();
       String appYaml = readTextEntry(zipFile, appYamlEntry);
 
@@ -139,15 +141,13 @@ class SpringBootHexagonalBasicCliIT {
           .contains("spring:")
           .contains("application:")
           .contains("name:")
-          .contains("greeting-service");
+          .contains("greeting");
 
-      ZipEntry readmeEntry = zipFile.getEntry("greeting-service/README.md");
+      ZipEntry readmeEntry = zipFile.getEntry("greeting/README.md");
       assertThat(readmeEntry).isNotNull();
       String readme = readTextEntry(zipFile, readmeEntry);
 
-      assertThat(readme)
-          .contains("Greeting Service")
-          .contains("io.github.blueprintplatform.samples.greeting");
+      assertThat(readme).contains("Greeting").contains("io.github.blueprintplatform.greeting");
     }
   }
 }

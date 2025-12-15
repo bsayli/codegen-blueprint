@@ -2,8 +2,8 @@ package io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.github.blueprintplatform.codegen.adapter.out.shared.SampleCodeLayoutSpec;
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
+import io.github.blueprintplatform.codegen.adapter.out.shared.templating.ClasspathTemplateScanner;
 import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
 import io.github.blueprintplatform.codegen.domain.factory.ProjectBlueprintFactory;
@@ -31,7 +31,6 @@ import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Languag
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.TechStack;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedTextResource;
-import io.github.blueprintplatform.codegen.testsupport.templating.NoopTemplateRenderer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -47,23 +46,12 @@ import org.junit.jupiter.api.Test;
 class SampleCodeAdapterTest {
 
   private static final String BASE_PATH = "springboot/maven/java/";
-  private static final String STANDARD_SAMPLES_ROOT = "sample/standard";
-  private static final String HEXAGONAL_SAMPLES_ROOT = "sample/hexagonal";
-  private static final String BASIC_DIR_NAME = "basic";
-  private static final String RICH_DIR_NAME = "rich";
-
   private static final String BASE_PACKAGE = "com.acme.demo";
   private static final String BASE_PACKAGE_PATH = "com/acme/demo";
 
   private static final ArtifactSpec DUMMY_ARTIFACT_SPEC = new ArtifactSpec(BASE_PATH, List.of());
 
-  private static final SampleCodeLayoutSpec SAMPLES_CODE_SPEC =
-      new SampleCodeLayoutSpec(
-          new SampleCodeLayoutSpec.Roots(STANDARD_SAMPLES_ROOT, HEXAGONAL_SAMPLES_ROOT),
-          new SampleCodeLayoutSpec.Levels(BASIC_DIR_NAME, RICH_DIR_NAME));
-
   private static ProjectBlueprint blueprint(ProjectLayout layout, SampleCodeLevel level) {
-
     ProjectMetadata metadata =
         new ProjectMetadata(
             new ProjectIdentity(new GroupId("com.acme"), new ArtifactId("demo-app")),
@@ -94,7 +82,10 @@ class SampleCodeAdapterTest {
   @DisplayName("artifactKey() should return SAMPLE_CODE")
   void artifactKey_shouldReturnSampleCode() {
     SampleCodeAdapter adapter =
-        new SampleCodeAdapter(new NoopTemplateRenderer(), DUMMY_ARTIFACT_SPEC, SAMPLES_CODE_SPEC);
+        new SampleCodeAdapter(
+            new RecordingTemplateRenderer(),
+            DUMMY_ARTIFACT_SPEC,
+            new StubClasspathTemplateScanner(List.of()));
 
     assertThat(adapter.artifactKey()).isEqualTo(ArtifactKey.SAMPLE_CODE);
   }
@@ -103,57 +94,82 @@ class SampleCodeAdapterTest {
   @DisplayName("generate() should return empty when sample level is NONE")
   void generate_noneLevel_shouldReturnEmpty() {
     SampleCodeAdapter adapter =
-        new SampleCodeAdapter(new NoopTemplateRenderer(), DUMMY_ARTIFACT_SPEC, SAMPLES_CODE_SPEC);
+        new SampleCodeAdapter(
+            new RecordingTemplateRenderer(),
+            DUMMY_ARTIFACT_SPEC,
+            new StubClasspathTemplateScanner(
+                List.of("springboot/maven/java/sample/hexagonal/basic/x.java.ftl")));
 
-    ProjectBlueprint blueprint = blueprint(ProjectLayout.HEXAGONAL, SampleCodeLevel.NONE);
+    ProjectBlueprint bp = blueprint(ProjectLayout.HEXAGONAL, SampleCodeLevel.NONE);
 
-    Iterable<? extends GeneratedResource> resources = adapter.generate(blueprint);
-
-    assertThat(resources).isEmpty();
+    assertThat(adapter.generate(bp)).isEmpty();
   }
 
   @Test
   @DisplayName("generate() should return empty when layout is STANDARD even if level is BASIC")
   void generate_standardLayoutBasicLevel_shouldReturnEmpty() {
     SampleCodeAdapter adapter =
-        new SampleCodeAdapter(new NoopTemplateRenderer(), DUMMY_ARTIFACT_SPEC, SAMPLES_CODE_SPEC);
+        new SampleCodeAdapter(
+            new RecordingTemplateRenderer(),
+            DUMMY_ARTIFACT_SPEC,
+            new StubClasspathTemplateScanner(
+                List.of("springboot/maven/java/sample/hexagonal/basic/x.java.ftl")));
 
-    ProjectBlueprint blueprint = blueprint(ProjectLayout.STANDARD, SampleCodeLevel.BASIC);
+    ProjectBlueprint bp = blueprint(ProjectLayout.STANDARD, SampleCodeLevel.BASIC);
 
-    Iterable<? extends GeneratedResource> resources = adapter.generate(blueprint);
-
-    assertThat(resources).isEmpty();
+    assertThat(adapter.generate(bp)).isEmpty();
   }
 
   @Test
-  @DisplayName("generate() should resolve hexagonal BASIC templates and map them to Java sources")
+  @DisplayName(
+      "generate() should scan hexagonal BASIC templates and render them into src/main/java")
   void generate_hexagonalBasic_shouldGenerateSampleSources() {
+    String templateRoot = "springboot/maven/java/sample/hexagonal/basic";
+
+    String controllerTemplate =
+        templateRoot + "/adapter/sample/greeting/in/rest/GreetingController.java.ftl";
+
+    String nonJavaTemplate = templateRoot + "/adapter/sample/greeting/in/rest/ignored.txt.ftl";
+
     RecordingTemplateRenderer renderer = new RecordingTemplateRenderer();
+    StubClasspathTemplateScanner scanner =
+        new StubClasspathTemplateScanner(List.of(controllerTemplate, nonJavaTemplate));
 
-    SampleCodeAdapter adapter =
-        new SampleCodeAdapter(renderer, DUMMY_ARTIFACT_SPEC, SAMPLES_CODE_SPEC);
+    SampleCodeAdapter adapter = new SampleCodeAdapter(renderer, DUMMY_ARTIFACT_SPEC, scanner);
 
-    ProjectBlueprint blueprint = blueprint(ProjectLayout.HEXAGONAL, SampleCodeLevel.BASIC);
+    ProjectBlueprint bp = blueprint(ProjectLayout.HEXAGONAL, SampleCodeLevel.BASIC);
 
-    Iterable<? extends GeneratedResource> resources = adapter.generate(blueprint);
+    Iterable<? extends GeneratedResource> resources = adapter.generate(bp);
     List<Path> paths = toRelativePaths(resources);
 
-    assertThat(paths).isNotEmpty();
-
-    Path expectedGreetingControllerPath =
+    Path expectedOut =
         Path.of("src/main/java")
             .resolve(BASE_PACKAGE_PATH)
             .resolve("adapter/sample/greeting/in/rest/GreetingController.java");
 
-    assertThat(paths).contains(expectedGreetingControllerPath);
+    assertThat(paths).containsExactlyInAnyOrder(expectedOut);
 
-    String expectedTemplateName =
-        "springboot/maven/java/sample/hexagonal/basic/adapter/sample/greeting/in/rest/GreetingController.java.ftl";
+    assertThat(renderer.capturedTemplateNames).containsExactly(controllerTemplate);
 
-    assertThat(renderer.capturedTemplateNames).contains(expectedTemplateName);
+    assertThat(renderer.capturedModels).containsExactly(Map.of("projectPackageName", BASE_PACKAGE));
 
-    assertThat(renderer.capturedModels)
-        .allMatch(model -> BASE_PACKAGE.equals(model.get("projectPackageName")));
+    assertThat(scanner.lastRoot).isEqualTo(templateRoot);
+  }
+
+  private static final class StubClasspathTemplateScanner extends ClasspathTemplateScanner {
+
+    private final List<String> templates;
+    private String lastRoot;
+
+    private StubClasspathTemplateScanner(List<String> templates) {
+      this.templates = List.copyOf(templates);
+    }
+
+    @Override
+    public List<String> scan(String templateRoot) {
+      this.lastRoot = templateRoot;
+      return templates.stream().filter(t -> t.startsWith(templateRoot + "/")).toList();
+    }
   }
 
   private static final class RecordingTemplateRenderer implements TemplateRenderer {
@@ -164,6 +180,7 @@ class SampleCodeAdapterTest {
     @Override
     public GeneratedResource renderUtf8(
         Path outPath, String templateName, Map<String, Object> model) {
+
       capturedTemplateNames.add(templateName);
       capturedModels.add(model);
       return new GeneratedTextResource(outPath, "", StandardCharsets.UTF_8);

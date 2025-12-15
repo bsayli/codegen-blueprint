@@ -414,19 +414,21 @@
       <div class="code-window">
         <div class="code-line code-muted">// Architecture-aware, hexagonal-ready scaffolding</div>
 
-        <div class="code-line code-cmd"><span class="code-key">java</span> -jar <span class="code-str">codegen-blueprint-1.0.0.jar</span> \</div>
-        <div class="code-line code-cmd">  --cli \</div>
-        <div class="code-line code-cmd">  springboot \</div>
-        <div class="code-line code-cmd">  --group-id <span class="code-str">io.github.blueprintplatform.samples</span> \</div>
-        <div class="code-line code-cmd">  --artifact-id <span class="code-str">greeting-service</span> \</div>
-        <div class="code-line code-cmd">  --name <span class="code-str">"Greeting Service"</span> \</div>
-        <div class="code-line code-cmd">  --package-name <span class="code-str">io.github.blueprintplatform.samples.greeting</span> \</div>
+        <div class="code-line code-cmd"><span class="code-key">java</span> -jar <span class="code-str">codegen-blueprint-1.0.0.jar</span> &bsol;</div>
+        <div class="code-line code-cmd">  --cli <span class="code-str">springboot</span> &bsol;</div>
+        <div class="code-line code-cmd">  --group-id <span class="code-str">io.github.blueprintplatform</span> &bsol;</div>
+        <div class="code-line code-cmd">  --artifact-id <span class="code-str">greeting</span> &bsol;</div>
+        <div class="code-line code-cmd">  --name <span class="code-str">"Greeting"</span> &bsol;</div>
+        <div class="code-line code-cmd">  --description <span class="code-str">"Greeting hexagonal sample"</span> &bsol;</div>
+        <div class="code-line code-cmd">  --package-name <span class="code-str">io.github.blueprintplatform.greeting</span> &bsol;</div>
 
         <div class="code-line code-sep">// Optional flags</div>
-        <div class="code-line code-cmd">  --layout <span class="code-str">hexagonal</span> \</div>
-        <div class="code-line code-cmd">  --sample-code <span class="code-str">basic</span> \</div>
-        <div class="code-line code-cmd">  --dependency <span class="code-str">web</span> \</div>
-        <div class="code-line code-cmd">  --dependency <span class="code-str">data_jpa</span></div>
+        <div class="code-line code-cmd">  --layout <span class="code-str">hexagonal</span> &bsol;</div>
+        <div class="code-line code-cmd">  --enforcement <span class="code-str">basic</span> &bsol;</div>
+        <div class="code-line code-cmd">  --sample-code <span class="code-str">basic</span> &bsol;</div>
+        <div class="code-line code-cmd">  --dependency <span class="code-str">web</span> &bsol;</div>
+        <div class="code-line code-cmd">  --dependency <span class="code-str">data_jpa</span> &bsol;</div>
+        <div class="code-line code-cmd">  --target-dir <span class="code-str">/path/to/output</span></div>
 
         <div class="code-line code-muted" style="margin-top: 8px;">// Defaults → maven · Java 21 · Spring Boot 3.5.x</div>
       </div>

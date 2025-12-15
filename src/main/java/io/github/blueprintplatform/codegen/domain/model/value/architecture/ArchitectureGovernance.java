@@ -27,4 +27,8 @@ public record ArchitectureGovernance(EnforcementMode mode) {
   public boolean isStrict() {
     return mode == EnforcementMode.STRICT;
   }
+
+  public boolean isBasic() {
+    return mode == EnforcementMode.BASIC;
+  }
 }

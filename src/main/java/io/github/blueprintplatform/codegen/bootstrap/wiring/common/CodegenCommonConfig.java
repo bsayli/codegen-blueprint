@@ -1,6 +1,7 @@
 package io.github.blueprintplatform.codegen.bootstrap.wiring.common;
 
 import io.github.blueprintplatform.codegen.adapter.out.build.maven.shared.PomDependencyMapper;
+import io.github.blueprintplatform.codegen.adapter.out.shared.templating.ClasspathTemplateScanner;
 import io.github.blueprintplatform.codegen.adapter.shared.naming.StringCaseFormatter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,5 +17,10 @@ public class CodegenCommonConfig {
   @Bean
   public PomDependencyMapper pomDependencyMapper() {
     return new PomDependencyMapper();
+  }
+
+  @Bean
+  public ClasspathTemplateScanner classpathTemplateScanner() {
+    return new ClasspathTemplateScanner();
   }
 }

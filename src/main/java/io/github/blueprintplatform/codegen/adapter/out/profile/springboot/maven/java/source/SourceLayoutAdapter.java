@@ -3,25 +3,35 @@ package io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.SourceLayoutPort;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
-import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
 import io.github.blueprintplatform.codegen.domain.model.value.pkg.PackageName;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedDirectory;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SourceLayoutAdapter implements SourceLayoutPort {
 
-  private static final Path SRC_MAIN_JAVA = Path.of("src/main/java");
-  private static final Path SRC_TEST_JAVA = Path.of("src/test/java");
-  private static final Path SRC_MAIN_RESOURCES = Path.of("src/main/resources");
-  private static final Path SRC_TEST_RESOURCES = Path.of("src/test/resources");
+  private static final Path SRC_MAIN_JAVA = Path.of("src", "main", "java");
+  private static final Path SRC_TEST_JAVA = Path.of("src", "test", "java");
+  private static final Path SRC_MAIN_RESOURCES = Path.of("src", "main", "resources");
+  private static final Path SRC_TEST_RESOURCES = Path.of("src", "test", "resources");
 
-  private static final String SEGMENT_ADAPTER = "adapter";
-  private static final String SEGMENT_APPLICATION = "application";
-  private static final String SEGMENT_BOOTSTRAP = "bootstrap";
-  private static final String SEGMENT_DOMAIN = "domain";
+  private static final List<Path> COMMON_DIRS =
+      List.of(SRC_MAIN_JAVA, SRC_TEST_JAVA, SRC_MAIN_RESOURCES, SRC_TEST_RESOURCES);
+
+  private static final List<Path> HEX_DIRS =
+      List.of(Path.of("adapter"), Path.of("application"), Path.of("bootstrap"), Path.of("domain"));
+
+  private static final List<Path> STANDARD_DIRS =
+      List.of(
+          Path.of("controller"),
+          Path.of("service"),
+          Path.of("repository"),
+          Path.of("config"),
+          Path.of("domain"),
+          Path.of("domain", "model"));
 
   @Override
   public ArtifactKey artifactKey() {
@@ -30,30 +40,32 @@ public class SourceLayoutAdapter implements SourceLayoutPort {
 
   @Override
   public Iterable<? extends GeneratedResource> generate(ProjectBlueprint blueprint) {
+    Path mainBasePackageDir =
+        resolveBasePackageDir(SRC_MAIN_JAVA, blueprint.getMetadata().packageName());
+    Path testBasePackageDir =
+        resolveBasePackageDir(SRC_TEST_JAVA, blueprint.getMetadata().packageName());
+
     List<GeneratedResource> resources = new ArrayList<>();
 
-    resources.add(new GeneratedDirectory(SRC_MAIN_JAVA));
-    resources.add(new GeneratedDirectory(SRC_TEST_JAVA));
-    resources.add(new GeneratedDirectory(SRC_MAIN_RESOURCES));
-    resources.add(new GeneratedDirectory(SRC_TEST_RESOURCES));
+    addDirectories(resources, COMMON_DIRS);
+    addDirectories(resources, List.of(mainBasePackageDir, testBasePackageDir));
 
-    PackageName packageName = blueprint.getMetadata().packageName();
-    String packagePath = packageName.value().replace('.', '/');
-
-    Path mainBasePackageDir = SRC_MAIN_JAVA.resolve(packagePath);
-    Path testBasePackageDir = SRC_TEST_JAVA.resolve(packagePath);
-
-    resources.add(new GeneratedDirectory(mainBasePackageDir));
-    resources.add(new GeneratedDirectory(testBasePackageDir));
-
-    ProjectLayout layout = blueprint.getArchitecture().layout();
-    if (layout.isHexagonal()) {
-      resources.add(new GeneratedDirectory(mainBasePackageDir.resolve(SEGMENT_ADAPTER)));
-      resources.add(new GeneratedDirectory(mainBasePackageDir.resolve(SEGMENT_APPLICATION)));
-      resources.add(new GeneratedDirectory(mainBasePackageDir.resolve(SEGMENT_BOOTSTRAP)));
-      resources.add(new GeneratedDirectory(mainBasePackageDir.resolve(SEGMENT_DOMAIN)));
-    }
-
+    var segments = blueprint.getArchitecture().layout().isHexagonal() ? HEX_DIRS : STANDARD_DIRS;
+    addDirectoriesUnder(resources, mainBasePackageDir, segments);
     return List.copyOf(resources);
+  }
+
+  private Path resolveBasePackageDir(Path javaRoot, PackageName packageName) {
+    String[] parts = packageName.value().split("\\.");
+    Path pkgPath = Path.of(parts[0], Arrays.copyOfRange(parts, 1, parts.length));
+    return javaRoot.resolve(pkgPath);
+  }
+
+  private void addDirectories(List<GeneratedResource> out, List<Path> dirs) {
+    dirs.stream().map(GeneratedDirectory::new).forEach(out::add);
+  }
+
+  private void addDirectoriesUnder(List<GeneratedResource> out, Path base, List<Path> segments) {
+    segments.stream().map(base::resolve).map(GeneratedDirectory::new).forEach(out::add);
   }
 }

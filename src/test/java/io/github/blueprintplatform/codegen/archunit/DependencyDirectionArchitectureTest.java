@@ -14,6 +14,7 @@ class DependencyDirectionArchitectureTest {
 
   private static final String APPLICATION = "..application..";
   private static final String ADAPTER = "..adapter..";
+
   @ArchTest
   static final ArchRule application_must_not_depend_on_adapters =
       noClasses()
@@ -22,7 +23,9 @@ class DependencyDirectionArchitectureTest {
           .should()
           .dependOnClassesThat()
           .resideInAnyPackage(ADAPTER);
+
   private static final String BOOTSTRAP = "..bootstrap..";
+
   @ArchTest
   static final ArchRule bootstrap_must_not_be_depended_on =
       noClasses()

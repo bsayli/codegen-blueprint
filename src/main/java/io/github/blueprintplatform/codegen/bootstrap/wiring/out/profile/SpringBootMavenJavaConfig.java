@@ -6,14 +6,15 @@ import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.
 import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.build.MavenPomBuildConfigurationAdapter;
 import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.config.ApplicationYamlAdapter;
 import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.doc.ProjectDocumentationAdapter;
+import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.governance.ArchitectureGovernanceAdapter;
 import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.ignore.GitIgnoreAdapter;
 import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.sample.SampleCodeAdapter;
 import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.source.MainSourceEntrypointAdapter;
 import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.source.SourceLayoutAdapter;
 import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.source.TestSourceEntrypointAdapter;
 import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.wrapper.MavenWrapperBuildToolFilesAdapter;
-import io.github.blueprintplatform.codegen.adapter.out.shared.SampleCodeLayoutSpec;
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
+import io.github.blueprintplatform.codegen.adapter.out.shared.templating.ClasspathTemplateScanner;
 import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
 import io.github.blueprintplatform.codegen.adapter.shared.naming.StringCaseFormatter;
 import io.github.blueprintplatform.codegen.application.port.out.ProjectArtifactsPort;
@@ -105,18 +106,30 @@ public class SpringBootMavenJavaConfig {
   }
 
   @Bean
+  ArchitectureGovernancePort springBootMavenJavaArchitectureGovernanceAdapter(
+      TemplateRenderer renderer,
+      CodegenProfilesProperties profiles,
+      ArtifactSpecMapper artifactSpecMapper,
+      ClasspathTemplateScanner classpathTemplateScanner) {
+
+    ArtifactSpec artifactSpec =
+        artifactSpecMapper.from(
+            profiles.artifact(PROFILE_KEY, ArtifactKey.ARCHITECTURE_GOVERNANCE));
+
+    return new ArchitectureGovernanceAdapter(renderer, artifactSpec, classpathTemplateScanner);
+  }
+
+  @Bean
   SampleCodePort springBootMavenJavaSampleCodeAdapter(
       TemplateRenderer renderer,
       CodegenProfilesProperties profiles,
       ArtifactSpecMapper artifactSpecMapper,
-      SampleCodeSpecMapper sampleCodeSpecMapper) {
+      ClasspathTemplateScanner classpathTemplateScanner) {
 
     ArtifactSpec artifactSpec =
         artifactSpecMapper.from(profiles.artifact(PROFILE_KEY, ArtifactKey.SAMPLE_CODE));
 
-    SampleCodeLayoutSpec sampleSpec = sampleCodeSpecMapper.from(profiles.sampleCode());
-
-    return new SampleCodeAdapter(renderer, artifactSpec, sampleSpec);
+    return new SampleCodeAdapter(renderer, artifactSpec, classpathTemplateScanner);
   }
 
   @Bean
@@ -141,6 +154,7 @@ public class SpringBootMavenJavaConfig {
       ApplicationConfigurationPort springBootMavenJavaApplicationYamlAdapter,
       MainSourceEntrypointPort springBootMavenJavaMainSourceEntrypointAdapter,
       TestSourceEntrypointPort springBootMavenJavaTestSourceEntrypointAdapter,
+      ArchitectureGovernancePort springBootMavenJavaArchitectureGovernanceAdapter,
       SampleCodePort springBootMavenJavaSampleCodeAdapter,
       ProjectDocumentationPort springBootMavenJavaProjectDocumentationAdapter) {
 
@@ -155,6 +169,8 @@ public class SpringBootMavenJavaConfig {
         ArtifactKey.MAIN_SOURCE_ENTRY_POINT, springBootMavenJavaMainSourceEntrypointAdapter);
     registry.put(
         ArtifactKey.TEST_SOURCE_ENTRY_POINT, springBootMavenJavaTestSourceEntrypointAdapter);
+    registry.put(
+        ArtifactKey.ARCHITECTURE_GOVERNANCE, springBootMavenJavaArchitectureGovernanceAdapter);
     registry.put(ArtifactKey.SAMPLE_CODE, springBootMavenJavaSampleCodeAdapter);
     registry.put(ArtifactKey.PROJECT_DOCUMENTATION, springBootMavenJavaProjectDocumentationAdapter);
     return Collections.unmodifiableMap(registry);

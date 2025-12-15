@@ -23,6 +23,11 @@
     <properties>
         <java.version>${javaVersion}</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <#if pomProperties??>
+        <#list pomProperties?keys?sort as k>
+        <${k}>${pomProperties[k]}</${k}>
+    </#list>
+    </#if>
     </properties>
 
     <dependencies>
@@ -30,7 +35,9 @@
             <dependency>
                 <groupId>${d.groupId}</groupId>
                 <artifactId>${d.artifactId}</artifactId>
-                <#if d.version?? && d.version?has_content>
+                <#if d.versionPropertyKey?? && d.versionPropertyKey?has_content>
+                    <version>${"$"}{${d.versionPropertyKey}}</version>
+                <#elseif d.version?? && d.version?has_content>
                     <version>${d.version}</version>
                 </#if>
                 <#if d.scope?? && d.scope?has_content>

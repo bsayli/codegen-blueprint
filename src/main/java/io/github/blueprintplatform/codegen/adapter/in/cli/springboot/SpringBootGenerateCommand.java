@@ -92,7 +92,10 @@ public class SpringBootGenerateCommand implements Callable<Integer> {
   @Option(
       names = {"--layout"},
       required = false,
-      description = "Project layout. Valid values: ${COMPLETION-CANDIDATES}",
+      description =
+          "Project layout. Valid values: ${COMPLETION-CANDIDATES}. "
+              + "standard = layered packages (controller/service/repository/domain/config), "
+              + "hexagonal = ports & adapters structure.",
       defaultValue = "standard")
   ProjectLayout layout;
 

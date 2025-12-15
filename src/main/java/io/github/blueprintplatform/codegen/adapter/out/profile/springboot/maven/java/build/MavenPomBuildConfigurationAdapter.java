@@ -37,8 +37,16 @@ public class MavenPomBuildConfigurationAdapter extends AbstractSingleTemplateArt
   private static final PomDependency TEST_STARTER =
       PomDependency.of(SPRING_BOOT_GROUP_ID, "spring-boot-starter-test", null, "test");
 
-  private static final PomDependency H2_TEST =
-      PomDependency.of("com.h2database", "h2", "2.4.240", null);
+  private static final PomDependency H2_DB = PomDependency.of("com.h2database", "h2", null, null);
+
+  private static final String KEY_POM_PROPERTIES = "pomProperties";
+
+  private static final String ARCHUNIT_VERSION_KEY = "archunit.version";
+  private static final String ARCHUNIT_VERSION = "1.4.1";
+
+  private static final PomDependency ARCH_UNIT_TEST =
+      PomDependency.ofWithVersionProperty(
+          "com.tngtech.archunit", "archunit-junit5", ARCHUNIT_VERSION_KEY, "test");
 
   private final PomDependencyMapper pomDependencyMapper;
 
@@ -60,17 +68,6 @@ public class MavenPomBuildConfigurationAdapter extends AbstractSingleTemplateArt
     ProjectIdentity id = bp.getMetadata().identity();
     SpringBootJvmTarget pt = (SpringBootJvmTarget) bp.getPlatform().platformTarget();
 
-    List<PomDependency> dependencies = new ArrayList<>();
-    dependencies.add(CORE_STARTER);
-
-    dependencies.addAll(pomDependencyMapper.from(bp.getDependencies()));
-
-    if (hasSpringBootStarter(bp, STARTER_DATA_JPA)) {
-      dependencies.add(H2_TEST);
-    }
-
-    dependencies.add(TEST_STARTER);
-
     return Map.ofEntries(
         entry(KEY_GROUP_ID, id.groupId().value()),
         entry(KEY_ARTIFACT_ID, id.artifactId().value()),
@@ -78,15 +75,44 @@ public class MavenPomBuildConfigurationAdapter extends AbstractSingleTemplateArt
         entry(KEY_SPRING_BOOT_VER, pt.springBoot().defaultVersion()),
         entry(KEY_PROJECT_NAME, bp.getMetadata().name().value()),
         entry(KEY_PROJECT_DESCRIPTION, bp.getMetadata().description().value()),
-        entry(KEY_DEPENDENCIES, dependencies));
+        entry(KEY_POM_PROPERTIES, resolvePomProperties(bp)),
+        entry(KEY_DEPENDENCIES, resolvePomDependencies(bp)));
   }
 
-  private boolean hasSpringBootStarter(ProjectBlueprint bp, String starterArtifactId) {
+  private List<PomDependency> resolvePomDependencies(ProjectBlueprint bp) {
+    List<PomDependency> deps = new ArrayList<>();
+
+    deps.add(CORE_STARTER);
+    deps.addAll(pomDependencyMapper.from(bp.getDependencies()));
+
+    if (isStarterJpaSelected(bp)) {
+      deps.add(H2_DB);
+    }
+
+    if (bp.getArchitecture().governance().isEnabled()) {
+      deps.add(ARCH_UNIT_TEST);
+    }
+
+    deps.add(TEST_STARTER);
+
+    return List.copyOf(deps);
+  }
+
+  private boolean isStarterJpaSelected(ProjectBlueprint bp) {
     return bp.getDependencies().asList().stream()
         .map(Dependency::coordinates)
         .anyMatch(
             c ->
-                SPRING_BOOT_GROUP_ID.equalsIgnoreCase(c.groupId().value())
-                    && starterArtifactId.equalsIgnoreCase(c.artifactId().value()));
+                MavenPomBuildConfigurationAdapter.SPRING_BOOT_GROUP_ID.equalsIgnoreCase(
+                        c.groupId().value())
+                    && MavenPomBuildConfigurationAdapter.STARTER_DATA_JPA.equalsIgnoreCase(
+                        c.artifactId().value()));
+  }
+
+  private Map<String, String> resolvePomProperties(ProjectBlueprint bp) {
+    if (!bp.getArchitecture().governance().isEnabled()) {
+      return Map.of();
+    }
+    return Map.of(ARCHUNIT_VERSION_KEY, ARCHUNIT_VERSION);
   }
 }

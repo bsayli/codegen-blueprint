@@ -10,9 +10,7 @@ import org.springframework.validation.annotation.Validated;
 
 @Validated
 @ConfigurationProperties(prefix = "codegen")
-public record CodegenProfilesProperties(
-    @Valid @NotNull Map<String, ProfileProperties> profiles,
-    @Valid @NotNull SampleCodeProperties sampleCode) {
+public record CodegenProfilesProperties(@Valid @NotNull Map<String, ProfileProperties> profiles) {
 
   public ArtifactDefinition artifact(String profileKey, ArtifactKey artifactKey) {
     var profileProps = requireProfile(profileKey);

@@ -27,7 +27,7 @@ They struggle to keep **architecture consistent** as they scale.
 Most project generators create a folder structure and disappear.
 **Codegen Blueprint** codifies and executes architectural intent:
 
-* Enforces boundaries — layered and/or Hexagonal
+* Enforces architectural boundaries — layered and/or Hexagonal (opt-in)
 * Prevents silent architecture drift
 * Protects the domain from frameworks
 * Standardizes early decisions across teams
@@ -118,7 +118,7 @@ This is why Blueprint is not a template collection.
 
 A **CLI-driven**, **profile‑based**, **architecture‑aware** project generator.
 
-📌 Current profile: **springboot‑maven‑java**
+📌 Current profile: **spring-boot‑maven‑java**
 
 > Spring Boot 3.5+ · Java 21 · Maven — production‑ready baseline
 
@@ -198,15 +198,16 @@ bootstrap    // Spring wiring + config
 
 ### Included — GA Ready
 
-| Feature                            | Status |
-| ---------------------------------- | ------ |
-| CLI project generation             | ✔      |
-| Optional Hexagonal structure       | ✔      |
-| Spring Boot 3.5+ + Java 21 + Maven | ✔      |
-| Main & Test entrypoints            | ✔      |
-| Build + config artifacts           | ✔      |
-| Optional greeting sample           | ✔      |
-| MIT License                        | ✔      |
+| Feature                                           | Status |
+| ------------------------------------------------- | ------ |
+| CLI project generation                            | ✔      |
+| Optional Hexagonal structure                      | ✔      |
+| Optional architecture enforcement (ArchUnit-based)| ✔      |
+| Spring Boot 3.5+ + Java 21 + Maven                | ✔      |
+| Main & Test entrypoints                           | ✔      |
+| Build + config artifacts                          | ✔      |
+| Optional greeting sample                          | ✔      |
+| MIT License                                       | ✔      |
 
 ---
 
@@ -216,12 +217,14 @@ Adapters drive interactions **in** and **out** of the core domain — keeping do
 
 ### Inbound (Delivery) — How requests enter
 
-| Adapter | Status     | Description                                             |
-| ------- | ---------- | ------------------------------------------------------- |
-| CLI     | ✔ GA Ready | Primary driver to generate services via command-line    |
-| REST    | 🚧 Planned | Future interactive generation + developer onboarding UX |
+| Adapter | Status     | Description                                          |
+| ------ | ---------- | ---------------------------------------------------- |
+| CLI    | ✔ GA Ready | Primary driver to generate services via command-line |
+| REST   | 🚧 Planned | Future interactive generation + onboarding UX        |
 
 ### Outbound (Artifacts) — What the engine produces
+
+> Architecture enforcement artifacts are generated, not hard-wired
 
 Everything required to **build → run → extend** a real service:
 
@@ -230,25 +233,28 @@ Everything required to **build → run → extend** a real service:
 * Domain + Application + Adapter layout
 * Application configuration (YAML)
 * Optional Hexagonal sample slice
-* README + project docs
+* Optional **architecture enforcement tests (ArchUnit)**  
+  *(enabled via `--enforcement basic|strict`)*
+* README + project documentation
 * Filesystem writer for artifact creation
 
 > The domain depends on nothing — adapters depend on the domain.
 
 ---
 
+
 ## 🔄 CLI Usage
 
 ```bash
 java -jar codegen-blueprint-1.0.0.jar \
-  --cli \
-  springboot \
-  --group-id io.github.blueprintplatform.samples \
-  --artifact-id greeting-service \
-  --name "Greeting Service" \
-  --description "Sample Greeting Service built with hexagonal architecture" \
-  --package-name io.github.blueprintplatform.samples.greeting \
+  --cli springboot \
+  --group-id io.github.blueprintplatform \
+  --artifact-id greeting \
+  --name "Greeting" \
+  --description "Greeting sample built with hexagonal architecture" \
+  --package-name io.github.blueprintplatform.greeting \
   --layout hexagonal \
+  --enforcement basic \
   --sample-code basic \
   --dependency web \
   --dependency data_jpa \
@@ -305,7 +311,8 @@ From Day Zero to Production — architecture remains **intentional**, **testable
 ### 🎯 Roadmap
 
 #### 🔹 Phase 1 — Architecture-First Generation (Today)
-* Hexagonal / Layered architecture enforcement
+* Hexagonal / Layered architecture enforcement (opt-in)
+* **Optional architecture enforcement via generated ArchUnit tests**
 * Profile-driven CLI generation (Spring Boot · Maven · Java 21)
 * Domain purity: **no Spring inside the core**
 * End-to-end testable scaffolding

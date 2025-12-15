@@ -28,7 +28,7 @@ public class MainSourceEntrypointAdapter extends AbstractJavaSourceFileAdapter
 
   @Override
   protected String buildClassName(ProjectBlueprint blueprint) {
-    ProjectIdentity id = blueprint.getIdentity();
+    ProjectIdentity id = blueprint.getMetadata().identity();
     return pascal(id.artifactId().value()) + POSTFIX_APPLICATION;
   }
 }

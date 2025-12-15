@@ -5,6 +5,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.blueprintplatform.codegen.domain.error.exception.DomainViolationException;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
+import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureGovernance;
+import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureSpec;
+import io.github.blueprintplatform.codegen.domain.model.value.architecture.EnforcementMode;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependencies;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependency;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.DependencyCoordinates;
@@ -12,10 +15,13 @@ import io.github.blueprintplatform.codegen.domain.model.value.identity.ArtifactI
 import io.github.blueprintplatform.codegen.domain.model.value.identity.GroupId;
 import io.github.blueprintplatform.codegen.domain.model.value.identity.ProjectIdentity;
 import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
+import io.github.blueprintplatform.codegen.domain.model.value.metadata.ProjectMetadata;
 import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectDescription;
 import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectName;
 import io.github.blueprintplatform.codegen.domain.model.value.pkg.PackageName;
+import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeLevel;
 import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeOptions;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.PlatformSpec;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.JavaVersion;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.PlatformTarget;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootJvmTarget;
@@ -33,20 +39,12 @@ import org.junit.jupiter.api.Test;
 @Tag("domain")
 class ProjectBlueprintFactoryTest {
 
-  private static ProjectIdentity identity() {
-    return new ProjectIdentity(new GroupId("com.example"), new ArtifactId("demo-app"));
-  }
-
-  private static ProjectName name() {
-    return new ProjectName("demo-app");
-  }
-
-  private static ProjectDescription description() {
-    return new ProjectDescription("simple demo project");
-  }
-
-  private static PackageName pkg() {
-    return new PackageName("com.example.demo");
+  private static ProjectMetadata metadata() {
+    return new ProjectMetadata(
+        new ProjectIdentity(new GroupId("com.example"), new ArtifactId("demo-app")),
+        new ProjectName("demo-app"),
+        new ProjectDescription("simple demo project"),
+        new PackageName("com.example.demo"));
   }
 
   private static TechStack techStack() {
@@ -57,17 +55,19 @@ class ProjectBlueprintFactoryTest {
     return new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5);
   }
 
-  private static ProjectLayout layout() {
-    return ProjectLayout.STANDARD;
+  private static PlatformSpec platform() {
+    return new PlatformSpec(techStack(), target());
   }
 
-  private static SampleCodeOptions sampleCodeOptions() {
-    return SampleCodeOptions.none();
+  private static ArchitectureSpec architecture() {
+    return new ArchitectureSpec(
+        ProjectLayout.STANDARD,
+        new ArchitectureGovernance(EnforcementMode.NONE),
+        new SampleCodeOptions(SampleCodeLevel.NONE));
   }
 
   private static Dependencies dependencies() {
-    Dependency d = dep("org.acme", "alpha");
-    return Dependencies.of(List.of(d));
+    return Dependencies.of(List.of(dep("org.acme", "alpha")));
   }
 
   private static Dependency dep(String groupId, String artifactId) {
@@ -77,89 +77,29 @@ class ProjectBlueprintFactoryTest {
 
   @Test
   @DisplayName(
-      "of(identity, name, desc, package, stack, layout, target, dependencies) should create blueprint with same references")
-  void of_withDependenciesObject_shouldCreateBlueprint() {
-    ProjectIdentity identity = identity();
-    ProjectName name = name();
-    ProjectDescription description = description();
-    PackageName packageName = pkg();
-    TechStack stack = techStack();
-    PlatformTarget target = target();
-    ProjectLayout layout = layout();
+      "of(metadata, platform, architecture, dependencies) should create blueprint with same references")
+  void of_shouldCreateBlueprint() {
+    ProjectMetadata metadata = metadata();
+    PlatformSpec platform = platform();
+    ArchitectureSpec architecture = architecture();
     Dependencies dependencies = dependencies();
-    SampleCodeOptions sampleCodeOptions = SampleCodeOptions.none();
-    ProjectBlueprint bp =
-        ProjectBlueprintFactory.of(
-            identity,
-            name,
-            description,
-            packageName,
-            stack,
-            layout,
-            target,
-            dependencies,
-            sampleCodeOptions);
 
-    assertThat(bp.getIdentity()).isSameAs(identity);
-    assertThat(bp.getName()).isSameAs(name);
-    assertThat(bp.getDescription()).isSameAs(description);
-    assertThat(bp.getPackageName()).isSameAs(packageName);
-    assertThat(bp.getTechStack()).isSameAs(stack);
-    assertThat(bp.getLayout()).isSameAs(layout);
-    assertThat(bp.getPlatformTarget()).isSameAs(target);
+    ProjectBlueprint bp =
+        ProjectBlueprintFactory.of(metadata, platform, architecture, dependencies);
+
+    assertThat(bp.getMetadata()).isSameAs(metadata);
+    assertThat(bp.getPlatform()).isSameAs(platform);
+    assertThat(bp.getArchitecture()).isSameAs(architecture);
     assertThat(bp.getDependencies()).isSameAs(dependencies);
-  }
-
-  @Test
-  @DisplayName("of(..., List<Dependency>) should wrap list into Dependencies")
-  void of_withDependencyList_shouldWrapIntoDependencies() {
-    var d1 = dep("org.acme", "alpha");
-    var d2 = dep("org.example", "beta");
-
-    ProjectBlueprint bp =
-        ProjectBlueprintFactory.of(
-            identity(),
-            name(),
-            description(),
-            pkg(),
-            techStack(),
-            layout(),
-            target(),
-            List.of(d1, d2));
-
-    assertThat(bp.getDependencies()).isNotNull();
-    assertThat(bp.getDependencies().asList()).hasSize(2);
-  }
-
-  @Test
-  @DisplayName("of(..., Dependency...) should wrap varargs into Dependencies")
-  void of_withVarargs_shouldWrapIntoDependencies() {
-    var d1 = dep("org.acme", "alpha");
-    var d2 = dep("org.example", "beta");
-
-    ProjectBlueprint bp =
-        ProjectBlueprintFactory.of(
-            identity(), name(), description(), pkg(), techStack(), layout(), target(), d1, d2);
-
-    assertThat(bp.getDependencies()).isNotNull();
-    assertThat(bp.getDependencies().asList()).hasSize(2);
   }
 
   @Test
   @DisplayName("null tech stack should fail via CompatibilityPolicy with platform.target.missing")
   void nullTechStack_shouldFailPlatformTargetMissing() {
+    PlatformSpec platform = new PlatformSpec(null, target());
+
     assertThatThrownBy(
-            () ->
-                ProjectBlueprintFactory.of(
-                    identity(),
-                    name(),
-                    description(),
-                    pkg(),
-                    null, // techStack
-                    layout(),
-                    target(),
-                    dependencies(),
-                    sampleCodeOptions()))
+            () -> ProjectBlueprintFactory.of(metadata(), platform, architecture(), dependencies()))
         .isInstanceOfSatisfying(
             DomainViolationException.class,
             dve -> assertThat(dve.getMessageKey()).isEqualTo("platform.target.missing"));
@@ -169,18 +109,10 @@ class ProjectBlueprintFactoryTest {
   @DisplayName(
       "null platform target should fail via CompatibilityPolicy with platform.target.missing")
   void nullPlatformTarget_shouldFailPlatformTargetMissing() {
+    PlatformSpec platform = new PlatformSpec(techStack(), null);
+
     assertThatThrownBy(
-            () ->
-                ProjectBlueprintFactory.of(
-                    identity(),
-                    name(),
-                    description(),
-                    pkg(),
-                    techStack(),
-                    layout(),
-                    null,
-                    dependencies(),
-                    sampleCodeOptions()))
+            () -> ProjectBlueprintFactory.of(metadata(), platform, architecture(), dependencies()))
         .isInstanceOfSatisfying(
             DomainViolationException.class,
             dve -> assertThat(dve.getMessageKey()).isEqualTo("platform.target.missing"));
@@ -189,22 +121,13 @@ class ProjectBlueprintFactoryTest {
   @Test
   @DisplayName("incompatible platform target should delegate to CompatibilityPolicy and fail")
   void incompatiblePlatformTarget_shouldFailCompatibility() {
-    TechStack stack = techStack();
     PlatformTarget incompatible =
         new SpringBootJvmTarget(JavaVersion.JAVA_25, SpringBootVersion.V3_4);
 
+    PlatformSpec platform = new PlatformSpec(techStack(), incompatible);
+
     assertThatThrownBy(
-            () ->
-                ProjectBlueprintFactory.of(
-                    identity(),
-                    name(),
-                    description(),
-                    pkg(),
-                    stack,
-                    layout(),
-                    incompatible,
-                    dependencies(),
-                    sampleCodeOptions()))
+            () -> ProjectBlueprintFactory.of(metadata(), platform, architecture(), dependencies()))
         .isInstanceOfSatisfying(
             DomainViolationException.class,
             dve -> assertThat(dve.getMessageKey()).isEqualTo("platform.target.incompatible"));

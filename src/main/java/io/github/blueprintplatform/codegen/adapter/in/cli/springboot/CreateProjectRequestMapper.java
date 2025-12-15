@@ -4,6 +4,7 @@ import io.github.blueprintplatform.codegen.adapter.in.cli.CliProjectRequest;
 import io.github.blueprintplatform.codegen.adapter.in.cli.springboot.dependency.SpringBootDependencyAlias;
 import io.github.blueprintplatform.codegen.application.port.in.project.dto.CreateProjectRequest;
 import io.github.blueprintplatform.codegen.application.port.in.project.dto.DependencyInput;
+import io.github.blueprintplatform.codegen.domain.model.value.architecture.EnforcementMode;
 import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
 import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeLevel;
 import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeOptions;
@@ -30,6 +31,7 @@ public class CreateProjectRequestMapper {
     TechStack techStack = new TechStack(Framework.SPRING_BOOT, buildTool, language);
     PlatformTarget platformTarget = new SpringBootJvmTarget(javaVersion, bootVersion);
     ProjectLayout layout = ProjectLayout.fromKey(request.layoutKey());
+    EnforcementMode enforcementMode = EnforcementMode.fromKey(request.enforcementModeKey());
     SampleCodeLevel sampleCodeLevel = SampleCodeLevel.fromKey(request.sampleCodeLevelKey());
     List<DependencyInput> dependencies = toDependencyInputs(request.dependencies());
     SampleCodeOptions sampleCodeOptions = new SampleCodeOptions(sampleCodeLevel);
@@ -42,6 +44,7 @@ public class CreateProjectRequestMapper {
         request.packageName(),
         techStack,
         layout,
+        enforcementMode,
         platformTarget,
         dependencies,
         sampleCodeOptions,

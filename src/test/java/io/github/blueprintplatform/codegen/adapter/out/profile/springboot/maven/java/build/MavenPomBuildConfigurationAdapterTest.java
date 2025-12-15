@@ -6,7 +6,11 @@ import io.github.blueprintplatform.codegen.adapter.out.build.maven.shared.PomDep
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.TemplateSpec;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
+import io.github.blueprintplatform.codegen.domain.factory.ProjectBlueprintFactory;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
+import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureGovernance;
+import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureSpec;
+import io.github.blueprintplatform.codegen.domain.model.value.architecture.EnforcementMode;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependencies;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependency;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.DependencyCoordinates;
@@ -16,10 +20,12 @@ import io.github.blueprintplatform.codegen.domain.model.value.identity.ArtifactI
 import io.github.blueprintplatform.codegen.domain.model.value.identity.GroupId;
 import io.github.blueprintplatform.codegen.domain.model.value.identity.ProjectIdentity;
 import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
+import io.github.blueprintplatform.codegen.domain.model.value.metadata.ProjectMetadata;
 import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectDescription;
 import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectName;
 import io.github.blueprintplatform.codegen.domain.model.value.pkg.PackageName;
 import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeOptions;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.PlatformSpec;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.JavaVersion;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.PlatformTarget;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootJvmTarget;
@@ -48,16 +54,22 @@ class MavenPomBuildConfigurationAdapterTest {
   private static final String BASE_PATH = "springboot/maven/java/";
 
   private static ProjectBlueprint blueprintWithDependencies() {
-    ProjectIdentity identity =
-        new ProjectIdentity(new GroupId("com.acme"), new ArtifactId("demo-app"));
+    ProjectMetadata metadata =
+        new ProjectMetadata(
+            new ProjectIdentity(new GroupId("com.acme"), new ArtifactId("demo-app")),
+            new ProjectName("Demo App"),
+            new ProjectDescription("Sample Project"),
+            new PackageName("com.acme.demo"));
 
-    ProjectName name = new ProjectName("Demo App");
-    ProjectDescription description = new ProjectDescription("Sample Project");
-    PackageName pkg = new PackageName("com.acme.demo");
-    ProjectLayout layout = ProjectLayout.STANDARD;
     TechStack techStack = new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
-
     PlatformTarget target = new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5);
+    PlatformSpec platform = new PlatformSpec(techStack, target);
+
+    ArchitectureSpec architecture =
+        new ArchitectureSpec(
+            ProjectLayout.STANDARD,
+            new ArchitectureGovernance(EnforcementMode.NONE),
+            SampleCodeOptions.none());
 
     Dependency dep =
         new Dependency(
@@ -67,22 +79,11 @@ class MavenPomBuildConfigurationAdapterTest {
 
     Dependencies dependencies = Dependencies.of(List.of(dep));
 
-    SampleCodeOptions sampleCodeOptions = SampleCodeOptions.none();
-
-    return new ProjectBlueprint(
-        identity,
-        name,
-        description,
-        pkg,
-        techStack,
-        layout,
-        target,
-        dependencies,
-        sampleCodeOptions);
+    return ProjectBlueprintFactory.of(metadata, platform, architecture, dependencies);
   }
 
   @Test
-  @DisplayName("artifactKey() should return POM")
+  @DisplayName("artifactKey() should return BUILD_CONFIG")
   void artifactKey_shouldReturnPom() {
     MavenPomBuildConfigurationAdapter adapter =
         new MavenPomBuildConfigurationAdapter(

@@ -50,8 +50,8 @@ public class MavenPomBuildConfigurationAdapter extends AbstractSingleTemplateArt
 
   @Override
   protected Map<String, Object> buildModel(ProjectBlueprint bp) {
-    ProjectIdentity id = bp.getIdentity();
-    SpringBootJvmTarget pt = (SpringBootJvmTarget) bp.getPlatformTarget();
+    ProjectIdentity id = bp.getMetadata().identity();
+    SpringBootJvmTarget pt = (SpringBootJvmTarget) bp.getPlatform().platformTarget();
 
     List<PomDependency> dependencies = new ArrayList<>();
     dependencies.add(CORE_STARTER);
@@ -63,8 +63,8 @@ public class MavenPomBuildConfigurationAdapter extends AbstractSingleTemplateArt
         entry(KEY_ARTIFACT_ID, id.artifactId().value()),
         entry(KEY_JAVA_VERSION, pt.java().asString()),
         entry(KEY_SPRING_BOOT_VER, pt.springBoot().defaultVersion()),
-        entry(KEY_PROJECT_NAME, bp.getName().value()),
-        entry(KEY_PROJECT_DESCRIPTION, bp.getDescription().value()),
+        entry(KEY_PROJECT_NAME, bp.getMetadata().name().value()),
+        entry(KEY_PROJECT_DESCRIPTION, bp.getMetadata().description().value()),
         entry(KEY_DEPENDENCIES, dependencies));
   }
 }

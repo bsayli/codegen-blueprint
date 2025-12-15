@@ -4,11 +4,13 @@ import io.github.blueprintplatform.codegen.adapter.in.cli.CliProjectRequest;
 import io.github.blueprintplatform.codegen.adapter.in.cli.springboot.dependency.SpringBootDependencyAlias;
 import io.github.blueprintplatform.codegen.application.port.in.project.CreateProjectPort;
 import io.github.blueprintplatform.codegen.application.port.in.project.dto.CreateProjectResponse;
+import io.github.blueprintplatform.codegen.domain.model.value.architecture.EnforcementMode;
 import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
 import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeLevel;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.JavaVersion;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.BuildTool;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Framework;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Language;
 import java.nio.file.Path;
 import java.util.List;
@@ -95,6 +97,13 @@ public class SpringBootGenerateCommand implements Callable<Integer> {
   ProjectLayout layout;
 
   @Option(
+      names = {"--architecture", "--enforcement"},
+      required = false,
+      description = "Architecture enforcement mode. Valid values: ${COMPLETION-CANDIDATES}",
+      defaultValue = "none")
+  EnforcementMode enforcementMode;
+
+  @Option(
       names = {"--dependency"},
       required = false,
       description = "Dependency alias, can be repeated. Available: ${COMPLETION-CANDIDATES}")
@@ -136,6 +145,7 @@ public class SpringBootGenerateCommand implements Callable<Integer> {
             packageName,
             profile,
             layout.key(),
+            enforcementMode.key(),
             dependencyAliases,
             sampleCode.key(),
             targetDirectory);
@@ -151,6 +161,6 @@ public class SpringBootGenerateCommand implements Callable<Integer> {
   }
 
   private String buildProfileKey(BuildTool buildTool, Language language) {
-    return "springboot-" + buildTool.key() + "-" + language.key();
+    return Framework.SPRING_BOOT.key() + "-" + buildTool.key() + "-" + language.key();
   }
 }

@@ -3,6 +3,7 @@ package io.github.blueprintplatform.codegen.bootstrap.wiring.in.cli;
 import io.github.blueprintplatform.codegen.adapter.in.cli.CodegenCommand;
 import io.github.blueprintplatform.codegen.adapter.in.cli.shared.KeyedEnumConverter;
 import io.github.blueprintplatform.codegen.adapter.in.cli.springboot.dependency.SpringBootDependencyAlias;
+import io.github.blueprintplatform.codegen.domain.model.value.architecture.EnforcementMode;
 import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
 import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeLevel;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.JavaVersion;
@@ -41,6 +42,8 @@ public class CodegenCliExecutor {
                 SpringBootVersion.class, new KeyedEnumConverter<>(SpringBootVersion::fromKey))
             .registerConverter(
                 SampleCodeLevel.class, new KeyedEnumConverter<>(SampleCodeLevel::fromKey))
+            .registerConverter(
+                EnforcementMode.class, new KeyedEnumConverter<>(EnforcementMode::fromKey))
             .registerConverter(SpringBootDependencyAlias.class, SpringBootDependencyAlias::fromKey);
 
     cmd.setExecutionExceptionHandler(exceptionHandler);

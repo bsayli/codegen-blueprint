@@ -6,6 +6,10 @@ import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactS
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.TemplateSpec;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
+import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureGovernance;
+import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureSpec;
+import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependencies;
+import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeOptions;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedTextResource;
 import io.github.blueprintplatform.codegen.testsupport.templating.CapturingTemplateRenderer;
@@ -52,7 +56,11 @@ class MavenWrapperBuildToolFilesAdapterTest {
         new MavenWrapperBuildToolFilesAdapter(renderer, artifactSpec);
 
     ProjectBlueprint blueprint =
-        new ProjectBlueprint(null, null, null, null, null, null, null, null, null);
+        new ProjectBlueprint(
+            null,
+            null,
+            new ArchitectureSpec(null, ArchitectureGovernance.none(), SampleCodeOptions.none()),
+            Dependencies.of(List.of()));
 
     Path relativePath = Path.of(".mvn/wrapper/maven-wrapper.properties");
     GeneratedTextResource expectedFile =

@@ -37,7 +37,7 @@ public class SourceLayoutAdapter implements SourceLayoutPort {
     resources.add(new GeneratedDirectory(SRC_MAIN_RESOURCES));
     resources.add(new GeneratedDirectory(SRC_TEST_RESOURCES));
 
-    PackageName packageName = blueprint.getPackageName();
+    PackageName packageName = blueprint.getMetadata().packageName();
     String packagePath = packageName.value().replace('.', '/');
 
     Path mainBasePackageDir = SRC_MAIN_JAVA.resolve(packagePath);
@@ -46,7 +46,7 @@ public class SourceLayoutAdapter implements SourceLayoutPort {
     resources.add(new GeneratedDirectory(mainBasePackageDir));
     resources.add(new GeneratedDirectory(testBasePackageDir));
 
-    ProjectLayout layout = blueprint.getLayout();
+    ProjectLayout layout = blueprint.getArchitecture().layout();
     if (layout.isHexagonal()) {
       resources.add(new GeneratedDirectory(mainBasePackageDir.resolve(SEGMENT_ADAPTER)));
       resources.add(new GeneratedDirectory(mainBasePackageDir.resolve(SEGMENT_APPLICATION)));

@@ -7,8 +7,28 @@ import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.TemplateS
 import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
 import io.github.blueprintplatform.codegen.adapter.shared.naming.StringCaseFormatter;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
+import io.github.blueprintplatform.codegen.domain.factory.ProjectBlueprintFactory;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
+import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureGovernance;
+import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureSpec;
+import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependencies;
+import io.github.blueprintplatform.codegen.domain.model.value.identity.ArtifactId;
+import io.github.blueprintplatform.codegen.domain.model.value.identity.GroupId;
+import io.github.blueprintplatform.codegen.domain.model.value.identity.ProjectIdentity;
+import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
+import io.github.blueprintplatform.codegen.domain.model.value.metadata.ProjectMetadata;
+import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectDescription;
+import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectName;
 import io.github.blueprintplatform.codegen.domain.model.value.pkg.PackageName;
+import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeOptions;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.PlatformSpec;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.JavaVersion;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootJvmTarget;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootVersion;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.BuildTool;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Framework;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Language;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.TechStack;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedTextResource;
 import io.github.blueprintplatform.codegen.testsupport.templating.CapturingTemplateRenderer;
@@ -40,8 +60,18 @@ class AbstractJavaSourceFileAdapterTest {
         new TestJavaSourceFileAdapter(renderer, artifactSpec, formatter);
 
     ProjectBlueprint blueprint =
-        new ProjectBlueprint(
-            null, null, null, new PackageName("com.acme.demo"), null, null, null, null, null);
+        ProjectBlueprintFactory.of(
+            new ProjectMetadata(
+                new ProjectIdentity(new GroupId("com.acme"), new ArtifactId("demo-app")),
+                new ProjectName("Demo App"),
+                new ProjectDescription("Sample Project"),
+                new PackageName("com.acme.demo")),
+            new PlatformSpec(
+                new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA),
+                new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5)),
+            new ArchitectureSpec(
+                ProjectLayout.STANDARD, ArchitectureGovernance.none(), SampleCodeOptions.none()),
+            Dependencies.of(List.of()));
 
     Path expectedPath = Path.of("src/main/java/com/acme/demo/DemoApplication.java");
 

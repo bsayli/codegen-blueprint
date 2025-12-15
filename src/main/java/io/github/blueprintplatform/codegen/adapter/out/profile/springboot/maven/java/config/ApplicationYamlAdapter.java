@@ -27,7 +27,7 @@ public class ApplicationYamlAdapter extends AbstractSingleTemplateArtifactAdapte
 
   @Override
   protected Map<String, Object> buildModel(ProjectBlueprint blueprint) {
-    ProjectIdentity id = blueprint.getIdentity();
-    return Map.ofEntries(entry(KEY_APP_NAME, id.artifactId().value()));
+    ProjectIdentity id = blueprint.getMetadata().identity();
+      return Map.ofEntries(entry(KEY_APP_NAME, id.artifactId().value()));
   }
 }

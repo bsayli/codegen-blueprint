@@ -12,6 +12,7 @@ import io.github.blueprintplatform.codegen.application.usecase.project.context.C
 import io.github.blueprintplatform.codegen.application.usecase.project.mapper.CreateProjectResponseMapper;
 import io.github.blueprintplatform.codegen.application.usecase.project.mapper.ProjectBlueprintMapper;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
+import io.github.blueprintplatform.codegen.domain.model.value.architecture.EnforcementMode;
 import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
 import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeOptions;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.JavaVersion;
@@ -63,9 +64,9 @@ class CreateProjectHandlerTest {
 
     var handler = new CreateProjectHandler(blueprintMapper, responseMapper, executionContext);
 
-    var cmd = getCreateProjectCommand();
+    var createProjectRequest = getCreateProjectRequest();
 
-    var result = handler.handle(cmd);
+    var result = handler.handle(createProjectRequest);
 
     assertThat(result.archivePath()).hasFileName("demo-app.zip");
     assertThat(result.projectRoot()).isEqualTo(tempDir.resolve("demo-app"));
@@ -88,6 +89,7 @@ class CreateProjectHandlerTest {
     assertThat(result.project().projectDescription()).isEqualTo("Demo project");
     assertThat(result.project().packageName()).isEqualTo("com.acme.demo");
     assertThat(result.project().layout()).isEqualTo(ProjectLayout.STANDARD);
+    assertThat(result.project().enforcementMode()).isEqualTo(EnforcementMode.NONE);
     assertThat(result.project().sampleCode()).isEqualTo(SampleCodeOptions.none());
 
     assertThat(result.files())
@@ -98,7 +100,7 @@ class CreateProjectHandlerTest {
     assertThat(result.files()).allSatisfy(f -> assertThat(f.binary()).isFalse());
   }
 
-  private CreateProjectRequest getCreateProjectCommand() {
+  private CreateProjectRequest getCreateProjectRequest() {
     var techStack = new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
     var platformTarget = new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5);
 
@@ -110,6 +112,7 @@ class CreateProjectHandlerTest {
         "com.acme.demo",
         techStack,
         ProjectLayout.STANDARD,
+        EnforcementMode.NONE,
         platformTarget,
         List.of(),
         SampleCodeOptions.none(),

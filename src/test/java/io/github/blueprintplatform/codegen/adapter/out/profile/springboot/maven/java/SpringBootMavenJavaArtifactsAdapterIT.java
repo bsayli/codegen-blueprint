@@ -4,6 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.github.blueprintplatform.codegen.domain.factory.ProjectBlueprintFactory;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
+import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureGovernance;
+import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureSpec;
+import io.github.blueprintplatform.codegen.domain.model.value.architecture.EnforcementMode;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependencies;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependency;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.DependencyCoordinates;
@@ -11,10 +14,12 @@ import io.github.blueprintplatform.codegen.domain.model.value.identity.ArtifactI
 import io.github.blueprintplatform.codegen.domain.model.value.identity.GroupId;
 import io.github.blueprintplatform.codegen.domain.model.value.identity.ProjectIdentity;
 import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
+import io.github.blueprintplatform.codegen.domain.model.value.metadata.ProjectMetadata;
 import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectDescription;
 import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectName;
 import io.github.blueprintplatform.codegen.domain.model.value.pkg.PackageName;
 import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeOptions;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.PlatformSpec;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.JavaVersion;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.PlatformTarget;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootJvmTarget;
@@ -52,17 +57,23 @@ class SpringBootMavenJavaArtifactsAdapterIT {
   }
 
   private ProjectBlueprint blueprint() {
-    ProjectIdentity identity =
-        new ProjectIdentity(new GroupId("com.example"), new ArtifactId("demo-app"));
-
-    ProjectName name = new ProjectName("demo-app");
-    ProjectDescription description = new ProjectDescription("Integration test blueprint");
-    PackageName packageName = new PackageName("com.example.demo");
+    ProjectMetadata metadata =
+        new ProjectMetadata(
+            new ProjectIdentity(new GroupId("com.example"), new ArtifactId("demo-app")),
+            new ProjectName("demo-app"),
+            new ProjectDescription("Integration test blueprint"),
+            new PackageName("com.example.demo"));
 
     TechStack techStack = new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA);
-
     PlatformTarget platformTarget =
         new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5);
+    PlatformSpec platform = new PlatformSpec(techStack, platformTarget);
+
+    ArchitectureSpec architecture =
+        new ArchitectureSpec(
+            ProjectLayout.STANDARD,
+            new ArchitectureGovernance(EnforcementMode.NONE),
+            SampleCodeOptions.none());
 
     Dependency webStarter =
         new Dependency(
@@ -73,18 +84,6 @@ class SpringBootMavenJavaArtifactsAdapterIT {
 
     Dependencies dependencies = Dependencies.of(List.of(webStarter));
 
-    ProjectLayout layout = ProjectLayout.STANDARD;
-    SampleCodeOptions sampleCodeOptions = SampleCodeOptions.none();
-
-    return ProjectBlueprintFactory.of(
-        identity,
-        name,
-        description,
-        packageName,
-        techStack,
-        layout,
-        platformTarget,
-        dependencies,
-        sampleCodeOptions);
+    return ProjectBlueprintFactory.of(metadata, platform, architecture, dependencies);
   }
 }

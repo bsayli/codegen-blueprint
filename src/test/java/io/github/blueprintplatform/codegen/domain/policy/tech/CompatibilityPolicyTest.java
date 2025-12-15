@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.github.blueprintplatform.codegen.domain.error.exception.DomainViolationException;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.PlatformSpec;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.JavaVersion;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.PlatformTarget;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootJvmTarget;
@@ -28,6 +29,15 @@ class CompatibilityPolicyTest {
 
   private static PlatformTarget target(JavaVersion java, SpringBootVersion boot) {
     return new SpringBootJvmTarget(java, boot);
+  }
+
+  @Test
+  @DisplayName("ensureCompatible(PlatformSpec) should delegate to core compatibility checks")
+  void ensureCompatible_platformSpec_shouldWork() {
+    PlatformSpec platform =
+        new PlatformSpec(techStack(), target(JavaVersion.JAVA_21, SpringBootVersion.V3_5));
+
+    assertThatCode(() -> CompatibilityPolicy.ensureCompatible(platform)).doesNotThrowAnyException();
   }
 
   @Test

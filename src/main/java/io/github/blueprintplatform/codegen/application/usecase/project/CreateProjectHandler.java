@@ -29,28 +29,27 @@ public class CreateProjectHandler implements CreateProjectPort {
   }
 
   @Override
-  public CreateProjectResponse handle(CreateProjectRequest command) {
-    ProjectBlueprint projectBlueprint = blueprintMapper.from(command);
+  public CreateProjectResponse handle(CreateProjectRequest createProjectRequest) {
+    ProjectBlueprint blueprint = blueprintMapper.from(createProjectRequest);
+
+    String artifactId = blueprint.getMetadata().identity().artifactId().value();
 
     Path projectRoot =
         executionContext
             .rootPort()
-            .prepareRoot(
-                command.targetDirectory(),
-                projectBlueprint.getIdentity().artifactId().value(),
-                FAIL_IF_EXISTS);
+            .prepareRoot(createProjectRequest.targetDirectory(), artifactId, FAIL_IF_EXISTS);
 
     ProjectArtifactsPort artifactsPort =
-        executionContext.artifactsSelector().select(projectBlueprint.getTechStack());
-    var resources = artifactsPort.generate(projectBlueprint);
+        executionContext.artifactsSelector().select(blueprint.getPlatform().techStack());
+
+    var resources = artifactsPort.generate(blueprint);
 
     executionContext.writerPort().write(projectRoot, resources);
 
-    String baseName = projectBlueprint.getIdentity().artifactId().value();
-    Path archive = executionContext.archiverPort().archive(projectRoot, baseName);
+    Path archive = executionContext.archiverPort().archive(projectRoot, artifactId);
 
     List<Path> projectFiles = executionContext.fileListingPort().listFiles(projectRoot);
 
-    return responseMapper.from(projectBlueprint, projectRoot, projectFiles, archive);
+    return responseMapper.from(blueprint, projectRoot, projectFiles, archive);
   }
 }

@@ -9,6 +9,7 @@ import io.github.blueprintplatform.codegen.application.port.in.project.CreatePro
 import io.github.blueprintplatform.codegen.application.port.in.project.dto.CreateProjectRequest;
 import io.github.blueprintplatform.codegen.application.port.in.project.dto.CreateProjectResponse;
 import io.github.blueprintplatform.codegen.application.port.in.project.dto.ProjectGenerationSummary;
+import io.github.blueprintplatform.codegen.domain.model.value.architecture.EnforcementMode;
 import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeOptions;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.JavaVersion;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.SpringBootJvmTarget;
@@ -41,9 +42,9 @@ class CodegenCliExecutorTest {
     int exitCode = getExitCode(useCase);
 
     assertThat(exitCode).isZero();
-    assertThat(useCase.lastCommand).isNotNull();
+    assertThat(useCase.lastCreateProjectRequest).isNotNull();
 
-    CreateProjectRequest cmd = useCase.lastCommand;
+    CreateProjectRequest cmd = useCase.lastCreateProjectRequest;
 
     assertThat(cmd.groupId()).isEqualTo("com.acme");
     assertThat(cmd.artifactId()).isEqualTo("demo-app");
@@ -97,27 +98,28 @@ class CodegenCliExecutorTest {
   }
 
   static class RecordingCreateProjectPort implements CreateProjectPort {
-    CreateProjectRequest lastCommand;
+    CreateProjectRequest lastCreateProjectRequest;
 
     @Override
-    public CreateProjectResponse handle(CreateProjectRequest command) {
-      this.lastCommand = command;
+    public CreateProjectResponse handle(CreateProjectRequest createProjectRequest) {
+      this.lastCreateProjectRequest = createProjectRequest;
 
       var project =
           new ProjectGenerationSummary(
-              command.groupId(),
-              command.artifactId(),
-              command.projectName(),
-              command.projectDescription(),
-              command.packageName(),
+              lastCreateProjectRequest.groupId(),
+              lastCreateProjectRequest.artifactId(),
+              lastCreateProjectRequest.projectName(),
+              lastCreateProjectRequest.projectDescription(),
+              lastCreateProjectRequest.packageName(),
               new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA),
-              command.layout(),
+              lastCreateProjectRequest.layout(),
+              EnforcementMode.NONE,
               new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5),
               SampleCodeOptions.none(),
               List.of());
 
       return new CreateProjectResponse(
-          project, command.targetDirectory(), Path.of("demo-app.zip"), List.of());
+          project, lastCreateProjectRequest.targetDirectory(), Path.of("demo-app.zip"), List.of());
     }
   }
 

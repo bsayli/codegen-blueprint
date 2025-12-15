@@ -52,15 +52,15 @@ public class SampleCodeAdapter implements SampleCodePort {
 
   @Override
   public Iterable<? extends GeneratedResource> generate(ProjectBlueprint blueprint) {
-    SampleCodeOptions options = blueprint.getSampleCodeOptions();
+    SampleCodeOptions options = blueprint.getArchitecture().sampleCodeOptions();
     SampleCodeLevel level = options == null ? SampleCodeLevel.NONE : options.level();
 
     boolean levelInvalid = (level == null) || !level.isEnabled() || SampleCodeLevel.RICH == level;
-    if (levelInvalid || !blueprint.getLayout().isHexagonal()) {
+    if (levelInvalid || !blueprint.getArchitecture().layout().isHexagonal()) {
       return List.of();
     }
 
-    ProjectLayout layout = blueprint.getLayout();
+    ProjectLayout layout = blueprint.getArchitecture().layout();
     String templateBasePath = artifactSpec.basePath();
     String samplesRootRelative = resolveSamplesRoot(layout, level);
     String templateRoot = normalizeTemplateRoot(templateBasePath, samplesRootRelative);
@@ -70,7 +70,7 @@ public class SampleCodeAdapter implements SampleCodePort {
       throw new SampleCodeTemplatesNotFoundException(templateRoot, layout.key(), level.key());
     }
 
-    PackageName pkg = blueprint.getPackageName();
+    PackageName pkg = blueprint.getMetadata().packageName();
     String packagePath = pkg.value().replace('.', '/');
 
     Map<String, Object> model = buildModel(blueprint);
@@ -122,7 +122,7 @@ public class SampleCodeAdapter implements SampleCodePort {
   }
 
   private Map<String, Object> buildModel(ProjectBlueprint blueprint) {
-    PackageName pkg = blueprint.getPackageName();
+    PackageName pkg = blueprint.getMetadata().packageName();
     return Map.of(MODEL_KEY_PROJECT_PACKAGE_NAME, pkg.value());
   }
 

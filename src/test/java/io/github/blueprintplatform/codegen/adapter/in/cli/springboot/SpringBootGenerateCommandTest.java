@@ -8,6 +8,7 @@ import io.github.blueprintplatform.codegen.application.port.in.project.CreatePro
 import io.github.blueprintplatform.codegen.application.port.in.project.dto.CreateProjectRequest;
 import io.github.blueprintplatform.codegen.application.port.in.project.dto.CreateProjectResponse;
 import io.github.blueprintplatform.codegen.application.port.in.project.dto.ProjectGenerationSummary;
+import io.github.blueprintplatform.codegen.domain.model.value.architecture.EnforcementMode;
 import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
 import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeLevel;
 import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeOptions;
@@ -48,6 +49,7 @@ class SpringBootGenerateCommandTest {
 
     cmd.layout = ProjectLayout.STANDARD;
     cmd.sampleCode = SampleCodeLevel.NONE;
+    cmd.enforcementMode = EnforcementMode.NONE;
     cmd.dependencies = List.of(SpringBootDependencyAlias.WEB);
     Path expected = Path.of(".");
     cmd.targetDirectory = expected;
@@ -69,9 +71,10 @@ class SpringBootGenerateCommandTest {
     assertThat(mapper.lastRequest.packageName()).isEqualTo("com.acme.demo");
     assertThat(mapper.lastRequest.targetDirectory()).isEqualTo(expected);
 
-    assertThat(mapper.lastRequest.profile()).isEqualTo("springboot-maven-java");
+    assertThat(mapper.lastRequest.profile()).isEqualTo("spring-boot-maven-java");
 
     assertThat(mapper.lastRequest.layoutKey()).isEqualTo(ProjectLayout.STANDARD.key());
+    assertThat(mapper.lastRequest.enforcementModeKey()).isEqualTo(EnforcementMode.NONE.key());
     assertThat(mapper.lastRequest.sampleCodeLevelKey()).isEqualTo(SampleCodeLevel.NONE.key());
 
     assertThat(mapper.lastRequest.dependencies())
@@ -124,6 +127,7 @@ class SpringBootGenerateCommandTest {
               "com.acme.demo",
               new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA),
               ProjectLayout.STANDARD,
+              EnforcementMode.NONE,
               new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5),
               SampleCodeOptions.none(),
               List.of());

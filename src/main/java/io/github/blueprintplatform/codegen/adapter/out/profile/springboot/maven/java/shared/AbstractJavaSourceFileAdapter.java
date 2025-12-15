@@ -39,7 +39,7 @@ public abstract class AbstractJavaSourceFileAdapter implements ArtifactPort {
   @Override
   public final Iterable<? extends GeneratedResource> generate(ProjectBlueprint blueprint) {
     String className = buildClassName(blueprint);
-    PackageName packageName = blueprint.getPackageName();
+    PackageName packageName = blueprint.getMetadata().packageName();
 
     Map<String, Object> model =
         Map.ofEntries(

@@ -11,6 +11,7 @@ public record CliProjectRequest(
     String packageName,
     String profile,
     String layoutKey,
+    String enforcementModeKey,
     List<String> dependencies,
     String sampleCodeLevelKey,
     Path targetDirectory) {}

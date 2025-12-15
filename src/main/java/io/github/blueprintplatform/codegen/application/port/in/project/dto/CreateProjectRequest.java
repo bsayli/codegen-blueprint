@@ -1,5 +1,6 @@
 package io.github.blueprintplatform.codegen.application.port.in.project.dto;
 
+import io.github.blueprintplatform.codegen.domain.model.value.architecture.EnforcementMode;
 import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
 import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeOptions;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.PlatformTarget;
@@ -15,6 +16,7 @@ public record CreateProjectRequest(
     String packageName,
     TechStack techStack,
     ProjectLayout layout,
+    EnforcementMode enforcementMode,
     PlatformTarget platformTarget,
     List<DependencyInput> dependencies,
     SampleCodeOptions sampleCodeOptions,

@@ -5,19 +5,12 @@ import io.github.blueprintplatform.codegen.application.port.in.project.dto.Gener
 import io.github.blueprintplatform.codegen.application.port.in.project.dto.ProjectDependencySummary;
 import io.github.blueprintplatform.codegen.application.port.in.project.dto.ProjectGenerationSummary;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
+import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureSpec;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependencies;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependency;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.DependencyCoordinates;
-import io.github.blueprintplatform.codegen.domain.model.value.identity.ArtifactId;
-import io.github.blueprintplatform.codegen.domain.model.value.identity.GroupId;
-import io.github.blueprintplatform.codegen.domain.model.value.identity.ProjectIdentity;
-import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
-import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectDescription;
-import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectName;
-import io.github.blueprintplatform.codegen.domain.model.value.pkg.PackageName;
-import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeOptions;
-import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.PlatformTarget;
-import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.TechStack;
+import io.github.blueprintplatform.codegen.domain.model.value.metadata.ProjectMetadata;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.PlatformSpec;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -27,9 +20,7 @@ import java.util.Set;
 public class CreateProjectResponseMapper {
 
   private static final Set<String> EXECUTABLE_FILE_NAMES = Set.of("mvnw", "gradlew");
-
   private static final Set<String> EXECUTABLE_EXTENSIONS = Set.of(".sh", ".cmd", ".bat");
-
   private static final Set<String> BINARY_EXTENSIONS =
       Set.of(".jar", ".zip", ".png", ".jpg", ".jpeg", ".gif", ".pdf", ".ico");
 
@@ -56,32 +47,25 @@ public class CreateProjectResponseMapper {
   }
 
   private ProjectGenerationSummary toProjectGenerationSummary(ProjectBlueprint blueprint) {
-    ProjectIdentity identity = blueprint.getIdentity();
-
-    GroupId groupId = identity.groupId();
-    ArtifactId artifactId = identity.artifactId();
-    ProjectName name = blueprint.getName();
-    ProjectDescription description = blueprint.getDescription();
-    PackageName packageName = blueprint.getPackageName();
-    TechStack techStack = blueprint.getTechStack();
-    ProjectLayout layout = blueprint.getLayout();
-    PlatformTarget platformTarget = blueprint.getPlatformTarget();
-    SampleCodeOptions sampleCode = blueprint.getSampleCodeOptions();
+    ProjectMetadata metadata = blueprint.getMetadata();
+    PlatformSpec platform = blueprint.getPlatform();
+    ArchitectureSpec architecture = blueprint.getArchitecture();
     Dependencies dependencies = blueprint.getDependencies();
 
     List<ProjectDependencySummary> dependencySummaries =
         dependencies.asList().stream().map(this::toProjectDependencySummary).toList();
 
     return new ProjectGenerationSummary(
-        groupId.value(),
-        artifactId.value(),
-        name.value(),
-        description.value(),
-        packageName.value(),
-        techStack,
-        layout,
-        platformTarget,
-        sampleCode,
+        metadata.identity().groupId().value(),
+        metadata.identity().artifactId().value(),
+        metadata.name().value(),
+        metadata.description().value(),
+        metadata.packageName().value(),
+        platform.techStack(),
+        architecture.layout(),
+        architecture.governance().mode(),
+        platform.platformTarget(),
+        architecture.sampleCodeOptions(),
         dependencySummaries);
   }
 

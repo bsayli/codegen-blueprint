@@ -4,6 +4,8 @@ import io.github.blueprintplatform.codegen.application.port.in.project.dto.Creat
 import io.github.blueprintplatform.codegen.application.port.in.project.dto.DependencyInput;
 import io.github.blueprintplatform.codegen.domain.factory.ProjectBlueprintFactory;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
+import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureGovernance;
+import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureSpec;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependencies;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.Dependency;
 import io.github.blueprintplatform.codegen.domain.model.value.dependency.DependencyCoordinates;
@@ -12,33 +14,33 @@ import io.github.blueprintplatform.codegen.domain.model.value.dependency.Depende
 import io.github.blueprintplatform.codegen.domain.model.value.identity.ArtifactId;
 import io.github.blueprintplatform.codegen.domain.model.value.identity.GroupId;
 import io.github.blueprintplatform.codegen.domain.model.value.identity.ProjectIdentity;
-import io.github.blueprintplatform.codegen.domain.model.value.layout.ProjectLayout;
+import io.github.blueprintplatform.codegen.domain.model.value.metadata.ProjectMetadata;
 import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectDescription;
 import io.github.blueprintplatform.codegen.domain.model.value.naming.ProjectName;
 import io.github.blueprintplatform.codegen.domain.model.value.pkg.PackageName;
-import io.github.blueprintplatform.codegen.domain.model.value.sample.SampleCodeOptions;
-import io.github.blueprintplatform.codegen.domain.model.value.tech.platform.PlatformTarget;
+import io.github.blueprintplatform.codegen.domain.model.value.tech.PlatformSpec;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProjectBlueprintMapper {
 
   public ProjectBlueprint from(CreateProjectRequest c) {
-    ProjectIdentity identity =
-        new ProjectIdentity(new GroupId(c.groupId()), new ArtifactId(c.artifactId()));
+    ProjectMetadata metadata =
+        new ProjectMetadata(
+            new ProjectIdentity(new GroupId(c.groupId()), new ArtifactId(c.artifactId())),
+            new ProjectName(c.projectName()),
+            new ProjectDescription(c.projectDescription()),
+            new PackageName(c.packageName()));
 
-    ProjectName name = new ProjectName(c.projectName());
-    ProjectDescription description = new ProjectDescription(c.projectDescription());
-    PackageName pkg = new PackageName(c.packageName());
+    PlatformSpec platform = new PlatformSpec(c.techStack(), c.platformTarget());
 
-    PlatformTarget target = c.platformTarget();
-    ProjectLayout layout = c.layout();
-    SampleCodeOptions sampleCodeOptions = c.sampleCodeOptions();
+    ArchitectureGovernance architectureGovernance = new ArchitectureGovernance(c.enforcementMode());
+    ArchitectureSpec architecture =
+        new ArchitectureSpec(c.layout(), architectureGovernance, c.sampleCodeOptions());
 
-    Dependencies deps = mapDependencies(c.dependencies());
+    Dependencies dependencies = mapDependencies(c.dependencies());
 
-    return ProjectBlueprintFactory.of(
-        identity, name, description, pkg, c.techStack(), layout, target, deps, sampleCodeOptions);
+    return ProjectBlueprintFactory.of(metadata, platform, architecture, dependencies);
   }
 
   private Dependencies mapDependencies(List<DependencyInput> raw) {
@@ -64,6 +66,7 @@ public class ProjectBlueprintMapper {
               version,
               scope));
     }
+
     return Dependencies.of(items);
   }
 }

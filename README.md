@@ -11,7 +11,7 @@
 
 * 🤝 [Contributing](#-contributing)
 > 🚀 Executable Architecture Generator — Enforced by Design. Scalable by Default.  
-🔗 Part of the **Blueprint Platform** → https://github.com/blueprint-platform
+🔗 Part of the **Blueprint Platform** → [Blueprint Platform GitHub Organization](https://github.com/blueprint-platform)
 
 <p align="center">
   <img src="docs/images/cover/cover.png" alt="Executable Architecture — From Day Zero" width="700" />
@@ -155,6 +155,13 @@ Architecture isn’t only drawn — it executes here ⬇
 - 🧭 **How to Explore This Codebase (Hexagonal Guide)**  
   Understand ports/adapters, profiles, boundaries  
   → [Hexagonal Architecture Guide](docs/guides/how-to-explore-hexagonal-architecture.md)
+
+---
+
+- 🧠 **Architecture Governance & AI Collaboration Protocol**  
+  Defines *how architectural decisions are made, enforced, and protected* —  
+  including **how AI is allowed to participate**  
+  → [Architecture Governance & AI Protocol](docs/architecture/architecture-governance-and-ai-protocol.md)
 
 ### 🧩 Part of the Blueprint Platform
 
@@ -348,7 +355,7 @@ From Day Zero to Production — architecture remains **intentional**, **testable
 * Platform telemetry for architecture health
 
 📌 Community-driven priorities →  
-🔗 Participate: https://github.com/blueprint-platform/codegen-blueprint/discussions
+🔗 Participate: [Discussions](https://github.com/blueprint-platform/codegen-blueprint/discussions)
 
 ---
 
@@ -376,11 +383,9 @@ We welcome:
 * Stack profiles & adapters
 * Template & documentation enhancements
 
-Start here → Discussions:
-[https://github.com/blueprint-platform/codegen-blueprint/discussions](https://github.com/blueprint-platform/codegen-blueprint/discussions)
-
-Issues:
-[https://github.com/blueprint-platform/codegen-blueprint/issues](https://github.com/blueprint-platform/codegen-blueprint/issues)
+Start here → :
+* [Discussions](https://github.com/blueprint-platform/codegen-blueprint/discussions)
+* [Issues](https://github.com/blueprint-platform/codegen-blueprint/issues)
 
 ---
 

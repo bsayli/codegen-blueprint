@@ -41,13 +41,21 @@ class CompatibilityPolicyTest {
   }
 
   @Test
+  @DisplayName("ensureCompatible(PlatformSpec) should fail when platform is null")
+  void ensureCompatible_platformSpec_null_shouldFailTargetMissing() {
+    assertThatThrownBy(() -> CompatibilityPolicy.ensureCompatible(null))
+        .isInstanceOfSatisfying(
+            DomainViolationException.class,
+            dve -> assertThat(dve.getMessageKey()).isEqualTo("platform.target.missing"));
+  }
+
+  @Test
   @DisplayName("ensureCompatible should fail when techStack or target is null")
-  @SuppressWarnings("DataFlowIssue")
   void ensureCompatible_nullTechStackOrTarget_shouldFailTargetMissing() {
     TechStack stack = techStack();
-    PlatformTarget target = target(JavaVersion.JAVA_21, SpringBootVersion.V3_5);
+    PlatformTarget ok = target(JavaVersion.JAVA_21, SpringBootVersion.V3_5);
 
-    assertThatThrownBy(() -> CompatibilityPolicy.ensureCompatible(null, target))
+    assertThatThrownBy(() -> CompatibilityPolicy.ensureCompatible(null, ok))
         .isInstanceOfSatisfying(
             DomainViolationException.class,
             dve -> assertThat(dve.getMessageKey()).isEqualTo("platform.target.missing"));
@@ -100,8 +108,36 @@ class CompatibilityPolicyTest {
               assertThat(dve.getMessageKey()).isEqualTo("platform.target.incompatible");
               assertThat(dve.getArgs())
                   .containsExactly(
-                      SpringBootVersion.V3_4.defaultVersion(), JavaVersion.JAVA_25.asString());
+                      SpringBootVersion.V3_4.majorMinor(), JavaVersion.JAVA_25.asString());
             });
+  }
+
+  @Test
+  @DisplayName("TechStack should fail fast when framework/buildTool/language is null")
+  void techStack_nullParts_shouldFailTechStackNotBlank() {
+    assertThatThrownBy(() -> new TechStack(null, BuildTool.MAVEN, Language.JAVA))
+        .isInstanceOfSatisfying(
+            DomainViolationException.class,
+            dve -> assertThat(dve.getMessageKey()).isEqualTo("project.tech-stack.not.blank"));
+
+    assertThatThrownBy(() -> new TechStack(Framework.SPRING_BOOT, null, Language.JAVA))
+        .isInstanceOfSatisfying(
+            DomainViolationException.class,
+            dve -> assertThat(dve.getMessageKey()).isEqualTo("project.tech-stack.not.blank"));
+
+    assertThatThrownBy(() -> new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, null))
+        .isInstanceOfSatisfying(
+            DomainViolationException.class,
+            dve -> assertThat(dve.getMessageKey()).isEqualTo("project.tech-stack.not.blank"));
+  }
+
+  @Test
+  @DisplayName("PlatformTarget should be sealed and permit only SpringBootJvmTarget")
+  void platformTarget_shouldBeSealedAndRestricted() {
+    assertThat(PlatformTarget.class.isSealed()).isTrue();
+
+    var permitted = PlatformTarget.class.getPermittedSubclasses();
+    assertThat(permitted).containsExactly(SpringBootJvmTarget.class);
   }
 
   @Test

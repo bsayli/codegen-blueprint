@@ -5,6 +5,11 @@ ROOT_DIR="$(pwd)"
 WORK_DIR="$(mktemp -d)"
 TARGET_DIR="$WORK_DIR/out"
 
+JAVA_VERSION="${JAVA_VERSION:-21}"
+BOOT_VERSION="${BOOT_VERSION:-3.5}"
+ARTIFACT_ID="${ARTIFACT_ID:-greeting}"
+PACKAGE_NAME="${PACKAGE_NAME:-io.github.blueprintplatform.greeting}"
+
 cleanup() {
   rm -rf "$WORK_DIR" || true
 }
@@ -23,19 +28,21 @@ java -jar "$JAR_PATH" \
   --spring.main.web-application-type=none \
   --cli springboot \
   --group-id io.github.blueprintplatform \
-  --artifact-id greeting \
+  --artifact-id "$ARTIFACT_ID" \
   --name Greeting \
   --description "Greeting sample built with hexagonal architecture" \
-  --package-name io.github.blueprintplatform.greeting \
+  --package-name "$PACKAGE_NAME" \
   --layout hexagonal \
   --enforcement basic \
   --sample-code basic \
+  --java "$JAVA_VERSION" \
+  --boot "$BOOT_VERSION" \
   --dependency web \
   --dependency data_jpa \
   --dependency actuator \
   --target-dir "$TARGET_DIR"
 
-ZIP="$TARGET_DIR/greeting.zip"
+ZIP="$TARGET_DIR/$ARTIFACT_ID.zip"
 if [ ! -f "$ZIP" ]; then
   echo "Expected zip not found: $ZIP"
   find "$TARGET_DIR" -maxdepth 3 -type f -print || true
@@ -44,7 +51,7 @@ fi
 
 unzip -q "$ZIP" -d "$TARGET_DIR/unzipped"
 
-GEN_DIR="$TARGET_DIR/unzipped/greeting"
+GEN_DIR="$TARGET_DIR/unzipped/$ARTIFACT_ID"
 if [ ! -d "$GEN_DIR" ]; then
   echo "Expected generated project dir not found: $GEN_DIR"
   find "$TARGET_DIR/unzipped" -maxdepth 4 -type d -print || true

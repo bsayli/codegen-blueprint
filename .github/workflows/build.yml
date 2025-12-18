@@ -12,14 +12,21 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    strategy:
+      fail-fast: false
+      matrix:
+        java: [ '21', '25' ]
+
+    name: Build & Test (JDK ${{ matrix.java }})
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up JDK 21
+      - name: Set up JDK ${{ matrix.java }}
         uses: actions/setup-java@v4
         with:
-          java-version: '21'
+          java-version: ${{ matrix.java }}
           distribution: 'temurin'
           cache: maven
 
@@ -27,14 +34,24 @@ jobs:
         run: mvn -B -q -ntp clean verify
 
       - name: Verify generated project (hexagonal basic)
-        run: | 
+        env:
+          JAVA_VERSION: ${{ matrix.java }}
+          BOOT_VERSION: '3.5'
+          ARTIFACT_ID: greeting-j${{ matrix.java }}-b35-hex
+          PACKAGE_NAME: io.github.blueprintplatform.greetingj${{ matrix.java }}b35hex
+        run: |
           chmod +x ci/verify-generated-project-hexagonal-basic.sh
           ./ci/verify-generated-project-hexagonal-basic.sh
 
       - name: Verify generated project (standard basic)
+        env:
+          JAVA_VERSION: ${{ matrix.java }}
+          BOOT_VERSION: '3.5'
+          ARTIFACT_ID: greeting-j${{ matrix.java }}-b35-std
+          PACKAGE_NAME: io.github.blueprintplatform.greetingj${{ matrix.java }}b35std
         run: |
           chmod +x ci/verify-generated-project-standard-basic.sh
-          ./ci/verify-generated-project-standard-basic.sh    
+          ./ci/verify-generated-project-standard-basic.sh
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4

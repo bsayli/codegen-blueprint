@@ -5,8 +5,8 @@ import io.github.blueprintplatform.codegen.domain.shared.KeyEnumParser;
 import io.github.blueprintplatform.codegen.domain.shared.KeyedEnum;
 
 public enum SpringBootVersion implements KeyedEnum {
-  V3_5("3.5", "3.5.8"),
-  V3_4("3.4", "3.4.12");
+  V3_5("3.5", "3.5.9"),
+  V3_4("3.4", "3.4.13");
 
   private static final ErrorCode UNKNOWN = () -> "platform.springboot-version.unknown";
 

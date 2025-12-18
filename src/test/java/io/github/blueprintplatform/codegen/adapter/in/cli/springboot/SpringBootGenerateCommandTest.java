@@ -34,7 +34,7 @@ class SpringBootGenerateCommandTest {
 
   @Test
   @DisplayName("call() should build CliProjectRequest and invoke use case with mapped command")
-  void call_shouldBuildRequestAndInvokeUseCase() throws Exception {
+  void call_shouldBuildRequestAndInvokeUseCase() {
     var mapper = new RecordingMapper();
     var useCase = new StubCreateProjectPort();
 
@@ -122,14 +122,14 @@ class SpringBootGenerateCommandTest {
           new ProjectMetadataSummary(
               "com.acme", "demo-app", "Demo App", "Demo application for Acme", "com.acme.demo");
 
-      var techStack = new TechStackSummary("spring-boot", "3.5.8", "maven", null, "java", "21");
+      var techStack = new TechStackSummary("spring-boot", "3.5.9", "maven", null, "java", "21");
 
       var runtimeTarget =
           new RuntimeTargetSummary(
               "spring-boot-jvm",
               Map.of(
                   "javaVersion", "21",
-                  "springBootVersion", "3.5.8"));
+                  "springBootVersion", "3.5.9"));
 
       var architecture = new ArchitectureSpecSummary("standard", "none", "none");
 

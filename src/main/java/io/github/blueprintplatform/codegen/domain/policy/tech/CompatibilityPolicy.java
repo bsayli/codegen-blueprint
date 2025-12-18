@@ -84,7 +84,7 @@ public final class CompatibilityPolicy {
     Set<JavaVersion> allowed = SPRINGBOOT_JAVA_SUPPORT.getOrDefault(springBoot, Set.of());
     if (!allowed.contains(java)) {
       throw new DomainViolationException(
-          TARGET_INCOMPATIBLE, springBoot.defaultVersion(), java.asString());
+          TARGET_INCOMPATIBLE, springBoot.majorMinor(), java.asString());
     }
   }
 }

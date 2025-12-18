@@ -21,7 +21,7 @@ class PlatformTargetTest {
     assertThat(target.java()).isEqualTo(JavaVersion.JAVA_21);
     assertThat(target.springBoot()).isEqualTo(SpringBootVersion.V3_4);
     assertThat(target.java().asString()).isEqualTo("21");
-    assertThat(target.springBoot().defaultVersion()).isEqualTo("3.4.12");
+    assertThat(target.springBoot().defaultVersion()).isEqualTo("3.4.13");
   }
 
   @Test

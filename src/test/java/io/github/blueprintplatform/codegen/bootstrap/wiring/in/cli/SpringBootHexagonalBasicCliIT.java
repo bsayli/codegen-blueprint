@@ -2,29 +2,47 @@ package io.github.blueprintplatform.codegen.bootstrap.wiring.in.cli;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 @Tag("integration")
 @Tag("cli-e2e")
-class SpringBootHexagonalBasicCliIT {
+class SpringBootCliE2EIT {
 
   @TempDir Path tempDir;
   @Autowired private CodegenCliExecutor cliExecutor;
+
+  static Stream<Arguments> scenarios() {
+    return Stream.of(
+        Arguments.of(true, "21", "3.5", "3.5.9", null),
+        Arguments.of(true, "25", "3.5", "3.5.9", null),
+        Arguments.of(true, "21", "3.4", "3.4.13", null),
+        Arguments.of(false, "25", "3.4", "3.4.13", "platform.target.incompatible"));
+  }
+
+  private static String artifactId(String java, String boot) {
+    String bootKey = boot.replace(".", "");
+    return "greeting-j" + java + "-b" + bootKey;
+  }
 
   private static List<String> zipEntries(ZipFile zipFile) {
     Enumeration<? extends ZipEntry> entries = zipFile.entries();
@@ -41,29 +59,64 @@ class SpringBootHexagonalBasicCliIT {
     }
   }
 
-  @Test
+  private static CapturedIo captureIo(CodegenCliExecutor executor, String[] args) {
+    ByteArrayOutputStream err = new ByteArrayOutputStream();
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+    try (PrintStream errPs = new PrintStream(err, true, StandardCharsets.UTF_8);
+        PrintStream outPs = new PrintStream(out, true, StandardCharsets.UTF_8)) {
+
+      int exitCode = executor.execute(args, outPs, errPs);
+      return new CapturedIo(
+          exitCode, out.toString(StandardCharsets.UTF_8), err.toString(StandardCharsets.UTF_8));
+    }
+  }
+
+  private static void assertSpringBootParentVersion(String pomXml, String expectedVersion) {
+    assertThat(pomXml)
+        .contains("<parent>")
+        .contains("<groupId>org.springframework.boot</groupId>")
+        .contains("<artifactId>spring-boot-starter-parent</artifactId>")
+        .contains("<version>" + expectedVersion + "</version>");
+  }
+
+  @ParameterizedTest(name = "java={1}, boot={2} shouldSucceed={0}")
+  @MethodSource("scenarios")
   @DisplayName(
-      "CLI springboot hexagonal basic (web + data_jpa + actuator, enforcement basic) should generate project archive with core files and expected content")
-  void cli_springboot_hexagonal_basic_shouldGenerateProjectArchive() throws IOException {
-    // given
+      "CLI springboot should generate valid archives for supported targets and fail for incompatible target")
+  void cli_springboot_matrix_shouldBehaveAsExpected(
+      boolean shouldSucceed,
+      String java,
+      String boot,
+      String expectedBootPatch,
+      String expectedErrorCode)
+      throws IOException {
+
+    String artifactId = artifactId(java, boot);
+    String packageName = "io.github.blueprintplatform." + artifactId.replace("-", "");
+
     String[] args = {
       "springboot",
       "--group-id",
       "io.github.blueprintplatform",
       "--artifact-id",
-      "greeting",
+      artifactId,
       "--name",
       "Greeting",
       "--description",
       "Greeting sample built with hexagonal architecture",
       "--package-name",
-      "io.github.blueprintplatform.greeting",
+      packageName,
       "--layout",
       "hexagonal",
       "--enforcement",
       "basic",
       "--sample-code",
       "basic",
+      "--java",
+      java,
+      "--boot",
+      boot,
       "--dependency",
       "web",
       "--dependency",
@@ -74,80 +127,80 @@ class SpringBootHexagonalBasicCliIT {
       tempDir.toString()
     };
 
-    // when
-    int exitCode = cliExecutor.execute(args);
+    CapturedIo io = captureIo(cliExecutor, args);
 
-    // then
-    assertThat(exitCode).isZero();
+    Path archivePath = tempDir.resolve(artifactId + ".zip");
 
-    Path archivePath = tempDir.resolve("greeting.zip");
-    assertThat(Files.exists(archivePath))
-        .as("Archive should be created at target-dir/greeting.zip")
-        .isTrue();
+    if (shouldSucceed) {
+      assertThat(io.exitCode()).isZero();
 
-    try (ZipFile zipFile = new ZipFile(archivePath.toFile())) {
-      List<String> entryNames = zipEntries(zipFile);
+      assertThat(Files.exists(archivePath))
+          .as("Archive should be created at target-dir/%s.zip".formatted(artifactId))
+          .isTrue();
 
-      assertThat(entryNames).contains("greeting/");
+      try (ZipFile zipFile = new ZipFile(archivePath.toFile())) {
+        List<String> entryNames = zipEntries(zipFile);
 
-      assertThat(entryNames)
-          .as("pom.xml should be present at root of project")
-          .contains("greeting/pom.xml");
-      assertThat(entryNames)
-          .as("application.yml should be present under src/main/resources")
-          .contains("greeting/src/main/resources/application.yml");
-      assertThat(entryNames)
-          .as("README.md should be present at root of project")
-          .contains("greeting/README.md");
+        assertThat(entryNames).contains(artifactId + "/");
 
-      assertThat(entryNames)
-          .anySatisfy(
-              name ->
-                  assertThat(name)
-                      .startsWith("greeting/src/main/java/io/github/blueprintplatform/greeting/")
-                      .endsWith("Application.java"));
+        assertThat(entryNames).contains(artifactId + "/pom.xml");
+        assertThat(entryNames).contains(artifactId + "/src/main/resources/application.yml");
+        assertThat(entryNames).contains(artifactId + "/README.md");
 
-      assertThat(entryNames)
-          .anySatisfy(
-              name ->
-                  assertThat(name)
-                      .startsWith("greeting/src/test/java/io/github/blueprintplatform/greeting/")
-                      .endsWith("ApplicationTests.java"));
+        assertThat(entryNames)
+            .anySatisfy(
+                name ->
+                    assertThat(name)
+                        .startsWith(
+                            artifactId + "/src/main/java/" + packageName.replace('.', '/') + "/")
+                        .endsWith("Application.java"));
 
-      assertThat(entryNames)
-          .contains(
-              "greeting/src/main/java/io/github/blueprintplatform/greeting/adapter/sample/in/rest/GreetingController.java");
+        assertThat(entryNames)
+            .anySatisfy(
+                name ->
+                    assertThat(name)
+                        .startsWith(
+                            artifactId + "/src/test/java/" + packageName.replace('.', '/') + "/")
+                        .endsWith("ApplicationTests.java"));
 
-      ZipEntry pomEntry = zipFile.getEntry("greeting/pom.xml");
-      assertThat(pomEntry).isNotNull();
-      String pomXml = readTextEntry(zipFile, pomEntry);
+        ZipEntry pomEntry = zipFile.getEntry(artifactId + "/pom.xml");
+        assertThat(pomEntry).isNotNull();
+        String pomXml = readTextEntry(zipFile, pomEntry);
 
-      assertThat(pomXml)
-          .contains("<groupId>io.github.blueprintplatform</groupId>")
-          .contains("<artifactId>greeting</artifactId>");
+        assertThat(pomXml)
+            .contains("<groupId>io.github.blueprintplatform</groupId>")
+            .contains("<artifactId>" + artifactId + "</artifactId>")
+            .contains("<java.version>" + java + "</java.version>")
+            .contains("spring-boot-starter-web")
+            .contains("spring-boot-starter-data-jpa")
+            .contains("spring-boot-starter-actuator")
+            .contains("spring-boot-starter-test");
 
-      assertThat(pomXml)
-          .contains("spring-boot-starter")
-          .contains("spring-boot-starter-web")
-          .contains("spring-boot-starter-data-jpa")
-          .contains("spring-boot-starter-actuator")
-          .contains("spring-boot-starter-test");
+        assertSpringBootParentVersion(pomXml, expectedBootPatch);
 
-      ZipEntry appYamlEntry = zipFile.getEntry("greeting/src/main/resources/application.yml");
-      assertThat(appYamlEntry).isNotNull();
-      String appYaml = readTextEntry(zipFile, appYamlEntry);
+        ZipEntry appYamlEntry =
+            zipFile.getEntry(artifactId + "/src/main/resources/application.yml");
+        assertThat(appYamlEntry).isNotNull();
+        String appYaml = readTextEntry(zipFile, appYamlEntry);
 
-      assertThat(appYaml)
-          .contains("spring:")
-          .contains("application:")
-          .contains("name:")
-          .contains("greeting");
+        assertThat(appYaml).contains("spring:").contains("application:").contains("name:");
 
-      ZipEntry readmeEntry = zipFile.getEntry("greeting/README.md");
-      assertThat(readmeEntry).isNotNull();
-      String readme = readTextEntry(zipFile, readmeEntry);
+        ZipEntry readmeEntry = zipFile.getEntry(artifactId + "/README.md");
+        assertThat(readmeEntry).isNotNull();
+        String readme = readTextEntry(zipFile, readmeEntry);
 
-      assertThat(readme).contains("Greeting").contains("io.github.blueprintplatform.greeting");
+        assertThat(readme).contains("Greeting").contains(packageName);
+      }
+    } else {
+      assertThat(io.exitCode()).isEqualTo(1);
+
+      assertThat(Files.exists(archivePath))
+          .as("Archive should NOT be created for incompatible target")
+          .isFalse();
+
+      assertThat(io.stderr()).contains("(code: " + expectedErrorCode + ")");
     }
   }
+
+  private record CapturedIo(int exitCode, String stdout, String stderr) {}
 }

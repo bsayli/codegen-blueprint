@@ -164,11 +164,13 @@ Codegen Blueprint today delivers:
 * Clean source layout (main + test) with verified bootstrapping
 * **Framework-free domain core by construction**
 * Profile-driven architecture selection (standard / hexagonal)
-* **Optional architecture enforcement via generated ArchUnit tests**
+* Optional architecture enforcement via generated ArchUnit tests  
   *(enabled with `--enforcement basic|strict`)*
 * Maven configuration, wrapper, and build baseline
 * Application configuration (`application.yml`)
-* Optional **Hexagonal teaching sample** (domain + ports + adapters)
+* Optional **basic sample code** for both:
+    * **standard (layered)** layout
+    * **hexagonal (ports & adapters)** layout
 
 > Architecture is not only generated —  
 > it can be **verified and enforced as part of the project output**.
@@ -480,7 +482,9 @@ Everything required to **build → run → extend** a real service:
 * Main & Test source structure
 * Domain + Application + Adapter layout
 * Application configuration (YAML)
-* Optional Hexagonal sample slice
+* Optional **basic sample code**, depending on selected layout:
+    * **standard (layered)** sample slice
+    * **hexagonal (ports & adapters)** sample slice
 * Optional **architecture enforcement tests (ArchUnit)**  
   *(enabled via `--enforcement basic|strict`)*
 * README + project documentation

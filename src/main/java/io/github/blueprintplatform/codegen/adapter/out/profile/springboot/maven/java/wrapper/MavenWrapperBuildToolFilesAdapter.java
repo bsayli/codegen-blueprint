@@ -21,7 +21,7 @@ public class MavenWrapperBuildToolFilesAdapter extends AbstractMultiTemplateArti
   }
 
   @Override
-  protected Map<String, Object> buildModel(ProjectBlueprint blueprint) {
+  protected Map<String, Object> buildModel(@SuppressWarnings("unused") ProjectBlueprint blueprint) {
     return Map.of();
   }
 }

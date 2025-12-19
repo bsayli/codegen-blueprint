@@ -36,5 +36,6 @@ public abstract class AbstractMultiTemplateArtifactAdapter implements ArtifactPo
     return List.copyOf(files);
   }
 
-  protected abstract Map<String, Object> buildModel(ProjectBlueprint blueprint);
+  protected abstract Map<String, Object> buildModel(
+      @SuppressWarnings("unused") ProjectBlueprint blueprint);
 }

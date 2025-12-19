@@ -32,6 +32,5 @@ public abstract class AbstractSingleTemplateArtifactAdapter implements ArtifactP
     return List.of(file);
   }
 
-  protected abstract Map<String, Object> buildModel(
-      @SuppressWarnings("unused") ProjectBlueprint blueprint);
+  protected abstract Map<String, Object> buildModel(ProjectBlueprint blueprint);
 }

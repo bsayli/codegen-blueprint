@@ -102,6 +102,26 @@ class AbstractMultiTemplateArtifactAdapterTest {
         .allSatisfy(model -> assertThat(model).isEqualTo(Map.of("key", "value")));
   }
 
+  @Test
+  @DisplayName("default buildModel() should return empty model and require non-null blueprint")
+  void defaultBuildModel_shouldReturnEmptyModelAndRequireNonNull() {
+    GeneratedResource file =
+        new GeneratedTextResource(Path.of("out/a.txt"), "a", StandardCharsets.UTF_8);
+
+    RecordingTemplateRenderer renderer = new RecordingTemplateRenderer(List.of(file));
+
+    ArtifactSpec artifactSpec =
+        new ArtifactSpec(BASE_PATH, List.of(new TemplateSpec("a.ftl", "out/a.txt")));
+
+    AbstractMultiTemplateArtifactAdapter adapter = new DefaultModelAdapter(renderer, artifactSpec);
+
+    adapter.generate(projectBlueprint());
+
+    assertThat(renderer.capturedModels)
+        .singleElement()
+        .satisfies(model -> assertThat(model).isEmpty());
+  }
+
   private static final class TestMultiTemplateAdapter extends AbstractMultiTemplateArtifactAdapter {
 
     TestMultiTemplateAdapter(TemplateRenderer renderer, ArtifactSpec artifactSpec) {
@@ -111,6 +131,18 @@ class AbstractMultiTemplateArtifactAdapterTest {
     @Override
     protected Map<String, Object> buildModel(ProjectBlueprint blueprint) {
       return Map.of("key", "value");
+    }
+
+    @Override
+    public ArtifactKey artifactKey() {
+      return null;
+    }
+  }
+
+  private static final class DefaultModelAdapter extends AbstractMultiTemplateArtifactAdapter {
+
+    DefaultModelAdapter(TemplateRenderer renderer, ArtifactSpec artifactSpec) {
+      super(renderer, artifactSpec);
     }
 
     @Override

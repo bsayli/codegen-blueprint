@@ -199,7 +199,7 @@ Enabled via:
 Enforced structural boundaries:
 
 ```
-adapters/    # technology surfaces
+adapter/    # technology surfaces
 application/ # orchestration
 domain/      # business rules
 bootstrap/   # wiring

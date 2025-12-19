@@ -103,7 +103,6 @@ The domain **declares the need**, but never performs IO itself.
 domain.port.out.filesystem
 ├─ ProjectRootPort
 ├─ ProjectWriterPort
-└─ ProjectFileListingPort
 ```
 
 ➡ Domain never touches IO implementations
@@ -346,7 +345,7 @@ The generated project:
 * Passes `mvn verify` on first run
 * Enforces architectural boundaries at test time
 * Prevents accidental dependency direction violations
-* Keeps Spring strictly at the edges (`bootstrap` / adapters)
+* Keeps Spring strictly at the edges (`bootstrap` and `adapter` layers)
 
 > Architecture is not suggested — it is **enforced by construction**.
 

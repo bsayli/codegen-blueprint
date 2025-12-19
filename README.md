@@ -769,7 +769,7 @@ Start here → :
 
 ## ⭐ Support
 
-If this project saves your team time or headaches:
+If this project saves your team time or headaches:<br>
 👉 **Please star the repo — it truly helps visibility!**
 
 **Barış Saylı** — Creator & Maintainer

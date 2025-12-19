@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public abstract class AbstractMultiTemplateArtifactAdapter implements ArtifactPort {
 
@@ -36,6 +37,8 @@ public abstract class AbstractMultiTemplateArtifactAdapter implements ArtifactPo
     return List.copyOf(files);
   }
 
-  protected abstract Map<String, Object> buildModel(
-      @SuppressWarnings("unused") ProjectBlueprint blueprint);
+  protected Map<String, Object> buildModel(ProjectBlueprint blueprint) {
+    Objects.requireNonNull(blueprint, "blueprint");
+    return Map.of();
+  }
 }

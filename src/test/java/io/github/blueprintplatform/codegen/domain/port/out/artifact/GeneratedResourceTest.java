@@ -44,6 +44,31 @@ class GeneratedResourceTest {
   }
 
   @Test
+  @DisplayName(
+      "BinaryContent should defensively copy, and equals/hashCode/toString should be stable")
+  void binaryContent_shouldBeImmutableAndValueBased() {
+    byte[] original = new byte[] {1, 2, 3};
+
+    BinaryContent c1 = new BinaryContent(original);
+
+    original[0] = 9;
+
+    assertThat(c1.bytes()).containsExactly(1, 2, 3);
+
+    byte[] view = c1.bytes();
+    view[1] = 8;
+
+    assertThat(c1.bytes()).containsExactly(1, 2, 3);
+
+    BinaryContent c2 = new BinaryContent(new byte[] {1, 2, 3});
+    BinaryContent c3 = new BinaryContent(new byte[] {1, 2, 4});
+
+    assertThat(c1).isEqualTo(c2).hasSameHashCodeAs(c2).isNotEqualTo(c3);
+
+    assertThat(c1.toString()).contains("BinaryContent").contains("size=3");
+  }
+
+  @Test
   @DisplayName("Binary should defensively copy bytes in ctor and accessor")
   void binary_shouldDefensivelyCopyBytes() {
     byte[] original = new byte[] {1, 2, 3};
@@ -51,13 +76,9 @@ class GeneratedResourceTest {
     GeneratedBinaryResource binary =
         new GeneratedBinaryResource(Path.of("bin.dat"), new BinaryContent(original));
 
-    // ctor defensive copy (BinaryContent ctor kopyalıyor olmalı)
     original[0] = 9;
-
     byte[] fromGetter = binary.bytes();
     assertThat(fromGetter).containsExactly(1, 2, 3);
-
-    // accessor defensive copy (BinaryContent.bytes() kopya dönmeli)
     fromGetter[1] = 8;
 
     byte[] fromGetterAgain = binary.bytes();

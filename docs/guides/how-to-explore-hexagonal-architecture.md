@@ -135,7 +135,7 @@ domain.port.out.filesystem
 ├─ ProjectWriterPort
 ```
 
-➡ Domain never touches IO implementations
+➡ Domain never touches IO implementations <br>
 ➡ Domain never packages output
 
 ---
@@ -240,6 +240,10 @@ build-config
 → sample-code (optional)
 → project-documentation
 ```
+
+> The pipeline is executed **top-to-bottom** in the exact order defined by the profile.
+> `build-config` is always the first artifact executed and establishes the build foundation
+> for everything that follows.
 
 Profiles are:
 

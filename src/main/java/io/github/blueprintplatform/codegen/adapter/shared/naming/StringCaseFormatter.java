@@ -2,7 +2,7 @@ package io.github.blueprintplatform.codegen.adapter.shared.naming;
 
 import java.util.regex.Pattern;
 
-public class StringCaseFormatter {
+public final class StringCaseFormatter {
 
   private static final String EMPTY = "";
   private static final Pattern NON_ALPHANUMERIC_DELIMITER = Pattern.compile("[^A-Za-z0-9]+");

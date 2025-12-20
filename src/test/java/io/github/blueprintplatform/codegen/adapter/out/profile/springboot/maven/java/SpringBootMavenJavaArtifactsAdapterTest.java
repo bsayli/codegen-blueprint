@@ -3,6 +3,7 @@ package io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
+import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactPipelineExecutor;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactPort;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureGovernance;
@@ -26,9 +27,7 @@ import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Framewo
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Language;
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.TechStack;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.StreamSupport;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -53,36 +52,40 @@ class SpringBootMavenJavaArtifactsAdapterTest {
   }
 
   @Test
-  @DisplayName("Should return empty list when no artifact ports are configured")
-  void shouldReturnEmptyWhenNoPorts() {
-    SpringBootMavenJavaArtifactsAdapter adapter =
-        new SpringBootMavenJavaArtifactsAdapter(List.of());
-
+  @DisplayName("Should return whatever executor returns")
+  void shouldReturnWhateverExecutorReturns() {
     ProjectBlueprint blueprint = blueprint();
 
-    List<? extends GeneratedResource> result =
-        StreamSupport.stream(adapter.generate(blueprint).spliterator(), false).toList();
+    ArtifactPipelineExecutor executor = mock(ArtifactPipelineExecutor.class);
+    List<ArtifactPort> ports = List.of(mock(ArtifactPort.class));
 
-    assertThat(result).isEmpty();
+    List<GeneratedResource> expected = List.of();
+    when(executor.execute(ports, blueprint)).thenReturn(expected);
+
+    SpringBootMavenJavaArtifactsAdapter adapter =
+        new SpringBootMavenJavaArtifactsAdapter(executor, ports);
+
+    var result = adapter.generate(blueprint);
+
+    assertThat(result).isSameAs(expected);
   }
 
   @Test
-  @DisplayName("Should delegate generate() exactly once to each ArtifactPort")
-  void shouldDelegateToEachArtifactPort() {
+  @DisplayName("Should delegate to ArtifactPipelineExecutor with given ports and blueprint")
+  void shouldDelegateToExecutor() {
     ProjectBlueprint blueprint = blueprint();
 
-    ArtifactPort p1 = mock(ArtifactPort.class);
-    ArtifactPort p2 = mock(ArtifactPort.class);
+    ArtifactPipelineExecutor executor = mock(ArtifactPipelineExecutor.class);
+    List<ArtifactPort> ports = List.of(mock(ArtifactPort.class), mock(ArtifactPort.class));
 
-    when(p1.generate(blueprint)).thenReturn(Collections.emptyList());
-    when(p2.generate(blueprint)).thenReturn(Collections.emptyList());
+    when(executor.execute(ports, blueprint)).thenReturn(List.of());
 
     SpringBootMavenJavaArtifactsAdapter adapter =
-        new SpringBootMavenJavaArtifactsAdapter(List.of(p1, p2));
+        new SpringBootMavenJavaArtifactsAdapter(executor, ports);
 
     adapter.generate(blueprint);
 
-    verify(p1, times(1)).generate(blueprint);
-    verify(p2, times(1)).generate(blueprint);
+    verify(executor, times(1)).execute(ports, blueprint);
+    verifyNoMoreInteractions(executor);
   }
 }

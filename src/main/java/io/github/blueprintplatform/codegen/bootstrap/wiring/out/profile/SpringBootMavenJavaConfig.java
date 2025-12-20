@@ -13,6 +13,7 @@ import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.
 import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.source.SourceLayoutAdapter;
 import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.source.TestSourceEntrypointAdapter;
 import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.wrapper.MavenWrapperBuildToolFilesAdapter;
+import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactPipelineExecutor;
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
 import io.github.blueprintplatform.codegen.adapter.out.shared.templating.ClasspathTemplateScanner;
 import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
@@ -179,13 +180,14 @@ public class SpringBootMavenJavaConfig {
 
   @Bean
   ProjectArtifactsPort springBootMavenJavaArtifactsAdapter(
+      ArtifactPipelineExecutor artifactPipelineExecutor,
       CodegenProfilesRegistry codegenProfilesProperties,
       Map<ArtifactKey, ArtifactPort> springBootMavenJavaArtifactRegistry) {
 
     var profile = codegenProfilesProperties.requireProfile(PROFILE_KEY);
     var orderedArtifactKeys = profile.orderedArtifactKeys();
 
-    List<ArtifactPort> ordered =
+    List<ArtifactPort> orderedArtifacts =
         orderedArtifactKeys.stream()
             .map(
                 key -> {
@@ -201,6 +203,6 @@ public class SpringBootMavenJavaConfig {
                 })
             .toList();
 
-    return new SpringBootMavenJavaArtifactsAdapter(ordered);
+    return new SpringBootMavenJavaArtifactsAdapter(artifactPipelineExecutor, orderedArtifacts);
   }
 }

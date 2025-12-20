@@ -1,9 +1,6 @@
 package io.github.blueprintplatform.codegen.domain.port.out.filesystem;
 
-import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedBinaryResource;
-import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedDirectory;
-import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
-import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedTextResource;
+import io.github.blueprintplatform.codegen.domain.port.out.artifact.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -17,34 +14,36 @@ public interface ProjectWriterPort {
 
   void createDirectories(Path projectRoot, Path relativeDir);
 
-  default void writeText(Path root, Path relative, String content) {
-    writeText(root, relative, content, StandardCharsets.UTF_8);
+  default void writeText(Path projectRoot, Path relativePath, String content) {
+    writeText(projectRoot, relativePath, content, StandardCharsets.UTF_8);
   }
 
   default void write(Path projectRoot, GeneratedResource resource) {
     switch (resource) {
-      case GeneratedTextResource text ->
-          writeText(projectRoot, text.relativePath(), text.content(), text.charset());
-      case GeneratedBinaryResource binary ->
-          writeBytes(projectRoot, binary.relativePath(), binary.bytes());
-      case GeneratedDirectory dir -> createDirectories(projectRoot, dir.relativePath());
-      default -> throw new IllegalArgumentException("Unsupported resource type: " + resource);
+      case GeneratedTextResource(Path relativePath, String content, Charset charset) ->
+              writeText(projectRoot, relativePath, content, charset);
+
+      case GeneratedBinaryResource(Path relativePath, BinaryContent content) ->
+              writeBytes(projectRoot, relativePath, content.bytes());
+
+      case GeneratedDirectory(Path relativePath) ->
+              createDirectories(projectRoot, relativePath);
     }
   }
 
   default void write(Path projectRoot, Iterable<? extends GeneratedResource> resources) {
-    for (GeneratedResource r : resources) {
-      write(projectRoot, r);
+    for (GeneratedResource resource : resources) {
+      write(projectRoot, resource);
     }
   }
 
   default void write(Path projectRoot, GeneratedResource... resources) {
-    for (GeneratedResource r : resources) {
-      write(projectRoot, r);
+    for (GeneratedResource resource : resources) {
+      write(projectRoot, resource);
     }
   }
 
   default void write(Path projectRoot, Stream<? extends GeneratedResource> resources) {
-    resources.forEach(r -> write(projectRoot, r));
+    resources.forEach(resource -> write(projectRoot, resource));
   }
 }

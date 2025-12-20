@@ -50,9 +50,10 @@ public class SpringBootMavenJavaConfig {
 
   @Bean
   BuildToolFilesPort springBootMavenJavaMavenWrapperBuildToolFilesAdapter(
-          TemplateRenderer renderer, CodegenProfilesRegistry registry, ArtifactSpecMapper mapper) {
+      TemplateRenderer renderer, CodegenProfilesRegistry registry, ArtifactSpecMapper mapper) {
 
-    ArtifactSpec spec = mapper.from(registry.requireArtifact(PROFILE_KEY, ArtifactKey.BUILD_TOOL_FILES));
+    ArtifactSpec spec =
+        mapper.from(registry.requireArtifact(PROFILE_KEY, ArtifactKey.BUILD_TOOL_FILES));
 
     return new MavenWrapperBuildToolFilesAdapter(renderer, spec);
   }
@@ -61,7 +62,8 @@ public class SpringBootMavenJavaConfig {
   IgnoreRulesPort springBootMavenJavaGitIgnoreAdapter(
       TemplateRenderer renderer, CodegenProfilesRegistry registry, ArtifactSpecMapper mapper) {
 
-    ArtifactSpec spec = mapper.from(registry.requireArtifact(PROFILE_KEY, ArtifactKey.IGNORE_RULES));
+    ArtifactSpec spec =
+        mapper.from(registry.requireArtifact(PROFILE_KEY, ArtifactKey.IGNORE_RULES));
     return new GitIgnoreAdapter(renderer, spec);
   }
 

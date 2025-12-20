@@ -17,9 +17,10 @@ class GeneratedResourceTest {
   @Test
   @DisplayName("Text with valid args should be created successfully")
   void text_validArgs_shouldCreateInstance() {
-    GeneratedTextResource text = new GeneratedTextResource(Path.of("pom.xml"), "<xml/>", UTF_8);
+    Path relativePath = Path.of("pom.xml");
+    GeneratedTextResource text = new GeneratedTextResource(relativePath, "<xml/>", UTF_8);
 
-    assertThat(text.relativePath()).isEqualTo(Path.of("pom.xml"));
+    assertThat(text.relativePath()).isEqualTo(relativePath);
     assertThat(text.content()).isEqualTo("<xml/>");
     assertThat(text.charset()).isEqualTo(UTF_8);
   }
@@ -46,15 +47,17 @@ class GeneratedResourceTest {
   @DisplayName("Binary should defensively copy bytes in ctor and accessor")
   void binary_shouldDefensivelyCopyBytes() {
     byte[] original = new byte[] {1, 2, 3};
-    GeneratedBinaryResource binary = new GeneratedBinaryResource(Path.of("bin.dat"), original);
 
-    // ctor defensive copy
+    GeneratedBinaryResource binary =
+        new GeneratedBinaryResource(Path.of("bin.dat"), new BinaryContent(original));
+
+    // ctor defensive copy (BinaryContent ctor kopyalıyor olmalı)
     original[0] = 9;
 
     byte[] fromGetter = binary.bytes();
     assertThat(fromGetter).containsExactly(1, 2, 3);
 
-    // accessor defensive copy
+    // accessor defensive copy (BinaryContent.bytes() kopya dönmeli)
     fromGetter[1] = 8;
 
     byte[] fromGetterAgain = binary.bytes();
@@ -64,7 +67,7 @@ class GeneratedResourceTest {
   @Test
   @DisplayName("Binary with null path should fail with file.path.not.blank")
   void binary_nullPath_shouldFailPathNotBlank() {
-    assertThatThrownBy(() -> new GeneratedBinaryResource(null, new byte[] {1}))
+    assertThatThrownBy(() -> new GeneratedBinaryResource(null, new BinaryContent(new byte[] {1})))
         .isInstanceOfSatisfying(
             DomainViolationException.class,
             dve -> assertThat(dve.getMessageKey()).isEqualTo("file.path.not.blank"));
@@ -73,7 +76,7 @@ class GeneratedResourceTest {
   @Test
   @DisplayName("Binary with null bytes should fail with file.content.not.blank")
   void binary_nullBytes_shouldFailContentNotBlank() {
-    assertThatThrownBy(() -> new GeneratedBinaryResource(Path.of("bin.dat"), null))
+    assertThatThrownBy(() -> new BinaryContent(null))
         .isInstanceOfSatisfying(
             DomainViolationException.class,
             dve -> assertThat(dve.getMessageKey()).isEqualTo("file.content.not.blank"));
@@ -82,12 +85,14 @@ class GeneratedResourceTest {
   @Test
   @DisplayName("Binary equals/hashCode should depend on path and bytes")
   void binary_equalsAndHashCode_shouldDependOnPathAndBytes() {
+    Path binRelativePath = Path.of("bin.dat");
+
     GeneratedBinaryResource b1 =
-        new GeneratedBinaryResource(Path.of("bin.dat"), new byte[] {1, 2, 3});
+        new GeneratedBinaryResource(binRelativePath, new BinaryContent(new byte[] {1, 2, 3}));
     GeneratedBinaryResource b2 =
-        new GeneratedBinaryResource(Path.of("bin.dat"), new byte[] {1, 2, 3});
+        new GeneratedBinaryResource(binRelativePath, new BinaryContent(new byte[] {1, 2, 3}));
     GeneratedBinaryResource b3 =
-        new GeneratedBinaryResource(Path.of("other.bin"), new byte[] {1, 2, 3});
+        new GeneratedBinaryResource(Path.of("other.bin"), new BinaryContent(new byte[] {1, 2, 3}));
 
     assertThat(b1).isEqualTo(b2).hasSameHashCodeAs(b2).isNotEqualTo(b3);
   }
@@ -95,9 +100,10 @@ class GeneratedResourceTest {
   @Test
   @DisplayName("Directory with valid path should be created successfully")
   void directory_validPath_shouldCreateInstance() {
-    GeneratedDirectory dir = new GeneratedDirectory(Path.of("src/main/java"));
+    Path relativePath = Path.of("src/main/java");
+    GeneratedDirectory dir = new GeneratedDirectory(relativePath);
 
-    assertThat(dir.relativePath()).isEqualTo(Path.of("src/main/java"));
+    assertThat(dir.relativePath()).isEqualTo(relativePath);
     assertThat(dir.toString()).contains("GeneratedDirectory");
   }
 

@@ -41,16 +41,43 @@ Architecture decisions are **compiled into the generator and materialized in the
 Most project templates generate **folders**.
 Codegen Blueprint generates **architectural intent**.
 
-Hexagonal Architecture was chosen because it delivers:
+Hexagonal Architecture is not a stylistic choice in this project.
+It is a **prerequisite** for Blueprint’s core promise:
 
-| Principle                   | Value Delivered                   |
-| --------------------------- | --------------------------------- |
-| Strict dependency direction | Pure, independent domain model    |
-| Ports define contracts      | Technology swaps without refactor |
-| Adapter isolation           | Framework choice does not leak    |
-| Test‑first boundaries       | Faster evolution with confidence  |
+> **Generate once.  
+> Evolve across frameworks, runtimes, and languages — without rewriting the core.**
 
-> The generated output already **protects the future architecture** of your service.
+### Why this matters
+
+Blueprint Platform is designed to be:
+
+- profile-driven
+- framework-agnostic at its core
+- extensible across stacks over time
+
+This is only possible if:
+
+- the **domain model remains pure and framework-free**
+- application use cases are expressed via **ports**
+- all technology decisions live behind **replaceable adapters**
+
+Without strict hexagonal boundaries:
+
+- every new framework would leak into core logic
+- profiles would become forks
+- extensibility would collapse into copy-paste generators
+
+### What Hexagonal enables here
+
+| Hexagonal Principle           | Platform Capability Enabled                                  |
+| ----------------------------- | ------------------------------------------------------------ |
+| Inward dependency direction   | Domain & application remain stable across profiles           |
+| Ports define use-case contracts | New delivery mechanisms (CLI, REST, future APIs) plug in safely |
+| Adapter isolation             | Frameworks and languages evolve without core rewrites        |
+| Profile-driven adapters       | New stacks are added by extension, not modification          |
+
+> **Spring Boot is the first adapter — not the foundation.**  
+> Hexagonal Architecture ensures it is never the last.
 
 ---
 

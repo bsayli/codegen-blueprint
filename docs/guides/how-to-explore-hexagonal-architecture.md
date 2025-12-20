@@ -29,6 +29,7 @@ Architecture decisions are **compiled into the generator and materialized in the
 * [Resource Model](#-resource-model--better-than-just-files)
 * [Verified Architecture — Testing Strategy](#-verified-architecture--testing-strategy)
 * [What You Learn from This Repo](#-what-you-learn-from-this-repo)
+* [Application Inbound Port (Use Case Boundary)](#-application-inbound-port-use-case-boundary)
 * [Try It — CLI Delivery Adapter](#-try-it--cli-delivery-adapter)
 * [Architecture Execution Path](#-architecture-execution-path-mental-model)
 * [Final Thoughts](#-final-thoughts)
@@ -294,6 +295,28 @@ It is **not positioned as** a classroom demo, step-by-step tutorial, or framewor
 
 Instead, it serves as a **production-oriented reference** for developers and architects
 who want to study, evaluate, and evolve executable architecture in real systems.
+
+---
+
+## 🎯 Application Inbound Port (Use Case Boundary)
+
+In Codegen Blueprint, the **primary hexagonal boundary** at the application edge is an **inbound port** (a use-case contract):
+
+- `application.port.in.project.CreateProjectPort`
+
+This is **not a domain port**.
+It represents a **use case entrypoint** owned by the application layer.
+
+Delivery mechanisms (CLI today, REST tomorrow) are **inbound adapters** that translate input into a `CreateProjectCommand` and invoke this port.
+
+```java
+public interface CreateProjectPort {
+    CreateProjectResult handle(CreateProjectCommand createProjectCommand);
+}
+```
+**Key idea:**  
+Adapters depend on the port.  
+The port does **not** depend on adapters.
 
 ---
 

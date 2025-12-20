@@ -44,6 +44,15 @@ class GeneratedResourceTest {
   }
 
   @Test
+  @DisplayName("Binary with null content should fail with file.content.not.blank")
+  void binary_nullContent_shouldFailContentNotBlank() {
+    assertThatThrownBy(() -> new GeneratedBinaryResource(Path.of("bin.dat"), null))
+        .isInstanceOfSatisfying(
+            DomainViolationException.class,
+            dve -> assertThat(dve.getMessageKey()).isEqualTo("file.content.not.blank"));
+  }
+
+  @Test
   @DisplayName(
       "BinaryContent should defensively copy, and equals/hashCode/toString should be stable")
   void binaryContent_shouldBeImmutableAndValueBased() {

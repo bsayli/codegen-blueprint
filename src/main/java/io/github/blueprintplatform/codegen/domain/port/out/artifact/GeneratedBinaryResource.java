@@ -1,5 +1,6 @@
 package io.github.blueprintplatform.codegen.domain.port.out.artifact;
 
+import static io.github.blueprintplatform.codegen.domain.policy.file.GeneratedFilePolicy.requireBinaryContent;
 import static io.github.blueprintplatform.codegen.domain.policy.file.GeneratedFilePolicy.requireRelativePath;
 
 import java.nio.file.Path;
@@ -9,9 +10,7 @@ public record GeneratedBinaryResource(Path relativePath, BinaryContent content)
 
   public GeneratedBinaryResource {
     requireRelativePath(relativePath);
-    if (content == null) {
-      throw new NullPointerException("content");
-    }
+    requireBinaryContent(content);
   }
 
   public byte[] bytes() {

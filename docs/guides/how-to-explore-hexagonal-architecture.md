@@ -67,6 +67,8 @@ Without strict hexagonal boundaries:
 - profiles would become forks
 - extensibility would collapse into copy-paste generators
 
+---
+
 ### What Hexagonal enables here
 
 | Hexagonal Principle           | Platform Capability Enabled                                  |

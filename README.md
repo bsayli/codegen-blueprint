@@ -223,7 +223,15 @@ When strict enforcement is enabled, architectural boundaries are translated into
 
 ## 🧱 Architecture Overview
 
-Architecture isn’t only drawn — it executes here ⬇
+Architecture isn’t only drawn — it executes here.
+
+Hexagonal Architecture is not a stylistic choice in Codegen Blueprint.
+It is a **structural requirement** for the platform’s core promise:
+
+> **Generate once.  
+> Evolve across frameworks, runtimes, and languages — without rewriting the core.**
+
+Spring Boot is the first adapter — not the foundation.
 
 📌 Want the architectural deep dive?
 
@@ -243,6 +251,8 @@ Architecture isn’t only drawn — it executes here ⬇
   Defines *how architectural decisions are made, enforced, and protected* —  
   including **how AI is allowed to participate**  
   → [Architecture Governance & AI Protocol](docs/architecture/architecture-governance-and-ai-protocol.md)
+
+---
 
 ### 🧩 Part of the Blueprint Platform
 

@@ -22,7 +22,7 @@ import io.github.blueprintplatform.codegen.application.port.out.artifact.*;
 import io.github.blueprintplatform.codegen.bootstrap.config.keys.ProfileKeys;
 import io.github.blueprintplatform.codegen.bootstrap.config.registry.CodegenProfilesRegistry;
 import io.github.blueprintplatform.codegen.bootstrap.error.exception.ProfileConfigurationException;
-import io.github.blueprintplatform.codegen.bootstrap.mapping.ArtifactSpecMapper;
+import io.github.blueprintplatform.codegen.bootstrap.mapper.ArtifactSpecMapper;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;

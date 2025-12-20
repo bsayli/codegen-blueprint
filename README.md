@@ -95,7 +95,7 @@ It treats architecture as a **first-class, executable product**:
 <br/>
 
 <p align="center">
-  <img src="docs/images/architecture/value-proposition.png" width="780" />
+  <img src="docs/images/architecture/value-proposition.png" width="780"  alt="Value proposition of Codegen Blueprint showing stakeholders, architecture engine capabilities, and enforced outcomes for teams"/>
   <br/>
   <em>Who benefits → Engine capabilities → What teams get</em>
 </p>
@@ -275,7 +275,7 @@ bootstrap   // Spring wiring + config
 ```
 
 <p align="center">
-  <img src="docs/images/architecture/architecture-overview.png" width="860" />
+  <img src="docs/images/architecture/architecture-overview.png" width="860"  alt="High-level flow of Codegen Blueprint from CLI through use case, domain, artifact generation, and Spring Boot project output"/>
   <br/>
   <em>CLI → Use case layer → Domain → Artifacts → Spring Boot project</em>
 </p>

@@ -1,4 +1,4 @@
-package io.github.blueprintplatform.codegen.bootstrap.mapping;
+package io.github.blueprintplatform.codegen.bootstrap.mapper;
 
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.TemplateSpec;

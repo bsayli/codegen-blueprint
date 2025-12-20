@@ -21,13 +21,12 @@ public interface ProjectWriterPort {
   default void write(Path projectRoot, GeneratedResource resource) {
     switch (resource) {
       case GeneratedTextResource(Path relativePath, String content, Charset charset) ->
-              writeText(projectRoot, relativePath, content, charset);
+          writeText(projectRoot, relativePath, content, charset);
 
       case GeneratedBinaryResource(Path relativePath, BinaryContent content) ->
-              writeBytes(projectRoot, relativePath, content.bytes());
+          writeBytes(projectRoot, relativePath, content.bytes());
 
-      case GeneratedDirectory(Path relativePath) ->
-              createDirectories(projectRoot, relativePath);
+      case GeneratedDirectory(Path relativePath) -> createDirectories(projectRoot, relativePath);
     }
   }
 

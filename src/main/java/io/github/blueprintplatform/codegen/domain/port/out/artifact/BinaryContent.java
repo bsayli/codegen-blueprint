@@ -6,19 +6,19 @@ import java.util.Arrays;
 
 public record BinaryContent(byte[] bytes) {
 
-  public BinaryContent {
+  public BinaryContent(byte[] bytes) {
     requireBinaryContent(bytes);
-    bytes = Arrays.copyOf(bytes, bytes.length);
+    this.bytes = Arrays.copyOf(bytes, bytes.length);
   }
 
+  @Override
   public byte[] bytes() {
     return Arrays.copyOf(bytes, bytes.length);
   }
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    return o instanceof BinaryContent(byte[] other) && Arrays.equals(bytes, other);
+    return (this == o) || (o instanceof BinaryContent(byte[] other) && Arrays.equals(bytes, other));
   }
 
   @Override

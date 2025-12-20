@@ -18,6 +18,7 @@ public record GeneratedBinaryResource(Path relativePath, BinaryContent content)
     return content.bytes();
   }
 
+  @SuppressWarnings("NullableProblems")
   @Override
   public String toString() {
     return "GeneratedBinaryResource[" + relativePath + ", " + content + "]";

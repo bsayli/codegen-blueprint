@@ -59,11 +59,12 @@ class SpringBootMavenJavaArtifactsAdapterTest {
     ArtifactPipelineExecutor executor = mock(ArtifactPipelineExecutor.class);
     List<ArtifactPort> ports = List.of(mock(ArtifactPort.class));
 
-    List<GeneratedResource> expected = List.of();
-    when(executor.execute(ports, blueprint)).thenReturn(expected);
+    Iterable<? extends GeneratedResource> expected = List.of();
+
+    doReturn(expected).when(executor).execute(ports, blueprint);
 
     SpringBootMavenJavaArtifactsAdapter adapter =
-        new SpringBootMavenJavaArtifactsAdapter(executor, ports);
+            new SpringBootMavenJavaArtifactsAdapter(executor, ports);
 
     var result = adapter.generate(blueprint);
 

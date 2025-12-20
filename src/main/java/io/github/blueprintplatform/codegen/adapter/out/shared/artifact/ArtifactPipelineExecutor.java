@@ -6,12 +6,13 @@ import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedRes
 import java.util.List;
 import java.util.stream.StreamSupport;
 
-public class ArtifactPipelineExecutor {
+public final class ArtifactPipelineExecutor {
 
-  public List<GeneratedResource> execute(List<ArtifactPort> artifacts, ProjectBlueprint blueprint) {
+  public Iterable<? extends GeneratedResource> execute(
+          List<ArtifactPort> artifacts, ProjectBlueprint blueprint) {
+
     return artifacts.stream()
-        .flatMap(p -> StreamSupport.stream(p.generate(blueprint).spliterator(), false))
-        .map(GeneratedResource.class::cast)
-        .toList();
+            .flatMap(p -> StreamSupport.stream(p.generate(blueprint).spliterator(), false))
+            .toList();
   }
 }

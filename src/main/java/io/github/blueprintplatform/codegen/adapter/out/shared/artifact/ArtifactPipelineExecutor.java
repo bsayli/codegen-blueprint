@@ -9,10 +9,10 @@ import java.util.stream.StreamSupport;
 public final class ArtifactPipelineExecutor {
 
   public Iterable<? extends GeneratedResource> execute(
-          List<ArtifactPort> artifacts, ProjectBlueprint blueprint) {
+      List<ArtifactPort> artifacts, ProjectBlueprint blueprint) {
 
     return artifacts.stream()
-            .flatMap(p -> StreamSupport.stream(p.generate(blueprint).spliterator(), false))
-            .toList();
+        .flatMap(p -> StreamSupport.stream(p.generate(blueprint).spliterator(), false))
+        .toList();
   }
 }

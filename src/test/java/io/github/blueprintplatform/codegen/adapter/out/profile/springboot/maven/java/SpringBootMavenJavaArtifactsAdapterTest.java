@@ -64,7 +64,7 @@ class SpringBootMavenJavaArtifactsAdapterTest {
     doReturn(expected).when(executor).execute(ports, blueprint);
 
     SpringBootMavenJavaArtifactsAdapter adapter =
-            new SpringBootMavenJavaArtifactsAdapter(executor, ports);
+        new SpringBootMavenJavaArtifactsAdapter(executor, ports);
 
     var result = adapter.generate(blueprint);
 

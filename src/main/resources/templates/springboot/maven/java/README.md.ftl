@@ -113,8 +113,9 @@ src
 │  │  └─ bootstrap
 │  └─ resources
 └─ test
-└─ java/${packageName?replace('.', '/')}
+   └─ java/${packageName?replace('.', '/')}
 ```
+
 
 > This project follows **Hexagonal Architecture (Ports & Adapters)**.
 >
@@ -138,7 +139,7 @@ src
 │  │  └─ config
 │  └─ resources
 └─ test
-└─ java/${packageName?replace('.', '/')}
+   └─ java/${packageName?replace('.', '/')}
 ```
 
 > This project follows a **Standard Layered Architecture**.

@@ -1,4 +1,4 @@
-package ${projectPackageName}.architecture.archunit.archunit;
+package ${projectPackageName}.architecture.archunit;
 
 import static com.tngtech.archunit.base.DescribedPredicate.describe;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;

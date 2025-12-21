@@ -77,30 +77,48 @@ mvn verify
 
 ### Hexagonal — Strict
 
-Includes **all Basic rules**, plus the following:
+**Strict enforcement generates the following rules:**
+
+---
 
 #### Adapter direction isolation
 
 * Inbound adapters **must not depend on outbound adapters**
 * Outbound adapters **must not depend on inbound adapters**
 
+---
+
 #### Domain purity
 
 * Domain may depend **only on:**
 
-    * JDK types (`java.*`)
-    * Other domain types
+  * JDK types (`java.*`)
+  * Other domain types
 * No framework, adapter, or application dependencies allowed
 
-#### Ports isolation
+---
 
-* Adapters may depend **only on application ports**
-* Adapters must not depend on application implementation classes
+#### Inbound adapter → domain isolation
+
+* Inbound adapters **must not depend on domain services** (`..domain..service..`)
+* Inbound adapters **must not depend on domain outbound ports** (`..domain..port..out..`)
+
+---
+
+#### Application implementation isolation
+
+* Adapters must not depend on **application implementation classes**
+
+  * Any `..application..` type **outside** `..application..port..`
+
+---
 
 #### Package cycle prevention
 
 * No cyclic dependencies between top-level packages
 * No cycles inside adapter subpackages
+
+---
 
 #### REST boundary isolation (Spring Web only)
 
@@ -112,17 +130,19 @@ Rules:
 
 * REST controllers **must not expose domain types** in:
 
-    * Return types
-    * Parameters
-    * Generic signatures
+  * Return types
+  * Parameters
+  * Generic signatures
 * DTOs under inbound adapters must not depend on domain
+
+---
 
 **Rationale**
 
 * HTTP is a public boundary
 * Domain types must never leak through that boundary
 
----
+--- 
 
 ## Standard (Layered) architecture enforcement
 
@@ -146,20 +166,20 @@ Rules:
 
 ### Standard — Strict
 
-Includes **all Basic rules**, plus the following:
+**Strict enforcement generates the following rules:**
 
-#### Layer dependency direction
+#### Layer dependency direction (and boundary bypass prevention)
 
 * Controllers must not depend on repositories
+* Controllers must not depend on domain services
 * Services must not depend on controllers
 * Repositories must not depend on services or controllers
 
 #### Domain purity
 
 * Domain may depend **only on:**
-
-    * JDK types
-    * Other domain types
+  * JDK types (`java.*`)
+  * Other domain types
 
 #### Package cycle prevention
 
@@ -167,19 +187,23 @@ Includes **all Basic rules**, plus the following:
 
 #### REST boundary isolation (Spring Web only)
 
+Enforced only when:
+
+* `spring-boot-starter-web` is present
+
 Rules:
 
 * REST controllers must not expose domain types in:
-
-    * Return types
-    * Parameters
-    * Generic signatures
+  * Return types
+  * Parameters
+  * Generic signatures
 * Controller DTOs must not depend on domain
 
 **Rationale**
 
 * Controller layer is the public HTTP boundary
-* Domain must remain internal
+* Domain types must never cross that boundary
+* Controllers must not bypass the service layer by invoking domain services directly
 
 ---
 

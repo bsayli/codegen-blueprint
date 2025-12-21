@@ -33,6 +33,7 @@ Architecture decisions are **compiled into the generator and materialized in the
 * [Try It — CLI Delivery Adapter](#-try-it--cli-delivery-adapter)
 * [Architecture Execution Path](#-architecture-execution-path-mental-model)
 * [Final Thoughts](#-final-thoughts)
+* [Appendix — Port Placement Policy (Domain vs Application)](#appendix--port-placement-policy-domain-vs-application)
 
 ---
 
@@ -440,3 +441,92 @@ ProjectWriterPort
 * Standards are repeatable at scale
 
 > Architecture is no longer documentation — it is **behavior**.
+
+---
+
+## Appendix — Port Placement Policy (Domain vs Application)
+
+This appendix exists to clarify an intentional design decision
+that is frequently misunderstood when reviewing hexagonal architectures.
+
+In Codegen Blueprint, **ports are not placed arbitrarily**.
+Their location reflects **ownership of responsibility**, not technical convenience.
+
+Hexagonal Architecture allows outbound ports at **multiple layers**, as long as **dependency direction and intent remain explicit**.
+
+---
+
+## Domain → Outbound Ports (`domain.port.out.*`)
+
+Domain outbound ports represent **fundamental infrastructure capabilities** required by the domain model to remain pure and executable.
+
+**Characteristics:**
+
+* Express **what the domain needs**, not *how it is delivered*
+* No orchestration or delivery semantics
+* No packaging, archiving, or presentation concerns
+* No framework or runtime assumptions
+
+**Examples:**
+
+* `ProjectRootPort` — prepare and validate a project root
+* `ProjectWriterPort` — persist generated resources
+
+These ports model **capabilities**, not workflows.
+
+The domain declares:
+
+> “I need to write resources”
+
+—not—
+
+> “I need to zip, publish, or expose them.”
+
+---
+
+## Application → Outbound Ports (`application.port.out.*`)
+
+Application outbound ports represent **use-case delivery and orchestration responsibilities**.
+
+**Characteristics:**
+
+* Coordinate execution and output
+* Own delivery semantics (archive, listing, reporting)
+* Bind multiple domain capabilities into a use-case flow
+* Framework-agnostic, but delivery-aware
+
+**Examples:**
+
+* `ProjectArchiverPort` — package the generated project
+* `ProjectOutputPort` — discover and report generated output
+* `ProjectArtifactsSelector` — select and execute artifact pipelines
+
+These ports model **how a use case is delivered**, not domain rules.
+
+---
+
+## Why This Split Exists
+
+This distinction is intentional and critical for a **generation engine**:
+
+* Domain ports stay stable across delivery mechanisms
+* Application ports evolve with delivery strategies
+* New delivery modes (CLI today, REST tomorrow) do **not** affect domain contracts
+* Enforcement rules remain explainable and enforceable
+
+If all outbound ports lived in the domain, the domain would implicitly own delivery orchestration — which it must not.
+
+If all outbound ports lived in the application, the domain would lose the ability to express its required capabilities.
+
+---
+
+## Architectural Guarantee
+
+* Domain depends on **domain ports only**
+* Application depends on **domain + application ports**
+* Adapters implement ports — never own them
+* Dependency direction remains strictly inward
+
+This is **not hexagonal drift**.
+It is **explicit responsibility separation** aligned with executable architecture.
+

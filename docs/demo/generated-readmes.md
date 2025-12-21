@@ -64,7 +64,7 @@ Key characteristics visible in the generated README:
 
 📄 **Full generated README:**
 
-→ [Hexagonal Project README.md](./generated/hexagonal/README.md)
+→ [Hexagonal Project README](./generated/hexagonal/README.md)
 
 ---
 
@@ -90,7 +90,7 @@ Key characteristics visible in the generated README:
 
 📄 **Full generated README:**
 
-→ [Standard Project README.md](./generated/standard/README.md)
+→ [Standard Project README](./generated/standard/README.md)
 
 ---
 

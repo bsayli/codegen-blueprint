@@ -50,11 +50,9 @@ Greeting sample built with standard layered architecture
 
 > If Maven is installed globally, you may also use `mvn` instead of the wrapper.
 
-
 ---
 
 ## ⚙️ Auto Configuration Notes
-
 
 ### H2 (for JPA)
 
@@ -63,15 +61,12 @@ This project includes an **in-memory H2 database** configuration because `spring
 * JDBC URL: `jdbc:h2:mem:greeting-standard`
 * Console: `/h2-console` (if enabled)
 
-
-
 ### Actuator
 
 Basic actuator exposure is enabled:
 
 * `/actuator/health`
 * `/actuator/info`
-
 
 
 ---
@@ -104,16 +99,12 @@ src
 ---
 
 ## 🧩 Architecture Enforcement
-
-
 Architecture enforcement is **enabled (strict)**.
 
 This project includes **strict, fail-fast architectural guardrails** generated as executable ArchUnit tests.
 Any architectural drift will **break the build deterministically**.
 
 ### What is enforced (strict)
-
-
 For **Standard (Layered) Architecture**, strict enforcement guarantees:
 
 * **Layer dependency direction and bypass prevention**
@@ -160,10 +151,6 @@ src/test/java/io/github/blueprintplatform/greeting/architecture/archunit/
 
 > These rules are generated code.
 > They are part of the project contract and should not be edited manually.
-
-
-
-
 
 ---
 
@@ -259,9 +246,9 @@ If you are comfortable with this structure, you are well-positioned to understan
 
 | Dependency | Scope |
 |-----------|-------|
-    | `org.springframework.boot:spring-boot-starter-actuator` | default |
-    | `org.springframework.boot:spring-boot-starter-data-jpa` | default |
-    | `org.springframework.boot:spring-boot-starter-web` | default |
+| `org.springframework.boot:spring-boot-starter-actuator` | default |
+| `org.springframework.boot:spring-boot-starter-data-jpa` | default |
+| `org.springframework.boot:spring-boot-starter-web` | default |
 
 ---
 

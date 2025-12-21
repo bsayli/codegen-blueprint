@@ -50,11 +50,9 @@ Greeting sample built with hexagonal architecture
 
 > If Maven is installed globally, you may also use `mvn` instead of the wrapper.
 
-
 ---
 
 ## ⚙️ Auto Configuration Notes
-
 
 ### H2 (for JPA)
 
@@ -63,15 +61,12 @@ This project includes an **in-memory H2 database** configuration because `spring
 * JDBC URL: `jdbc:h2:mem:greeting`
 * Console: `/h2-console` (if enabled)
 
-
-
 ### Actuator
 
 Basic actuator exposure is enabled:
 
 * `/actuator/health`
 * `/actuator/info`
-
 
 
 ---
@@ -104,7 +99,6 @@ src
 > * `adapter` contains inbound/outbound implementations (REST, persistence, messaging)
 > * `bootstrap` wires everything together
 
-
 ---
 
 ## 🧱 Hexagonal Architecture (Ports & Adapters)
@@ -127,19 +121,15 @@ Your `src/main/java/io/github/blueprintplatform/greeting` structure follows thes
 * Dependencies point **inward** (adapters depend on application/domain; domain depends on nothing).
 * The application layer exposes **ports**; adapters implement or call those ports.
 
-
 ---
 
 ## 🧩 Architecture Enforcement
-
-
 Architecture enforcement is **enabled (strict)**.
 
 This project includes **strict, fail-fast architectural guardrails** generated as executable ArchUnit tests.
 Any architectural drift will **break the build deterministically**.
 
 ### What is enforced (strict)
-
 
 For **Hexagonal Architecture**, strict enforcement guarantees:
 
@@ -181,7 +171,6 @@ For **Hexagonal Architecture**, strict enforcement guarantees:
   * No cyclic dependencies across top-level packages
   * No cycles inside adapter subpackages
 
-
 ### How enforcement works
 
 * Rules are generated automatically based on:
@@ -204,9 +193,6 @@ src/test/java/io/github/blueprintplatform/greeting/architecture/archunit/
 
 > These rules are generated code.
 > They are part of the project contract and should not be edited manually.
-
-
-
 
 ---
 
@@ -264,17 +250,15 @@ You can use this sample in two ways:
 * as a **teaching reference** for the hexagonal boundaries in this codebase
 * as a **starting slice** to evolve into your real business modules
 
-
-
 ---
 
 ## 📚 Selected Dependencies
 
 | Dependency | Scope |
 |-----------|-------|
-    | `org.springframework.boot:spring-boot-starter-actuator` | default |
-    | `org.springframework.boot:spring-boot-starter-data-jpa` | default |
-    | `org.springframework.boot:spring-boot-starter-web` | default |
+| `org.springframework.boot:spring-boot-starter-actuator` | default |
+| `org.springframework.boot:spring-boot-starter-data-jpa` | default |
+| `org.springframework.boot:spring-boot-starter-web` | default |
 
 ---
 

@@ -51,24 +51,20 @@ ${projectDescription}
 > If Maven is installed globally, you may also use `mvn` instead of the wrapper.
 
 <#if features?has_content && ((features.h2)!false || (features.actuator)!false || (features.security)!false)>
-
 ---
 
 ## ⚙️ Auto Configuration Notes
 
 <#if (features.h2)!false>
-
 ### H2 (for JPA)
 
 This project includes an **in-memory H2 database** configuration because `spring-boot-starter-data-jpa` was selected.
 
 * JDBC URL: `jdbc:h2:mem:${artifactId}`
 * Console: `/h2-console` (if enabled)
-
 </#if>
 
 <#if (features.actuator)!false>
-
 ### Actuator
 
 Basic actuator exposure is enabled:
@@ -77,13 +73,11 @@ Basic actuator exposure is enabled:
 * `/actuator/info`
 
 </#if>
-
 <#if (features.security)!false>
 
 ### Security
 
 `spring-boot-starter-security` is included. Endpoints may require authentication depending on defaults and your configuration.
-
 </#if>
 </#if>
 
@@ -117,7 +111,6 @@ src
 > * `application` orchestrates use cases and defines ports
 > * `adapter` contains inbound/outbound implementations (REST, persistence, messaging)
 > * `bootstrap` wires everything together
-
 <#else>
 
 ```text
@@ -166,7 +159,6 @@ Your `src/main/java/${packageName?replace('.', '/')}` structure follows these to
 
 * Dependencies point **inward** (adapters depend on application/domain; domain depends on nothing).
 * The application layer exposes **ports**; adapters implement or call those ports.
-
 </#if>
 
 ---
@@ -186,7 +178,6 @@ You can enable build-time guardrails by generating the project with:
 --enforcement strict  # strict, fail-fast enforcement
 ```
 </#if>
-
 <#if enforcement == "basic">
 Architecture enforcement is **enabled (basic)**.
 
@@ -216,7 +207,6 @@ mvn verify
 src/test/java/${packageName?replace('.', '/')}/architecture/archunit/
 ```
 </#if>
-
 <#if enforcement == "strict">
 Architecture enforcement is **enabled (strict)**.
 
@@ -224,7 +214,6 @@ This project includes **strict, fail-fast architectural guardrails** generated a
 Any architectural drift will **break the build deterministically**.
 
 ### What is enforced (strict)
-
 <#if layout == "hexagonal">
 
 For **Hexagonal Architecture**, strict enforcement guarantees:
@@ -267,7 +256,6 @@ For **Hexagonal Architecture**, strict enforcement guarantees:
   * No cyclic dependencies across top-level packages
   * No cycles inside adapter subpackages
 </#if>
-
 <#if layout == "standard">
 For **Standard (Layered) Architecture**, strict enforcement guarantees:
 
@@ -316,10 +304,7 @@ src/test/java/${packageName?replace('.', '/')}/architecture/archunit/
 
 > These rules are generated code.
 > They are part of the project contract and should not be edited manually.
-
 </#if>
-
-
 <#if layout == "hexagonal" && sampleCode == "basic">
 
 ---
@@ -377,9 +362,7 @@ You can use this sample in two ways:
 
 * as a **teaching reference** for the hexagonal boundaries in this codebase
 * as a **starting slice** to evolve into your real business modules
-
 </#if>
-
 <#if layout == "standard" && sampleCode == "basic">
 
 ---
@@ -479,7 +462,7 @@ If you are comfortable with this structure, you are well-positioned to understan
 | Dependency | Scope |
 |-----------|-------|
 <#list dependencies as d>
-    | `${d.groupId}:${d.artifactId}`<#if d.version?? && d.version?has_content>:`${d.version}`</#if> | <#if d.scope?? && d.scope?has_content>${d.scope}<#else>default</#if> |
+| `${d.groupId}:${d.artifactId}`<#if d.version?? && d.version?has_content>:`${d.version}`</#if> | <#if d.scope?? && d.scope?has_content>${d.scope}<#else>default</#if> |
 </#list>
 <#else>
 > No additional dependencies were selected.

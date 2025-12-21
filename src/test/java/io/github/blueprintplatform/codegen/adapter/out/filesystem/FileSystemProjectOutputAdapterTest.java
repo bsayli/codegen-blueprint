@@ -110,23 +110,22 @@ class FileSystemProjectOutputAdapterTest {
   }
 
   @Test
-  @DisplayName("list() should mark executable when POSIX executable bit is set (when supported)")
-  void list_posixExecutableBit_shouldMarkExecutable() throws IOException {
+  @DisplayName(
+      "list() should NOT mark executable only because POSIX executable bit is set (convention-only)")
+  void list_posixExecutableBit_shouldNotMatter_whenConventionOnly() throws IOException {
     Path bin = tempDir.resolve("bin/tool");
     Files.createDirectories(bin.getParent());
     Files.writeString(bin, "echo ok");
 
-    try {
-      Files.setPosixFilePermissions(
-          bin,
-          Set.of(
-              PosixFilePermission.OWNER_READ,
-              PosixFilePermission.OWNER_WRITE,
-              PosixFilePermission.OWNER_EXECUTE));
-    } catch (UnsupportedOperationException ignored) {
-      // Non-POSIX filesystem (e.g., Windows). Skip this assertion path.
-      return;
-    }
+    boolean posixSupported = Files.getFileStore(bin).supportsFileAttributeView("posix");
+    assumeTrue(posixSupported, "POSIX permissions not supported on this filesystem");
+
+    Files.setPosixFilePermissions(
+        bin,
+        Set.of(
+            PosixFilePermission.OWNER_READ,
+            PosixFilePermission.OWNER_WRITE,
+            PosixFilePermission.OWNER_EXECUTE));
 
     List<ProjectOutputItem> items = outputPort.list(tempDir);
 
@@ -136,11 +135,11 @@ class FileSystemProjectOutputAdapterTest {
             .findFirst()
             .orElseThrow();
 
-    assertThat(tool.executable()).isTrue();
+    assertThat(tool.executable()).isFalse();
   }
 
   @Test
-  @DisplayName("list() should wrap IOExceptions in ProjectFileListingException")
+  @DisplayName("list() should wrap IOExceptions in ProjectOutputDiscoveryException")
   void list_shouldWrapIOException() throws IOException {
     Path lockedDir = tempDir.resolve("locked");
     Files.createDirectories(lockedDir);
@@ -151,12 +150,11 @@ class FileSystemProjectOutputAdapterTest {
     Set<PosixFilePermission> originalPerms = Files.getPosixFilePermissions(lockedDir);
 
     try {
-      Files.setPosixFilePermissions(lockedDir, Set.of()); // no permissions at all
+      Files.setPosixFilePermissions(lockedDir, Set.of());
 
       assertThatThrownBy(() -> outputPort.list(lockedDir))
           .isInstanceOf(ProjectOutputDiscoveryException.class);
     } finally {
-      // restore so temp cleanup doesn't fail
       Files.setPosixFilePermissions(lockedDir, originalPerms);
     }
   }

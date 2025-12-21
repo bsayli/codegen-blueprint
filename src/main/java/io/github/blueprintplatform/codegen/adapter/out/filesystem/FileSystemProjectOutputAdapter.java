@@ -40,16 +40,13 @@ public class FileSystemProjectOutputAdapter implements ProjectOutputPort {
   private ProjectOutputItem toItem(Path normalizedRoot, Path absolutePath) {
     Path relativePath = normalizedRoot.relativize(absolutePath);
 
-    boolean executable = isExecutableFile(absolutePath, relativePath);
+    boolean executable = isExecutableFile(relativePath);
     boolean binary = isBinaryFile(relativePath);
 
     return new ProjectOutputItem(relativePath, binary, executable);
   }
 
-  private boolean isExecutableFile(Path absolutePath, Path relativePath) {
-    if (Files.isExecutable(absolutePath)) {
-      return true;
-    }
+  private boolean isExecutableFile(Path relativePath) {
     return hasExecutableName(relativePath) || hasExecutableExtension(relativePath);
   }
 

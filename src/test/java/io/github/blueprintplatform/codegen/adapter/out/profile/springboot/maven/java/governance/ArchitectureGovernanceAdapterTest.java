@@ -34,6 +34,7 @@ import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedRes
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedTextResource;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -102,6 +103,15 @@ class ArchitectureGovernanceAdapterTest {
     return Dependencies.of(List.of(new Dependency(coordinates, null, null)));
   }
 
+  private static Path expectedArchUnitOutPath(String fileName) {
+    String packagePath = BASE_PACKAGE.replace('.', '/');
+    return Paths.get("src/test/java")
+        .resolve(packagePath)
+        .resolve("architecture")
+        .resolve("archunit")
+        .resolve(fileName);
+  }
+
   @Test
   @DisplayName("artifactKey() should return ARCHITECTURE_GOVERNANCE")
   void artifactKey_shouldReturnArchitectureGovernance() {
@@ -117,13 +127,16 @@ class ArchitectureGovernanceAdapterTest {
   @Test
   @DisplayName("generate() should return empty when enforcement mode is NONE")
   void generate_noneMode_shouldReturnEmpty() {
+    RecordingTemplateRenderer renderer = new RecordingTemplateRenderer();
     ArchitectureGovernanceAdapter adapter =
         new ArchitectureGovernanceAdapter(
-            new RecordingTemplateRenderer(),
+            renderer,
             DUMMY_ARTIFACT_SPEC,
             new StubClasspathTemplateScanner(List.of(DOMAIN_PURITY_TEMPLATE)));
 
     assertThat(adapter.generate(blueprint(EnforcementMode.NONE))).isEmpty();
+    assertThat(renderer.capturedTemplateNames).isEmpty();
+    assertThat(renderer.capturedOutPaths).isEmpty();
   }
 
   @Test
@@ -143,6 +156,12 @@ class ArchitectureGovernanceAdapterTest {
         .contains(DOMAIN_PURITY_TEMPLATE)
         .doesNotContain(HEX_REST_SIGNATURE_TEMPLATE)
         .doesNotContain(STD_REST_SIGNATURE_TEMPLATE);
+
+    assertThat(renderer.capturedOutPaths)
+        .contains(expectedArchUnitOutPath("DomainPurityTest.java"))
+        .doesNotContain(
+            expectedArchUnitOutPath("HexagonalStrictRestBoundarySignatureIsolationTest.java"),
+            expectedArchUnitOutPath("StandardStrictRestBoundarySignatureIsolationTest.java"));
   }
 
   @Test
@@ -160,6 +179,12 @@ class ArchitectureGovernanceAdapterTest {
 
     assertThat(renderer.capturedTemplateNames)
         .contains(DOMAIN_PURITY_TEMPLATE, HEX_REST_SIGNATURE_TEMPLATE, STD_REST_SIGNATURE_TEMPLATE);
+
+    assertThat(renderer.capturedOutPaths)
+        .contains(
+            expectedArchUnitOutPath("DomainPurityTest.java"),
+            expectedArchUnitOutPath("HexagonalStrictRestBoundarySignatureIsolationTest.java"),
+            expectedArchUnitOutPath("StandardStrictRestBoundarySignatureIsolationTest.java"));
   }
 
   private static final class StubClasspathTemplateScanner extends ClasspathTemplateScanner {
@@ -177,11 +202,13 @@ class ArchitectureGovernanceAdapterTest {
 
   private static final class RecordingTemplateRenderer implements TemplateRenderer {
     private final List<String> capturedTemplateNames = new ArrayList<>();
+    private final List<Path> capturedOutPaths = new ArrayList<>();
 
     @Override
     public GeneratedResource renderUtf8(
         Path outPath, String templateResourcePath, Map<String, Object> model) {
       capturedTemplateNames.add(templateResourcePath);
+      capturedOutPaths.add(outPath);
       return new GeneratedTextResource(outPath, "", StandardCharsets.UTF_8);
     }
   }

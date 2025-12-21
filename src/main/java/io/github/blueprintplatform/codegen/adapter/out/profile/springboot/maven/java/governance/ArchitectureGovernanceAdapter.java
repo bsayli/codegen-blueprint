@@ -31,6 +31,7 @@ public class ArchitectureGovernanceAdapter implements ArchitectureGovernancePort
 
   private static final String MODEL_KEY_PROJECT_PACKAGE_NAME = "projectPackageName";
   private static final String OUT_SEGMENT_ARCHITECTURE = "architecture";
+  private static final String OUT_SEGMENT_ARCH_UNIT = "archunit";
 
   private static final String SPRING_BOOT_GROUP_ID = "org.springframework.boot";
   private static final DependencyFeature WEB_STARTER =
@@ -79,7 +80,12 @@ public class ArchitectureGovernanceAdapter implements ArchitectureGovernancePort
     PackageName pkg = blueprint.getMetadata().packageName();
     String packagePath = pkg.value().replace('.', '/');
 
-    Path outBase = Paths.get(SRC_TEST_JAVA).resolve(packagePath).resolve(OUT_SEGMENT_ARCHITECTURE);
+    Path outBase =
+        Paths.get(SRC_TEST_JAVA)
+            .resolve(packagePath)
+            .resolve(OUT_SEGMENT_ARCHITECTURE)
+            .resolve(OUT_SEGMENT_ARCH_UNIT);
+
     Map<String, Object> model = Map.of(MODEL_KEY_PROJECT_PACKAGE_NAME, pkg.value());
 
     List<String> renderableTemplates =

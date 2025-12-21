@@ -99,7 +99,7 @@ public class SpringBootGenerateCommand implements Callable<Integer> {
       names = {"--enforcement"},
       required = false,
       description = "Architecture enforcement mode. Valid values: ${COMPLETION-CANDIDATES}",
-      defaultValue = "none")
+      defaultValue = "basic")
   SpringBootArchitectureEnforcementOption enforcementMode;
 
   @Option(

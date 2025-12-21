@@ -228,15 +228,21 @@ Architecture isn’t only drawn — it executes here.
 Hexagonal Architecture is not a stylistic choice in Codegen Blueprint.
 It is a **structural requirement** for the platform’s core promise:
 
-> **Generate once.  
-> Evolve across frameworks, runtimes, and languages — without rewriting the core.**
+> Generate once.
+> Evolve across frameworks, runtimes, and languages — without rewriting the core.
 
 Spring Boot is the first adapter — not the foundation.
 
 📌 Want the architectural deep dive?
 
+- 📜 **Architecture Enforcement Contract**  
+  Defines *what architectural rules exist*, **when they apply**, and **what will break the build**  
+  → [Architecture Enforcement Contract](docs/architecture/architecture-enforcement-contract.md)
+
+---
+
 - 🔒 **Executable Architecture Scope (1.0.0 GA)**  
-  Defines what is *strictly enforced today* and output guarantees  
+  Declares **which enforcement rules are guaranteed in the 1.0.0 GA release** and output scope  
   → [Executable Architecture Scope (1.0.0 GA)](docs/architecture/executable-architecture-scope.md)
 
 ---
@@ -248,11 +254,8 @@ Spring Boot is the first adapter — not the foundation.
 ---
 
 - 🧠 **Architecture Governance & AI Collaboration Protocol**  
-  Defines *how architectural decisions are made, enforced, and protected* —  
-  including **how AI is allowed to participate**  
+  How architectural decisions are made, enforced, and protected  
   → [Architecture Governance & AI Protocol](docs/architecture/architecture-governance-and-ai-protocol.md)
-
----
 
 ### 🧩 Part of the Blueprint Platform
 
@@ -385,7 +388,7 @@ java -jar codegen-blueprint-1.0.0.jar \
 ### Available Options (`springboot`)
 
 | Option           | Required | Default    | Description                                               |
-| ---------------- | -------- | ---------- |-----------------------------------------------------------|
+| ---------------- | -------- |------------|-----------------------------------------------------------|
 | `--group-id`     | ✔        | –          | Maven `groupId`                                           |
 | `--artifact-id`  | ✔        | –          | Maven `artifactId` (also becomes the project folder name) |
 | `--name`         | ✔        | –          | Human-readable project name                               |
@@ -396,7 +399,7 @@ java -jar codegen-blueprint-1.0.0.jar \
 | `--java`         | ✖        | `21`       | Java version (21, 25) — GA target: 21                     |
 | `--boot`         | ✖        | `3.5`      | Spring Boot version (3.4, 3.5) — GA target: 3.5           |
 | `--layout`       | ✖        | `standard` | `standard` (layered) or `hexagonal` (ports & adapters)    |
-| `--enforcement`  | ✖        | `none`     | Architecture enforcement: `none`, `basic`, `strict`       |
+| `--enforcement`  | ✖        | `basic`    | Architecture enforcement: `none`, `basic`, `strict`       |
 | `--sample-code`  | ✖        | `none`     | Sample code level: `none`, `basic`                        |
 | `--dependency`   | ✖        | –          | Dependency alias (repeatable, controlled set)             |
 | `--target-dir`   | ✖        | `.`        | Target directory for generated output                     |
@@ -512,7 +515,7 @@ Architecture enforcement is **opt‑in**:
 When enabled, enforcement rules are generated as **executable ArchUnit tests** under:
 
 ```
-src/test/java/.../architecture/**
+src/test/java/<projectPackage>/architecture/archunit/**
 ```
 
 Violations fail the build deterministically during `mvn verify`.

@@ -180,6 +180,141 @@ Your `src/main/java/${packageName?replace('.', '/')}` structure follows these to
 
 </#if>
 
+---
+
+## 🧩 Architecture Enforcement
+
+<#-- NONE -->
+<#if enforcement == "none">
+
+Architecture enforcement is **disabled** for this project.
+
+* No architectural rules are generated
+* The build will not fail due to boundary violations
+* Architecture is guided by conventions and reviews only
+
+You can enable build-time guardrails by generating the project with:
+
+```bash
+--enforcement basic   # core boundaries
+--enforcement strict  # strict, fail-fast enforcement
+```
+
+</#if>
+
+<#-- BASIC -->
+<#if enforcement == "basic">
+
+Architecture enforcement is **enabled (basic)**.
+
+This project includes **generated ArchUnit tests** that enforce **core architectural boundaries** at build time.
+
+### What is enforced
+
+* Core dependency direction between architectural layers
+* Protection of the domain from outward dependencies
+* Prevention of the most common boundary violations
+
+### How enforcement works
+
+* Rules are generated as **executable tests**
+* Violations are detected during:
+
+```bash
+mvn verify
+```
+
+* If a rule is violated, **the build fails immediately**
+
+### Where the rules live
+
+```text
+src/test/java/${packageName?replace('.', '/')}/architecture/archunit/
+```
+
+</#if>
+
+<#-- STRICT -->
+<#if enforcement == "strict">
+
+Architecture enforcement is **enabled (strict)**.
+
+This project includes **strict, fail-fast architectural guardrails** generated as executable ArchUnit tests.
+Any architectural drift will **break the build deterministically**.
+
+### What is enforced (strict)
+
+<#-- Hexagonal strict -->
+<#if layout == "hexagonal">
+
+For **Hexagonal Architecture**, strict enforcement guarantees:
+
+* **Dependency direction**
+
+* Application does not depend on adapters
+* Bootstrap is a dependency leaf
+* **Inbound / outbound adapter isolation**
+
+* Inbound adapters cannot depend on outbound adapters (and vice versa)
+* **Domain purity**
+
+* Domain depends only on JDK and other domain types
+* **Ports isolation**
+
+* Adapters may depend only on application **ports**, not implementations
+* **REST boundary isolation** (when `spring-boot-starter-web` is present)
+
+* REST controllers must not expose domain types in method signatures
+* **Package cycle prevention**
+
+* No cyclic dependencies across top-level or adapter subpackages
+
+</#if>
+
+<#-- Standard strict -->
+<#if layout == "standard">
+
+For **Standard (Layered) Architecture**, strict enforcement guarantees:
+
+* **Layer dependency direction**
+
+* Controllers → Services → Repositories (no reverse dependencies)
+* **Domain purity**
+
+* Domain does not depend on web, service, or repository layers
+* **REST boundary isolation** (when `spring-boot-starter-web` is present)
+
+* Controllers must not expose domain types in method signatures
+* **Package cycle prevention**
+
+* No cyclic dependencies between top-level packages
+
+</#if>
+
+### How enforcement works
+
+* Rules are generated automatically based on:
+
+* selected **layout**
+* selected **enforcement mode**
+* selected **dependencies**
+* Enforcement happens at **build time only** — no runtime checks
+
+```bash
+mvn verify  # fails immediately on violation
+```
+
+### Where the rules live
+
+```text
+src/test/java/${packageName?replace('.', '/')}/architecture/archunit/
+```
+
+> These rules are generated code.
+> They are part of the project contract and should not be edited manually.
+
+</#if>
+
 <#if layout == "hexagonal" && sampleCode == "basic">
 
 ---
@@ -321,7 +456,6 @@ This sample is intentionally conservative by design.
 It favors clarity over abstraction, and explicit flow over indirection.
 
 If you are comfortable with this structure, you are well-positioned to understand and adopt more advanced architectural styles later on.
-
 
 </#if>
 

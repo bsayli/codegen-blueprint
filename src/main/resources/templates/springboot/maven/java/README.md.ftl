@@ -1,5 +1,3 @@
-<#-- README Generator Template -->
-
 # ${projectName}
 
 ${projectDescription}
@@ -52,7 +50,6 @@ ${projectDescription}
 
 > If Maven is installed globally, you may also use `mvn` instead of the wrapper.
 
-<#-- Auto-config hints based on selected features -->
 <#if features?has_content && ((features.h2)!false || (features.actuator)!false || (features.security)!false)>
 
 ---
@@ -88,13 +85,11 @@ Basic actuator exposure is enabled:
 `spring-boot-starter-security` is included. Endpoints may require authentication depending on defaults and your configuration.
 
 </#if>
-
 </#if>
+
 ---
 
 ## 📁 Project Layout
-
-<#-- Hexagonal layout -->
 <#if layout == "hexagonal">
 
 ```text
@@ -116,7 +111,6 @@ src
    └─ java/${packageName?replace('.', '/')}
 ```
 
-
 > This project follows **Hexagonal Architecture (Ports & Adapters)**.
 >
 > * `domain` contains pure business rules (framework-free)
@@ -124,7 +118,6 @@ src
 > * `adapter` contains inbound/outbound implementations (REST, persistence, messaging)
 > * `bootstrap` wires everything together
 
-<#-- Standard / layered layout -->
 <#else>
 
 ```text
@@ -149,12 +142,7 @@ src
 > * `repository` manages persistence
 > * `domain` holds core domain models
 > * `config` contains application and framework configuration
-
 </#if>
-
----
-
-<#-- Hexagonal showcase (only for hexagonal layout) -->
 <#if layout == "hexagonal">
 
 ---
@@ -172,7 +160,7 @@ Your `src/main/java/${packageName?replace('.', '/')}` structure follows these to
 * `domain` – core business rules (no Spring dependencies)
 * `application` – use cases + port contracts
 * `adapter` – inbound/outbound integrations (REST, DB, messaging, etc.)
-* `bootstrap` – wiring/configuration (Spring Boot entrypoints)
+* `bootstrap` – wiring/configuration (Spring Boot entrypoint)
 
 ### What this means in practice
 
@@ -184,10 +172,7 @@ Your `src/main/java/${packageName?replace('.', '/')}` structure follows these to
 ---
 
 ## 🧩 Architecture Enforcement
-
-<#-- NONE -->
 <#if enforcement == "none">
-
 Architecture enforcement is **disabled** for this project.
 
 * No architectural rules are generated
@@ -200,12 +185,9 @@ You can enable build-time guardrails by generating the project with:
 --enforcement basic   # core architectural guardrails
 --enforcement strict  # strict, fail-fast enforcement
 ```
-
 </#if>
 
-<#-- BASIC -->
 <#if enforcement == "basic">
-
 Architecture enforcement is **enabled (basic)**.
 
 This project includes **generated ArchUnit tests** that enforce **core architectural guardrails** at build time.
@@ -233,12 +215,9 @@ mvn verify
 ```text
 src/test/java/${packageName?replace('.', '/')}/architecture/archunit/
 ```
-
 </#if>
 
-<#-- STRICT -->
 <#if enforcement == "strict">
-
 Architecture enforcement is **enabled (strict)**.
 
 This project includes **strict, fail-fast architectural guardrails** generated as executable ArchUnit tests.
@@ -246,71 +225,73 @@ Any architectural drift will **break the build deterministically**.
 
 ### What is enforced (strict)
 
-<#-- Hexagonal strict -->
 <#if layout == "hexagonal">
 
 For **Hexagonal Architecture**, strict enforcement guarantees:
 
 * **Dependency direction**
+    * Application does not depend on adapters
+    * Bootstrap is a dependency leaf
 
-* Application does not depend on adapters
-* Bootstrap is a dependency leaf
+---
 
 * **Adapter direction isolation**
+  * Inbound adapters must not depend on outbound adapters
+  * Outbound adapters must not depend on inbound adapters
 
-* Inbound adapters must not depend on outbound adapters
-* Outbound adapters must not depend on inbound adapters
+---
 
 * **Inbound adapter → domain isolation**
+  * Inbound adapters must not depend on domain services
+  * Inbound adapters must not depend on domain outbound ports
 
-* Inbound adapters must not depend on domain services
-* Inbound adapters must not depend on domain outbound ports
+---
 
 * **Domain purity**
+  * Domain depends only on JDK types and other domain types
 
-* Domain depends only on JDK types and other domain types
+---
 
 * **Ports isolation**
+  * Adapters may depend only on application **ports**, not implementations
 
-* Adapters may depend only on application **ports**, not implementations
+---
 
 * **REST boundary isolation** (when `spring-boot-starter-web` is present)
+  * REST controllers must not expose domain types in method signatures
+  * Adapter DTOs must not depend on domain
 
-* REST controllers must not expose domain types in method signatures
-* Adapter DTOs must not depend on domain
+---
 
 * **Package cycle prevention**
-
-* No cyclic dependencies across top-level packages
-* No cycles inside adapter subpackages
-
+  * No cyclic dependencies across top-level packages
+  * No cycles inside adapter subpackages
 </#if>
 
-<#-- Standard strict -->
 <#if layout == "standard">
-
 For **Standard (Layered) Architecture**, strict enforcement guarantees:
 
 * **Layer dependency direction and bypass prevention**
+  * Controllers must not depend on repositories
+  * Controllers must not depend on domain services
+  * Services must not depend on controllers
+  * Repositories must not depend on services or controllers
 
-* Controllers must not depend on repositories
-* Controllers must not depend on domain services
-* Services must not depend on controllers
-* Repositories must not depend on services or controllers
+---
 
 * **Domain purity**
+  * Domain depends only on JDK types and other domain types
 
-* Domain depends only on JDK types and other domain types
+---
 
 * **REST boundary isolation** (when `spring-boot-starter-web` is present)
+  * REST controllers must not expose domain types in method signatures
+  * Controller DTOs must not depend on domain
 
-* REST controllers must not expose domain types in method signatures
-* Controller DTOs must not depend on domain
+---
 
 * **Package cycle prevention**
-
-* No cyclic dependencies between top-level packages
-
+  * No cyclic dependencies between top-level packages
 </#if>
 
 ### How enforcement works
@@ -360,13 +341,15 @@ Base path:
 /api/v1/sample/greetings
 ```
 
-Available endpoints:
+### Available endpoints
 
-* `GET /api/v1/sample/greetings/default`
-* returns a default greeting
+**GET** `/api/v1/sample/greetings/default`
 
-* `GET /api/v1/sample/greetings?name=John`
-* returns a personalized greeting
+Returns a default greeting.
+
+**GET** `/api/v1/sample/greetings?name=John`
+
+Returns a personalized greeting.
 
 Example calls:
 
@@ -378,14 +361,17 @@ curl -s "http://localhost:8080/api/v1/sample/greetings?name=John" | jq
 ### Where to look in the code
 
 * **Inbound REST adapter**
+  * `adapter/sample/in/rest/GreetingController`
 
-* `adapter/sample/in/rest/GreetingController`
+---
+
 * **Application port (input)**
+  * `application/sample/port/in/GetGreetingPort`
 
-* `application/sample/port/in/GetGreetingPort`
+---
+
 * **Use case implementation**
-
-* `application/sample/usecase/...` (varies by generator version)
+  * `application/sample/usecase/...` (varies by generator version)
 
 You can use this sample in two ways:
 
@@ -428,15 +414,15 @@ Base path:
 /api/v1/sample/greetings
 ```
 
-Available endpoints:
+### Available endpoints
 
-* `GET /api/v1/sample/greetings/default`
+**GET** `/api/v1/sample/greetings/default`
 
-* returns a default greeting
+Returns a default greeting.
 
-* `GET /api/v1/sample/greetings?name=John`
+**GET** `/api/v1/sample/greetings?name=John`
 
-* returns a personalized greeting
+Returns a personalized greeting.
 
 Example calls:
 
@@ -450,21 +436,23 @@ curl -s "http://localhost:8080/api/v1/sample/greetings?name=John" | jq
 To understand the sample, start with these classes:
 
 * **REST controller**
+  * `controller/sample/GreetingController`
 
-* `controller/sample/GreetingController`
+---
 
 * **Application / use-case service**
+  * `service/sample/GreetingService`
 
-* `service/sample/GreetingService`
+---
 
 * **Pure domain logic**
+  * `domain/sample/service/GreetingDomainService`
+  * `domain/sample/model/Greeting`
 
-* `domain/sample/service/GreetingDomainService`
-* `domain/sample/model/Greeting`
+---
 
 * **Audit side effect**
-
-* `repository/sample/GreetingAuditRepository`
+  * `repository/sample/GreetingAuditRepository`
 
 Each layer has a single, focused responsibility and communicates only with the layer directly below it.
 

@@ -1,4 +1,3 @@
-
 # Greeting
 
 Greeting sample built with hexagonal architecture
@@ -79,7 +78,6 @@ Basic actuator exposure is enabled:
 
 ## 📁 Project Layout
 
-
 ```text
 src
 ├─ main
@@ -99,16 +97,12 @@ src
    └─ java/io/github/blueprintplatform/greeting
 ```
 
-
 > This project follows **Hexagonal Architecture (Ports & Adapters)**.
 >
 > * `domain` contains pure business rules (framework-free)
 > * `application` orchestrates use cases and defines ports
 > * `adapter` contains inbound/outbound implementations (REST, persistence, messaging)
 > * `bootstrap` wires everything together
-
-
----
 
 
 ---
@@ -126,7 +120,7 @@ Your `src/main/java/io/github/blueprintplatform/greeting` structure follows thes
 * `domain` – core business rules (no Spring dependencies)
 * `application` – use cases + port contracts
 * `adapter` – inbound/outbound integrations (REST, DB, messaging, etc.)
-* `bootstrap` – wiring/configuration (Spring Boot entrypoints)
+* `bootstrap` – wiring/configuration (Spring Boot entrypoint)
 
 ### What this means in practice
 
@@ -137,8 +131,6 @@ Your `src/main/java/io/github/blueprintplatform/greeting` structure follows thes
 ---
 
 ## 🧩 Architecture Enforcement
-
-
 
 
 Architecture enforcement is **enabled (strict)**.
@@ -152,38 +144,42 @@ Any architectural drift will **break the build deterministically**.
 For **Hexagonal Architecture**, strict enforcement guarantees:
 
 * **Dependency direction**
+    * Application does not depend on adapters
+    * Bootstrap is a dependency leaf
 
-* Application does not depend on adapters
-* Bootstrap is a dependency leaf
+---
 
 * **Adapter direction isolation**
+  * Inbound adapters must not depend on outbound adapters
+  * Outbound adapters must not depend on inbound adapters
 
-* Inbound adapters must not depend on outbound adapters
-* Outbound adapters must not depend on inbound adapters
+---
 
 * **Inbound adapter → domain isolation**
+  * Inbound adapters must not depend on domain services
+  * Inbound adapters must not depend on domain outbound ports
 
-* Inbound adapters must not depend on domain services
-* Inbound adapters must not depend on domain outbound ports
+---
 
 * **Domain purity**
+  * Domain depends only on JDK types and other domain types
 
-* Domain depends only on JDK types and other domain types
+---
 
 * **Ports isolation**
+  * Adapters may depend only on application **ports**, not implementations
 
-* Adapters may depend only on application **ports**, not implementations
+---
 
 * **REST boundary isolation** (when `spring-boot-starter-web` is present)
+  * REST controllers must not expose domain types in method signatures
+  * Adapter DTOs must not depend on domain
 
-* REST controllers must not expose domain types in method signatures
-* Adapter DTOs must not depend on domain
+---
 
 * **Package cycle prevention**
-
-* No cyclic dependencies across top-level packages
-* No cycles inside adapter subpackages
-
+  * No cyclic dependencies across top-level packages
+  * No cycles inside adapter subpackages
 
 
 ### How enforcement works
@@ -231,13 +227,15 @@ Base path:
 /api/v1/sample/greetings
 ```
 
-Available endpoints:
+### Available endpoints
 
-* `GET /api/v1/sample/greetings/default`
-* returns a default greeting
+**GET** `/api/v1/sample/greetings/default`
 
-* `GET /api/v1/sample/greetings?name=John`
-* returns a personalized greeting
+Returns a default greeting.
+
+**GET** `/api/v1/sample/greetings?name=John`
+
+Returns a personalized greeting.
 
 Example calls:
 
@@ -249,14 +247,17 @@ curl -s "http://localhost:8080/api/v1/sample/greetings?name=John" | jq
 ### Where to look in the code
 
 * **Inbound REST adapter**
+  * `adapter/sample/in/rest/GreetingController`
 
-* `adapter/sample/in/rest/GreetingController`
+---
+
 * **Application port (input)**
+  * `application/sample/port/in/GetGreetingPort`
 
-* `application/sample/port/in/GetGreetingPort`
+---
+
 * **Use case implementation**
-
-* `application/sample/usecase/...` (varies by generator version)
+  * `application/sample/usecase/...` (varies by generator version)
 
 You can use this sample in two ways:
 

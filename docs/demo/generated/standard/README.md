@@ -1,4 +1,3 @@
-
 # Greeting (Standard Layered)
 
 Greeting sample built with standard layered architecture
@@ -79,7 +78,6 @@ Basic actuator exposure is enabled:
 
 ## 📁 Project Layout
 
-
 ```text
 src
 ├─ main
@@ -103,15 +101,9 @@ src
 > * `domain` holds core domain models
 > * `config` contains application and framework configuration
 
-
----
-
-
 ---
 
 ## 🧩 Architecture Enforcement
-
-
 
 
 Architecture enforcement is **enabled (strict)**.
@@ -122,29 +114,29 @@ Any architectural drift will **break the build deterministically**.
 ### What is enforced (strict)
 
 
-
 For **Standard (Layered) Architecture**, strict enforcement guarantees:
 
 * **Layer dependency direction and bypass prevention**
+  * Controllers must not depend on repositories
+  * Controllers must not depend on domain services
+  * Services must not depend on controllers
+  * Repositories must not depend on services or controllers
 
-* Controllers must not depend on repositories
-* Controllers must not depend on domain services
-* Services must not depend on controllers
-* Repositories must not depend on services or controllers
+---
 
 * **Domain purity**
+  * Domain depends only on JDK types and other domain types
 
-* Domain depends only on JDK types and other domain types
+---
 
 * **REST boundary isolation** (when `spring-boot-starter-web` is present)
+  * REST controllers must not expose domain types in method signatures
+  * Controller DTOs must not depend on domain
 
-* REST controllers must not expose domain types in method signatures
-* Controller DTOs must not depend on domain
+---
 
 * **Package cycle prevention**
-
-* No cyclic dependencies between top-level packages
-
+  * No cyclic dependencies between top-level packages
 
 ### How enforcement works
 
@@ -205,15 +197,15 @@ Base path:
 /api/v1/sample/greetings
 ```
 
-Available endpoints:
+### Available endpoints
 
-* `GET /api/v1/sample/greetings/default`
+**GET** `/api/v1/sample/greetings/default`
 
-* returns a default greeting
+Returns a default greeting.
 
-* `GET /api/v1/sample/greetings?name=John`
+**GET** `/api/v1/sample/greetings?name=John`
 
-* returns a personalized greeting
+Returns a personalized greeting.
 
 Example calls:
 
@@ -227,21 +219,23 @@ curl -s "http://localhost:8080/api/v1/sample/greetings?name=John" | jq
 To understand the sample, start with these classes:
 
 * **REST controller**
+  * `controller/sample/GreetingController`
 
-* `controller/sample/GreetingController`
+---
 
 * **Application / use-case service**
+  * `service/sample/GreetingService`
 
-* `service/sample/GreetingService`
+---
 
 * **Pure domain logic**
+  * `domain/sample/service/GreetingDomainService`
+  * `domain/sample/model/Greeting`
 
-* `domain/sample/service/GreetingDomainService`
-* `domain/sample/model/Greeting`
+---
 
 * **Audit side effect**
-
-* `repository/sample/GreetingAuditRepository`
+  * `repository/sample/GreetingAuditRepository`
 
 Each layer has a single, focused responsibility and communicates only with the layer directly below it.
 

@@ -225,36 +225,40 @@ When strict enforcement is enabled, architectural boundaries are translated into
 
 Architecture isn’t only drawn — it executes here.
 
-Hexagonal Architecture is not a stylistic choice in Codegen Blueprint.
+Hexagonal Architecture is not a stylistic choice in Codegen Blueprint.  
 It is a **structural requirement** for the platform’s core promise:
 
-> Generate once.
+> Generate once.  
 > Evolve across frameworks, runtimes, and languages — without rewriting the core.
 
 Spring Boot is the first adapter — not the foundation.
 
 📌 Want the architectural deep dive?
 
-- 📜 **Architecture Enforcement Scope**  
-  Defines *what architectural rules exist*, **when they apply**, and **what will break the build**  
-  → [Architecture Enforcement Scope](docs/architecture/architecture-enforcement-scope.md)
+- 📜 **Architecture Enforcement Rulebook**  
+  Defines **all architecture enforcement rules the engine is capable of generating**,  
+  how they work, and when they may be applied.  
+  *(Rule system reference — not a release guarantee)*  
+  → [Architecture Enforcement Rulebook](docs/architecture/architecture-enforcement-rulebook.md)
 
 ---
 
-- 🔒 **Executable Architecture Scope (1.0.0 GA)**  
-  Declares **which enforcement rules are guaranteed in the 1.0.0 GA release** and output scope  
-  → [Executable Architecture Scope (1.0.0 GA)](docs/architecture/executable-architecture-scope.md)
+- 🔒 **Executable Architecture Contract — 1.0.0 GA**  
+  Declares the **exact, non-negotiable architecture guarantees** provided by  
+  Codegen Blueprint **1.0.0 GA**, including enforced rules and generated output.  
+  *(If it’s not listed here, it is NOT guaranteed in GA)*  
+  → [Executable Architecture Contract — 1.0.0 GA](docs/architecture/executable-architecture-contract.md)
 
 ---
 
 - 🧭 **How to Explore This Codebase (Hexagonal Guide)**  
-  Understand ports/adapters, profiles, boundaries  
+  Understand ports, adapters, boundaries, and profile-driven execution  
   → [Hexagonal Architecture Guide](docs/guides/how-to-explore-hexagonal-architecture.md)
 
 ---
 
 - 🧠 **Architecture Governance & AI Collaboration Protocol**  
-  How architectural decisions are made, enforced, and protected  
+  How architectural decisions are made, reviewed, enforced, and protected  
   → [Architecture Governance & AI Protocol](docs/architecture/architecture-governance-and-ai-protocol.md)
 
 ---

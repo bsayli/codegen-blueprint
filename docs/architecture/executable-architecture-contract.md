@@ -1,7 +1,14 @@
-# Architecture Enforcement Scope — Codegen Blueprint 1.0.0 GA
+# Executable Architecture Contract — 1.0.0 GA
 
-> This unified document defines what the **Codegen Blueprint engine enforces today (1.0.0 GA)** and what the **generated project guarantees at output** — serving as a single, authoritative reference for architectural truth.
+**What Codegen Blueprint 1.0.0 GA guarantees, enforces, and produces.**
 
+This document defines the **exact, non-negotiable architecture guarantees**
+provided by Codegen Blueprint **1.0.0 GA** at generation and build time.
+
+> ⚠️ **GA Contract**
+>
+> If something is **not explicitly listed in this document**,
+> it is **NOT guaranteed** as part of the 1.0.0 GA release.
 ---
 
 ## 📚 Table of Contents

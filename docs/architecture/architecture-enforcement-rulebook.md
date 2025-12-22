@@ -1,10 +1,22 @@
-# Architecture Enforcement Scope (GA 1.0.0)
+# Architecture Enforcement Rulebook
 
-This document defines the **exact, build-time architecture enforcement contract** provided by Codegen Blueprint **1.0.0 GA**.
+**Build-time architecture rules generated and enforced by Codegen Blueprint.**
 
-The goal is not to explain ArchUnit or teach architecture styles, but to **declare what is enforced, when, and why**.
+This document defines the complete set of architecture enforcement rules
+that Codegen Blueprint is capable of generating.
 
-> Architecture here is not documented or recommended.
+> ⚠️ **Important**
+>
+> This document describes the **rule system itself**.
+> It does **not** guarantee that all rules are active in a given release.
+> Release-level guarantees are declared separately.
+
+---
+
+The goal of this document is **not** to explain ArchUnit
+or teach architecture styles, but to **declare what is enforced, when, and why**.
+
+> Architecture here is not documented or recommended.  
 > It is **generated and enforced deterministically at build time**.
 
 ---

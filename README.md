@@ -92,18 +92,15 @@ It treats architecture as a **first-class, executable product**:
 
 > **Executable Architecture — Delivered from day zero. Enforced over time.**
 
-<br/>
-
 <p align="center">
-  <img src="docs/images/architecture/value-proposition.png" width="780"  alt="Value proposition of Codegen Blueprint showing stakeholders, architecture engine capabilities, and enforced outcomes for teams"/>
+  <img src="docs/images/architecture/value-proposition.png" width="780" alt="Value proposition of Codegen Blueprint showing stakeholders, architecture engine capabilities, and enforced outcomes for teams"/>
   <br/>
   <em>Who benefits → Engine capabilities → What teams get</em>
 </p>
 
 ---
 
-🔗 Part of the **Blueprint Platform**  
-https://github.com/blueprint-platform
+🔗 Part of the **Blueprint Platform** → [blueprint-platform](https://github.com/blueprint-platform)
 
 🤝 [Contributing](#-contributing)
 
@@ -279,7 +276,7 @@ As the platform evolves, more modules will be introduced to complement `codegen-
 * Consistent and generics‑aware OpenAPI client generation
 * Support for multiple frameworks and technology stacks
 
-🔗 Learn more at the [Blueprint Platform GitHub Organization](https://github.com/blueprint-platform)
+🔗 Learn more at the [Blueprint Platform GitHub organization](https://github.com/blueprint-platform)
 
 > This aligns with the upcoming **Vision & Roadmap** section below.
 
@@ -680,8 +677,7 @@ From Day Zero to Production — architecture remains **intentional**, **testable
 * Platform telemetry for architecture health
 
 📌 Community-driven priorities →  
-🔗 Participate: [Discussions](https://github.com/blueprint-platform/codegen-blueprint/discussions)
-
+🔗 Participate via [GitHub Discussions](https://github.com/blueprint-platform/codegen-blueprint/discussions)
 ---
 
 ### 🧩 Why this matters
@@ -708,9 +704,9 @@ We welcome:
 * Stack profiles & adapters
 * Template & documentation enhancements
 
-Start here → :
-* [Discussions](https://github.com/blueprint-platform/codegen-blueprint/discussions)
-* [Issues](https://github.com/blueprint-platform/codegen-blueprint/issues)
+Start here →
+- 🔗 [GitHub Discussions](https://github.com/blueprint-platform/codegen-blueprint/discussions)
+- 🔗 [GitHub Issues](https://github.com/blueprint-platform/codegen-blueprint/issues)
 
 ---
 
@@ -721,9 +717,9 @@ If this project saves your team time or headaches:<br>
 
 **Barış Saylı** — Creator & Maintainer
 
-* GitHub — [https://github.com/bsayli](https://github.com/bsayli)
-* LinkedIn — [https://www.linkedin.com/in/bsayli](https://www.linkedin.com/in/bsayli)
-* Medium — [https://medium.com/@baris.sayli](https://medium.com/@baris.sayli)
+* GitHub → https://github.com/bsayli
+* LinkedIn → https://www.linkedin.com/in/bsayli
+* Medium → https://medium.com/@baris.sayli
 
 ---
 

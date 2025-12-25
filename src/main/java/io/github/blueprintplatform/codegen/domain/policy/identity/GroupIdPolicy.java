@@ -2,8 +2,11 @@ package io.github.blueprintplatform.codegen.domain.policy.identity;
 
 import static io.github.blueprintplatform.codegen.domain.error.code.ErrorKeys.compose;
 import static io.github.blueprintplatform.codegen.domain.error.code.Field.GROUP_ID;
-import static io.github.blueprintplatform.codegen.domain.error.code.Violation.*;
+import static io.github.blueprintplatform.codegen.domain.error.code.Violation.LENGTH;
+import static io.github.blueprintplatform.codegen.domain.error.code.Violation.NOT_BLANK;
+import static io.github.blueprintplatform.codegen.domain.error.code.Violation.SEGMENT_FORMAT;
 
+import io.github.blueprintplatform.codegen.domain.error.code.ErrorCode;
 import io.github.blueprintplatform.codegen.domain.error.exception.DomainViolationException;
 import io.github.blueprintplatform.codegen.domain.policy.rule.DotSeparatedSegmentsRule;
 import io.github.blueprintplatform.codegen.domain.policy.rule.LengthBetweenRule;
@@ -20,6 +23,10 @@ public final class GroupIdPolicy {
 
   private static final Pattern SEGMENT = Pattern.compile("^[a-z][a-z0-9]*$");
 
+  private static final ErrorCode CODE_NOT_BLANK = compose(GROUP_ID, NOT_BLANK);
+  private static final ErrorCode CODE_LENGTH = compose(GROUP_ID, LENGTH);
+  private static final ErrorCode CODE_SEGMENT_FORMAT = compose(GROUP_ID, SEGMENT_FORMAT);
+
   private GroupIdPolicy() {}
 
   public static String enforce(String raw) {
@@ -29,16 +36,18 @@ public final class GroupIdPolicy {
   }
 
   private static String normalize(String raw) {
-    if (raw == null) throw new DomainViolationException(compose(GROUP_ID, NOT_BLANK));
+    if (raw == null) {
+      throw new DomainViolationException(CODE_NOT_BLANK);
+    }
     return raw.trim().replaceAll("\\s+", "").toLowerCase(Locale.ROOT);
   }
 
   private static void validate(String value) {
     Rule<String> rule =
         CompositeRule.of(
-            new NotBlankRule(GROUP_ID),
-            new LengthBetweenRule(MIN, MAX, GROUP_ID),
-            new DotSeparatedSegmentsRule(SEGMENT, GROUP_ID, SEGMENT_FORMAT));
+            new NotBlankRule(CODE_NOT_BLANK),
+            new LengthBetweenRule(MIN, MAX, CODE_LENGTH),
+            new DotSeparatedSegmentsRule(SEGMENT, CODE_SEGMENT_FORMAT));
     rule.check(value);
   }
 }

@@ -1,6 +1,6 @@
 package io.github.blueprintplatform.codegen.domain.error.code;
 
-public enum Field implements ErrorCode {
+public enum Field {
   PROJECT_NAME(project("name")),
   PROJECT_DESCRIPTION(project("description")),
   GROUP_ID(project("group-id")),
@@ -22,7 +22,6 @@ public enum Field implements ErrorCode {
     return "dependency." + suffix;
   }
 
-  @Override
   public String key() {
     return key;
   }

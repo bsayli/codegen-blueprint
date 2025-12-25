@@ -13,9 +13,13 @@ public enum Violation {
   RESERVED_PREFIX(".reserved.prefix"),
   CONTROL_CHARS(".control.chars");
 
-  public final String suffix;
+  private final String suffix;
 
-  Violation(String s) {
-    this.suffix = s;
+  Violation(String suffix) {
+    this.suffix = suffix;
+  }
+
+  public String suffix() {
+    return suffix;
   }
 }

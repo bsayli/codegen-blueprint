@@ -2,8 +2,13 @@ package io.github.blueprintplatform.codegen.domain.policy.identity;
 
 import static io.github.blueprintplatform.codegen.domain.error.code.ErrorKeys.compose;
 import static io.github.blueprintplatform.codegen.domain.error.code.Field.ARTIFACT_ID;
-import static io.github.blueprintplatform.codegen.domain.error.code.Violation.*;
+import static io.github.blueprintplatform.codegen.domain.error.code.Violation.EDGE_CHAR;
+import static io.github.blueprintplatform.codegen.domain.error.code.Violation.INVALID_CHARS;
+import static io.github.blueprintplatform.codegen.domain.error.code.Violation.LENGTH;
+import static io.github.blueprintplatform.codegen.domain.error.code.Violation.NOT_BLANK;
+import static io.github.blueprintplatform.codegen.domain.error.code.Violation.STARTS_WITH_LETTER;
 
+import io.github.blueprintplatform.codegen.domain.error.code.ErrorCode;
 import io.github.blueprintplatform.codegen.domain.error.exception.DomainViolationException;
 import io.github.blueprintplatform.codegen.domain.policy.rule.AllowedCharsRule;
 import io.github.blueprintplatform.codegen.domain.policy.rule.LengthBetweenRule;
@@ -19,6 +24,12 @@ public final class ArtifactIdPolicy {
   private static final int MIN = 3;
   private static final int MAX = 50;
 
+  private static final ErrorCode CODE_NOT_BLANK = compose(ARTIFACT_ID, NOT_BLANK);
+  private static final ErrorCode CODE_LENGTH = compose(ARTIFACT_ID, LENGTH);
+  private static final ErrorCode CODE_INVALID_CHARS = compose(ARTIFACT_ID, INVALID_CHARS);
+  private static final ErrorCode CODE_STARTS_WITH_LETTER = compose(ARTIFACT_ID, STARTS_WITH_LETTER);
+  private static final ErrorCode CODE_EDGE_CHAR = compose(ARTIFACT_ID, EDGE_CHAR);
+
   private ArtifactIdPolicy() {}
 
   public static String enforce(String raw) {
@@ -28,7 +39,9 @@ public final class ArtifactIdPolicy {
   }
 
   private static String normalize(String raw) {
-    if (raw == null) throw new DomainViolationException(compose(ARTIFACT_ID, NOT_BLANK));
+    if (raw == null) {
+      throw new DomainViolationException(CODE_NOT_BLANK);
+    }
     return raw.trim()
         .replaceAll("\\s+", "-")
         .replace('_', '-')
@@ -39,11 +52,11 @@ public final class ArtifactIdPolicy {
   private static void validate(String value) {
     Rule<String> rule =
         CompositeRule.of(
-            new NotBlankRule(ARTIFACT_ID),
-            new LengthBetweenRule(MIN, MAX, ARTIFACT_ID),
-            new AllowedCharsRule("[a-z0-9-]", ARTIFACT_ID, INVALID_CHARS),
-            new StartsWithLetterRule(ARTIFACT_ID, STARTS_WITH_LETTER),
-            new NoEdgeCharRule('-', ARTIFACT_ID, EDGE_CHAR));
+            new NotBlankRule(CODE_NOT_BLANK),
+            new LengthBetweenRule(MIN, MAX, CODE_LENGTH),
+            new AllowedCharsRule("[a-z0-9-]", CODE_INVALID_CHARS),
+            new StartsWithLetterRule(CODE_STARTS_WITH_LETTER),
+            new NoEdgeCharRule('-', CODE_EDGE_CHAR));
     rule.check(value);
   }
 }

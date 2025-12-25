@@ -3,8 +3,10 @@ package io.github.blueprintplatform.codegen.domain.policy.naming;
 import static io.github.blueprintplatform.codegen.domain.error.code.ErrorKeys.compose;
 import static io.github.blueprintplatform.codegen.domain.error.code.Field.PROJECT_DESCRIPTION;
 import static io.github.blueprintplatform.codegen.domain.error.code.Violation.CONTROL_CHARS;
+import static io.github.blueprintplatform.codegen.domain.error.code.Violation.LENGTH;
 import static io.github.blueprintplatform.codegen.domain.error.code.Violation.NOT_BLANK;
 
+import io.github.blueprintplatform.codegen.domain.error.code.ErrorCode;
 import io.github.blueprintplatform.codegen.domain.error.exception.DomainViolationException;
 import io.github.blueprintplatform.codegen.domain.policy.rule.LengthBetweenRule;
 import io.github.blueprintplatform.codegen.domain.policy.rule.NotBlankRule;
@@ -20,11 +22,15 @@ public final class ProjectDescriptionPolicy {
 
   private static final Pattern NO_CONTROL_CHARS = Pattern.compile("^\\P{Cntrl}*$");
 
+  private static final ErrorCode CODE_NOT_BLANK = compose(PROJECT_DESCRIPTION, NOT_BLANK);
+  private static final ErrorCode CODE_LENGTH = compose(PROJECT_DESCRIPTION, LENGTH);
+  private static final ErrorCode CODE_CONTROL_CHARS = compose(PROJECT_DESCRIPTION, CONTROL_CHARS);
+
   private ProjectDescriptionPolicy() {}
 
   public static String enforce(String raw) {
     if (raw == null) {
-      throw new DomainViolationException(compose(PROJECT_DESCRIPTION, NOT_BLANK));
+      throw new DomainViolationException(CODE_NOT_BLANK);
     }
 
     String n = normalize(raw);
@@ -39,9 +45,9 @@ public final class ProjectDescriptionPolicy {
   private static void validate(String value) {
     Rule<String> rule =
         CompositeRule.of(
-            new NotBlankRule(PROJECT_DESCRIPTION),
-            new LengthBetweenRule(MIN, MAX, PROJECT_DESCRIPTION),
-            new RegexMatchRule(NO_CONTROL_CHARS, PROJECT_DESCRIPTION, CONTROL_CHARS));
+            new NotBlankRule(CODE_NOT_BLANK),
+            new LengthBetweenRule(MIN, MAX, CODE_LENGTH),
+            new RegexMatchRule(NO_CONTROL_CHARS, CODE_CONTROL_CHARS));
     rule.check(value);
   }
 }

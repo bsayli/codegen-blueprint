@@ -1,6 +1,6 @@
 package io.github.blueprintplatform.codegen.application.port.out.artifact;
 
-import io.github.blueprintplatform.codegen.application.exception.InvalidArtifactKeyException;
+import io.github.blueprintplatform.codegen.application.error.exception.InvalidArtifactKeyException;
 import java.util.Arrays;
 
 public enum ArtifactKey {

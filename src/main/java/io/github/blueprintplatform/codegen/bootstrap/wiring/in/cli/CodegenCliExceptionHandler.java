@@ -1,8 +1,8 @@
 package io.github.blueprintplatform.codegen.bootstrap.wiring.in.cli;
 
 import io.github.blueprintplatform.codegen.adapter.error.exception.base.AdapterException;
-import io.github.blueprintplatform.codegen.application.exception.ApplicationException;
-import io.github.blueprintplatform.codegen.bootstrap.error.exception.InfrastructureException;
+import io.github.blueprintplatform.codegen.application.error.exception.ApplicationException;
+import io.github.blueprintplatform.codegen.bootstrap.error.exception.BootstrapException;
 import io.github.blueprintplatform.codegen.domain.error.exception.DomainException;
 import java.io.IOException;
 import java.util.Locale;
@@ -49,9 +49,8 @@ public class CodegenCliExceptionHandler implements IExecutionExceptionHandler {
         printLocalizedError(cmd, adapterException.getMessageKey(), adapterException.getArgs());
         yield 3;
       }
-      case InfrastructureException infrastructureException -> {
-        printLocalizedError(
-            cmd, infrastructureException.getMessageKey(), infrastructureException.getArgs());
+      case BootstrapException bootstrapException -> {
+        printLocalizedError(cmd, bootstrapException.getMessageKey(), bootstrapException.getArgs());
         yield 3;
       }
       case IOException ioException -> {

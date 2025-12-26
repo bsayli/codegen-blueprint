@@ -1,4 +1,4 @@
-package io.github.blueprintplatform.codegen.application.exception;
+package io.github.blueprintplatform.codegen.application.error.exception;
 
 public final class InvalidArtifactKeyException extends ApplicationException {
 

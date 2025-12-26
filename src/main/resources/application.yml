@@ -5,8 +5,6 @@ spring:
 codegen:
   profiles:
     spring-boot-maven-java:
-      template-base-path: springboot/maven/java/
-
       ordered-artifact-keys:
         - build-config
         - build-tool-files
@@ -21,22 +19,23 @@ codegen:
 
       artifacts:
         build-config:
+          template-base-path: springboot/maven/java/
           templates:
             - template: pom.xml.ftl
               output-path: pom.xml
 
         build-tool-files:
+          template-base-path: springboot/maven/java/
           templates:
             - template: maven-wrapper.properties.ftl
               output-path: .mvn/wrapper/maven-wrapper.properties
-
             - template: mvnw.ftl
               output-path: mvnw
-
             - template: mvnw.cmd.ftl
               output-path: mvnw.cmd
 
         ignore-rules:
+          template-base-path: springboot/java/
           templates:
             - template: gitignore.ftl
               output-path: .gitignore
@@ -45,34 +44,40 @@ codegen:
           templates: [ ]
 
         app-config:
+          template-base-path: springboot/java/
           templates:
             - template: application.yml.ftl
               output-path: src/main/resources/application.yml
 
         main-source-entrypoint:
+          template-base-path: springboot/java/
           templates:
             - template: MainClass.java.ftl
               output-path: src/main/java
 
         test-source-entrypoint:
+          template-base-path: springboot/java/
           templates:
             - template: MainClassTests.java.ftl
               output-path: src/test/java
 
         architecture-governance:
+          template-base-path: springboot/java/
           templates: [ ]
 
         sample-code:
+          template-base-path: springboot/java/
           templates: [ ]
 
         project-documentation:
+          template-base-path: springboot/java/
           templates:
             - template: README.md.ftl
               output-path: README.md
+
 
 templating:
   encoding: UTF-8
   handler: RETHROW
   template-path: /templates
   cache-enabled: false
-

@@ -1,8 +1,10 @@
-package io.github.blueprintplatform.codegen.adapter.out.shared.artifact;
+package io.github.blueprintplatform.codegen.adapter.out.framework.springboot.java.source;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
+import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
+import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.TemplateSpec;
+import io.github.blueprintplatform.codegen.adapter.shared.naming.StringCaseFormatter;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureGovernance;
@@ -28,6 +30,7 @@ import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.TechSta
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedTextResource;
 import io.github.blueprintplatform.codegen.testsupport.templating.CapturingTemplateRenderer;
+import io.github.blueprintplatform.codegen.testsupport.templating.NoopTemplateRenderer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
@@ -38,18 +41,17 @@ import org.junit.jupiter.api.Test;
 
 @Tag("unit")
 @Tag("adapter")
-class AbstractSingleTemplateArtifactAdapterTest {
+class TestSourceEntrypointAdapterTest {
 
   private static final String BASE_PATH = "springboot/java/";
 
-  private static ProjectBlueprint projectBlueprint() {
+  private static ProjectBlueprint blueprint() {
     ProjectMetadata metadata =
         new ProjectMetadata(
-            new ProjectIdentity(
-                new GroupId("io.github.blueprintplatform"), new ArtifactId("greeting")),
-            new ProjectName("Greeting"),
-            new ProjectDescription("Greeting sample service"),
-            new PackageName("io.github.blueprintplatform.greeting"));
+            new ProjectIdentity(new GroupId("com.acme"), new ArtifactId("demo-app")),
+            new ProjectName("Demo App"),
+            new ProjectDescription("Sample Project"),
+            new PackageName("com.acme.demo"));
 
     PlatformSpec platform =
         new PlatformSpec(
@@ -60,51 +62,55 @@ class AbstractSingleTemplateArtifactAdapterTest {
         new ArchitectureSpec(
             ProjectLayout.STANDARD, ArchitectureGovernance.none(), SampleCodeOptions.none());
 
-    return ProjectBlueprint.of(metadata, platform, architecture, Dependencies.of(List.of()));
+    Dependencies dependencies = Dependencies.of(List.of());
+
+    return ProjectBlueprint.of(metadata, platform, architecture, dependencies);
   }
 
   @Test
-  @DisplayName("generate() should use first template, render with model, and return single file")
-  void generate_shouldRenderSingleTemplateAndReturnFile() {
+  @DisplayName("artifactKey() should return TEST_SOURCE_ENTRY_POINT")
+  void artifactKey_shouldReturnTestSourceEntrypoint() {
+    TestSourceEntrypointAdapter adapter =
+        new TestSourceEntrypointAdapter(
+            new NoopTemplateRenderer(),
+            new ArtifactSpec(BASE_PATH, List.of(new TemplateSpec("test.ftl", "src/test/java"))),
+            new StringCaseFormatter());
+
+    assertThat(adapter.artifactKey()).isEqualTo(ArtifactKey.TEST_SOURCE_ENTRY_POINT);
+  }
+
+  @Test
+  @DisplayName(
+      "generate() should build className = PascalCase(artifactId) + ApplicationTests and render file")
+  void generate_shouldBuildClassNameAndRenderFile() {
     CapturingTemplateRenderer renderer = new CapturingTemplateRenderer();
 
-    TemplateSpec templateSpec = new TemplateSpec("test-template.ftl", "output/test.txt");
-
+    TemplateSpec templateSpec = new TemplateSpec("test.ftl", "src/test/java");
     ArtifactSpec artifactSpec = new ArtifactSpec(BASE_PATH, List.of(templateSpec));
 
-    TestSingleTemplateAdapter adapter = new TestSingleTemplateAdapter(renderer, artifactSpec);
+    TestSourceEntrypointAdapter adapter =
+        new TestSourceEntrypointAdapter(renderer, artifactSpec, new StringCaseFormatter());
 
-    ProjectBlueprint blueprint = projectBlueprint();
+    ProjectBlueprint blueprint = blueprint();
 
-    Path relativePath = Path.of("output/test.txt");
+    Path expectedPath = Path.of("src/test/java/com/acme/demo/DemoAppApplicationTests.java");
+
     GeneratedTextResource expectedFile =
-        new GeneratedTextResource(relativePath, "rendered-content", StandardCharsets.UTF_8);
+        new GeneratedTextResource(
+            expectedPath, "class DemoAppApplicationTests {}", StandardCharsets.UTF_8);
     renderer.nextFile = expectedFile;
 
     Iterable<? extends GeneratedResource> result = adapter.generate(blueprint);
 
-    assertThat(renderer.capturedOutPath).isEqualTo(relativePath);
-    assertThat(renderer.capturedTemplateName).isEqualTo(BASE_PATH + "test-template.ftl");
-    assertThat(renderer.capturedModel).isEqualTo(Map.of("key", "value"));
-
     assertThat(result).singleElement().isSameAs(expectedFile);
-  }
 
-  private static final class TestSingleTemplateAdapter
-      extends AbstractSingleTemplateArtifactAdapter {
+    assertThat(renderer.capturedOutPath).isEqualTo(expectedPath);
+    assertThat(renderer.capturedTemplateName).isEqualTo(BASE_PATH + "test.ftl");
 
-    TestSingleTemplateAdapter(TemplateRenderer renderer, ArtifactSpec artifactSpec) {
-      super(renderer, artifactSpec);
-    }
-
-    @Override
-    protected Map<String, Object> buildModel(ProjectBlueprint blueprint) {
-      return Map.of("key", "value");
-    }
-
-    @Override
-    public ArtifactKey artifactKey() {
-      return null;
-    }
+    Map<String, Object> model = renderer.capturedModel;
+    assertThat(model)
+        .isNotNull()
+        .containsEntry("projectPackageName", "com.acme.demo")
+        .containsEntry("className", "DemoAppApplicationTests");
   }
 }

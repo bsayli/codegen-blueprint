@@ -1,8 +1,9 @@
-package io.github.blueprintplatform.codegen.adapter.out.shared.artifact;
+package io.github.blueprintplatform.codegen.adapter.out.framework.springboot.java.ignore;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
+import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
+import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.TemplateSpec;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureGovernance;
@@ -28,6 +29,7 @@ import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.TechSta
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedTextResource;
 import io.github.blueprintplatform.codegen.testsupport.templating.CapturingTemplateRenderer;
+import io.github.blueprintplatform.codegen.testsupport.templating.NoopTemplateRenderer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
@@ -38,73 +40,58 @@ import org.junit.jupiter.api.Test;
 
 @Tag("unit")
 @Tag("adapter")
-class AbstractSingleTemplateArtifactAdapterTest {
+class GitIgnoreAdapterTest {
 
   private static final String BASE_PATH = "springboot/java/";
 
-  private static ProjectBlueprint projectBlueprint() {
-    ProjectMetadata metadata =
-        new ProjectMetadata(
-            new ProjectIdentity(
-                new GroupId("io.github.blueprintplatform"), new ArtifactId("greeting")),
-            new ProjectName("Greeting"),
-            new ProjectDescription("Greeting sample service"),
-            new PackageName("io.github.blueprintplatform.greeting"));
+  @Test
+  @DisplayName("artifactKey() should return IGNORE_RULES")
+  void artifactKey_shouldReturnIgnoreRules() {
+    GitIgnoreAdapter adapter =
+        new GitIgnoreAdapter(
+            new NoopTemplateRenderer(),
+            new ArtifactSpec(BASE_PATH, List.of(new TemplateSpec("gitignore.ftl", ".gitignore"))));
 
-    PlatformSpec platform =
-        new PlatformSpec(
-            new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA),
-            new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5));
-
-    ArchitectureSpec architecture =
-        new ArchitectureSpec(
-            ProjectLayout.STANDARD, ArchitectureGovernance.none(), SampleCodeOptions.none());
-
-    return ProjectBlueprint.of(metadata, platform, architecture, Dependencies.of(List.of()));
+    assertThat(adapter.artifactKey()).isEqualTo(ArtifactKey.IGNORE_RULES);
   }
 
   @Test
-  @DisplayName("generate() should use first template, render with model, and return single file")
-  void generate_shouldRenderSingleTemplateAndReturnFile() {
+  @DisplayName("generate() should render ignore rules with an empty ignoreList model")
+  void generate_shouldRenderGitignoreWithEmptyIgnoreList() {
     CapturingTemplateRenderer renderer = new CapturingTemplateRenderer();
 
-    TemplateSpec templateSpec = new TemplateSpec("test-template.ftl", "output/test.txt");
-
+    TemplateSpec templateSpec = new TemplateSpec("gitignore.ftl", ".gitignore");
     ArtifactSpec artifactSpec = new ArtifactSpec(BASE_PATH, List.of(templateSpec));
 
-    TestSingleTemplateAdapter adapter = new TestSingleTemplateAdapter(renderer, artifactSpec);
+    GitIgnoreAdapter adapter = new GitIgnoreAdapter(renderer, artifactSpec);
 
-    ProjectBlueprint blueprint = projectBlueprint();
+    ProjectBlueprint blueprint =
+        ProjectBlueprint.of(
+            new ProjectMetadata(
+                new ProjectIdentity(new GroupId("com.acme"), new ArtifactId("demo-app")),
+                new ProjectName("Demo App"),
+                new ProjectDescription("Sample Project"),
+                new PackageName("com.acme.demo")),
+            new PlatformSpec(
+                new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA),
+                new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5)),
+            new ArchitectureSpec(
+                ProjectLayout.STANDARD, ArchitectureGovernance.none(), SampleCodeOptions.none()),
+            Dependencies.of(List.of()));
 
-    Path relativePath = Path.of("output/test.txt");
+    Path relativePath = Path.of(".gitignore");
     GeneratedTextResource expectedFile =
-        new GeneratedTextResource(relativePath, "rendered-content", StandardCharsets.UTF_8);
+        new GeneratedTextResource(relativePath, "# gitignore", StandardCharsets.UTF_8);
     renderer.nextFile = expectedFile;
 
     Iterable<? extends GeneratedResource> result = adapter.generate(blueprint);
 
-    assertThat(renderer.capturedOutPath).isEqualTo(relativePath);
-    assertThat(renderer.capturedTemplateName).isEqualTo(BASE_PATH + "test-template.ftl");
-    assertThat(renderer.capturedModel).isEqualTo(Map.of("key", "value"));
-
     assertThat(result).singleElement().isSameAs(expectedFile);
-  }
 
-  private static final class TestSingleTemplateAdapter
-      extends AbstractSingleTemplateArtifactAdapter {
+    assertThat(renderer.capturedOutPath).isEqualTo(relativePath);
+    assertThat(renderer.capturedTemplateName).isEqualTo(BASE_PATH + "gitignore.ftl");
 
-    TestSingleTemplateAdapter(TemplateRenderer renderer, ArtifactSpec artifactSpec) {
-      super(renderer, artifactSpec);
-    }
-
-    @Override
-    protected Map<String, Object> buildModel(ProjectBlueprint blueprint) {
-      return Map.of("key", "value");
-    }
-
-    @Override
-    public ArtifactKey artifactKey() {
-      return null;
-    }
+    Map<String, Object> model = renderer.capturedModel;
+    assertThat(model).isNotNull().containsEntry("ignoreList", List.of());
   }
 }

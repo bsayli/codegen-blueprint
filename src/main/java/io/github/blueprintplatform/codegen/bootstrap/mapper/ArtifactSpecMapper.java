@@ -10,7 +10,7 @@ public class ArtifactSpecMapper {
 
   public ArtifactSpec from(ArtifactDefinition def) {
     return new ArtifactSpec(
-        def.basePath(),
+        def.templateBasePath(),
         def.templates().stream().map(t -> new TemplateSpec(t.template(), t.outputPath())).toList());
   }
 }

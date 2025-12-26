@@ -2,7 +2,7 @@ package io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.github.blueprintplatform.codegen.adapter.out.build.maven.shared.PomDependency;
+import io.github.blueprintplatform.codegen.adapter.out.build.shared.BuildDependency;
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.TemplateSpec;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
@@ -34,7 +34,7 @@ import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.Languag
 import io.github.blueprintplatform.codegen.domain.model.value.tech.stack.TechStack;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedResource;
 import io.github.blueprintplatform.codegen.domain.port.out.artifact.GeneratedTextResource;
-import io.github.blueprintplatform.codegen.testsupport.build.RecordingPomDependencyMapper;
+import io.github.blueprintplatform.codegen.testsupport.build.RecordingBuildDependencyMapper;
 import io.github.blueprintplatform.codegen.testsupport.templating.CapturingTemplateRenderer;
 import io.github.blueprintplatform.codegen.testsupport.templating.NoopTemplateRenderer;
 import java.nio.charset.StandardCharsets;
@@ -84,7 +84,7 @@ class MavenPomBuildConfigurationAdapterTest {
         new MavenPomBuildConfigurationAdapter(
             new NoopTemplateRenderer(),
             new ArtifactSpec(BASE_PATH, List.of(new TemplateSpec("pom.ftl", "pom.xml"))),
-            new RecordingPomDependencyMapper(List.of()));
+            new RecordingBuildDependencyMapper(List.of()));
 
     assertThat(adapter.artifactKey()).isEqualTo(ArtifactKey.BUILD_CONFIG);
   }
@@ -95,9 +95,9 @@ class MavenPomBuildConfigurationAdapterTest {
   void generate_shouldBuildModel_withoutJpa_withoutGovernance() {
     CapturingTemplateRenderer renderer = new CapturingTemplateRenderer();
 
-    List<PomDependency> mapped =
-        List.of(PomDependency.of("org.acme", "custom-dep", "1.0.0", "runtime"));
-    RecordingPomDependencyMapper mapper = new RecordingPomDependencyMapper(mapped);
+    List<BuildDependency> mapped =
+        List.of(BuildDependency.of("org.acme", "custom-dep", "1.0.0", "runtime"));
+    RecordingBuildDependencyMapper mapper = new RecordingBuildDependencyMapper(mapped);
 
     ArtifactSpec artifactSpec =
         new ArtifactSpec(BASE_PATH, List.of(new TemplateSpec("pom.ftl", "pom.xml")));
@@ -130,7 +130,8 @@ class MavenPomBuildConfigurationAdapterTest {
     assertThat(props).isNotNull().isEmpty();
 
     @SuppressWarnings("unchecked")
-    List<PomDependency> deps = (List<PomDependency>) model.get(MavenPomBuildModel.KEY_DEPENDENCIES);
+    List<BuildDependency> deps =
+        (List<BuildDependency>) model.get(MavenPomBuildModel.KEY_DEPENDENCIES);
     assertThat(deps).hasSize(3);
 
     assertThat(deps.get(0)).isEqualTo(MavenPomBuildModel.CORE_STARTER);
@@ -143,9 +144,9 @@ class MavenPomBuildConfigurationAdapterTest {
   void generate_shouldAddH2_whenJpaSelected() {
     CapturingTemplateRenderer renderer = new CapturingTemplateRenderer();
 
-    List<PomDependency> mapped =
-        List.of(PomDependency.of("org.acme", "custom-dep", "1.0.0", "runtime"));
-    RecordingPomDependencyMapper mapper = new RecordingPomDependencyMapper(mapped);
+    List<BuildDependency> mapped =
+        List.of(BuildDependency.of("org.acme", "custom-dep", "1.0.0", "runtime"));
+    RecordingBuildDependencyMapper mapper = new RecordingBuildDependencyMapper(mapped);
 
     ArtifactSpec artifactSpec =
         new ArtifactSpec(BASE_PATH, List.of(new TemplateSpec("pom.ftl", "pom.xml")));
@@ -171,8 +172,8 @@ class MavenPomBuildConfigurationAdapterTest {
     adapter.generate(bp);
 
     @SuppressWarnings("unchecked")
-    List<PomDependency> deps =
-        (List<PomDependency>) renderer.capturedModel.get(MavenPomBuildModel.KEY_DEPENDENCIES);
+    List<BuildDependency> deps =
+        (List<BuildDependency>) renderer.capturedModel.get(MavenPomBuildModel.KEY_DEPENDENCIES);
 
     assertThat(deps).hasSize(4);
     assertThat(deps.get(0)).isEqualTo(MavenPomBuildModel.CORE_STARTER);
@@ -192,9 +193,9 @@ class MavenPomBuildConfigurationAdapterTest {
   void generate_shouldAddArchUnit_whenGovernanceEnabled() {
     CapturingTemplateRenderer renderer = new CapturingTemplateRenderer();
 
-    List<PomDependency> mapped =
-        List.of(PomDependency.of("org.acme", "custom-dep", "1.0.0", "runtime"));
-    RecordingPomDependencyMapper mapper = new RecordingPomDependencyMapper(mapped);
+    List<BuildDependency> mapped =
+        List.of(BuildDependency.of("org.acme", "custom-dep", "1.0.0", "runtime"));
+    RecordingBuildDependencyMapper mapper = new RecordingBuildDependencyMapper(mapped);
 
     ArtifactSpec artifactSpec =
         new ArtifactSpec(BASE_PATH, List.of(new TemplateSpec("pom.ftl", "pom.xml")));
@@ -228,8 +229,8 @@ class MavenPomBuildConfigurationAdapterTest {
             MavenPomBuildModel.ARCH_UNIT_VERSION_KEY, MavenPomBuildModel.ARCH_UNIT_VERSION);
 
     @SuppressWarnings("unchecked")
-    List<PomDependency> deps =
-        (List<PomDependency>) renderer.capturedModel.get(MavenPomBuildModel.KEY_DEPENDENCIES);
+    List<BuildDependency> deps =
+        (List<BuildDependency>) renderer.capturedModel.get(MavenPomBuildModel.KEY_DEPENDENCIES);
 
     assertThat(deps).hasSize(5);
     assertThat(deps.get(0)).isEqualTo(MavenPomBuildModel.CORE_STARTER);

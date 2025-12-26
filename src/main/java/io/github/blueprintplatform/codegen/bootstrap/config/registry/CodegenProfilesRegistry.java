@@ -34,12 +34,14 @@ public class CodegenProfilesRegistry {
           ProfileConfigurationException.KEY_ARTIFACT_NOT_FOUND, artifactKey.key(), profileKey);
     }
 
-    String basePath = profileProps.templateBasePath();
-    if (basePath == null || basePath.isBlank()) {
-      throw new ProfileConfigurationException(
-          ProfileConfigurationException.KEY_TEMPLATE_BASE_MISSING, profileKey);
+    if (!artifact.templates().isEmpty()) {
+      String basePath = artifact.templateBasePath();
+      if (basePath == null || basePath.isBlank()) {
+        throw new ProfileConfigurationException(
+            ProfileConfigurationException.KEY_TEMPLATE_BASE_MISSING, artifactKey.key(), profileKey);
+      }
     }
 
-    return new ArtifactDefinition(basePath, artifact.templates());
+    return artifact;
   }
 }

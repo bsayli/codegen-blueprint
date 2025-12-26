@@ -2,8 +2,8 @@ package io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven
 
 import static java.util.Map.entry;
 
-import io.github.blueprintplatform.codegen.adapter.out.build.maven.shared.PomDependency;
-import io.github.blueprintplatform.codegen.adapter.out.build.maven.shared.PomDependencyMapper;
+import io.github.blueprintplatform.codegen.adapter.out.build.shared.BuildDependency;
+import io.github.blueprintplatform.codegen.adapter.out.build.shared.BuildDependencyMapper;
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.AbstractSingleTemplateArtifactAdapter;
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
 import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
@@ -19,14 +19,14 @@ import java.util.Map;
 public class MavenPomBuildConfigurationAdapter extends AbstractSingleTemplateArtifactAdapter
     implements BuildConfigurationPort {
 
-  private final PomDependencyMapper pomDependencyMapper;
+  private final BuildDependencyMapper buildDependencyMapper;
 
   public MavenPomBuildConfigurationAdapter(
       TemplateRenderer renderer,
       ArtifactSpec artifactSpec,
-      PomDependencyMapper pomDependencyMapper) {
+      BuildDependencyMapper buildDependencyMapper) {
     super(renderer, artifactSpec);
-    this.pomDependencyMapper = pomDependencyMapper;
+    this.buildDependencyMapper = buildDependencyMapper;
   }
 
   @Override
@@ -57,11 +57,11 @@ public class MavenPomBuildConfigurationAdapter extends AbstractSingleTemplateArt
     return Map.of(MavenPomBuildModel.ARCH_UNIT_VERSION_KEY, MavenPomBuildModel.ARCH_UNIT_VERSION);
   }
 
-  private List<PomDependency> buildPomDependencies(ProjectBlueprint bp) {
-    List<PomDependency> deps = new ArrayList<>();
+  private List<BuildDependency> buildPomDependencies(ProjectBlueprint bp) {
+    List<BuildDependency> deps = new ArrayList<>();
 
     deps.add(MavenPomBuildModel.CORE_STARTER);
-    deps.addAll(pomDependencyMapper.from(bp.getDependencies()));
+    deps.addAll(buildDependencyMapper.from(bp.getDependencies()));
 
     if (isJpaSelected(bp)) {
       deps.add(MavenPomBuildModel.H2_DB);

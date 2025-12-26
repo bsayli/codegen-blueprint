@@ -40,7 +40,7 @@ import org.junit.jupiter.api.Test;
 @Tag("adapter")
 class AbstractMultiTemplateArtifactAdapterTest {
 
-  private static final String BASE_PATH = "springboot/maven/java/";
+  private static final String BASE_PATH = "springboot/java/";
 
   private static ProjectBlueprint projectBlueprint() {
     ProjectMetadata metadata =

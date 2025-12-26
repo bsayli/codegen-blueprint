@@ -1,6 +1,6 @@
 package io.github.blueprintplatform.codegen.bootstrap.wiring.shared;
 
-import io.github.blueprintplatform.codegen.adapter.out.build.maven.shared.PomDependencyMapper;
+import io.github.blueprintplatform.codegen.adapter.out.build.shared.BuildDependencyMapper;
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactPipelineExecutor;
 import io.github.blueprintplatform.codegen.adapter.out.shared.templating.ClasspathTemplateScanner;
 import io.github.blueprintplatform.codegen.adapter.shared.naming.StringCaseFormatter;
@@ -16,8 +16,8 @@ public class CodegenCommonConfig {
   }
 
   @Bean
-  public PomDependencyMapper pomDependencyMapper() {
-    return new PomDependencyMapper();
+  public BuildDependencyMapper pomDependencyMapper() {
+    return new BuildDependencyMapper();
   }
 
   @Bean

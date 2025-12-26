@@ -1,8 +1,11 @@
-package io.github.blueprintplatform.codegen.adapter.out.shared.artifact;
+package io.github.blueprintplatform.codegen.adapter.out.framework.springboot.java.shared;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
+import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.TemplateSpec;
 import io.github.blueprintplatform.codegen.adapter.out.templating.TemplateRenderer;
+import io.github.blueprintplatform.codegen.adapter.shared.naming.StringCaseFormatter;
 import io.github.blueprintplatform.codegen.application.port.out.artifact.ArtifactKey;
 import io.github.blueprintplatform.codegen.domain.model.ProjectBlueprint;
 import io.github.blueprintplatform.codegen.domain.model.value.architecture.ArchitectureGovernance;
@@ -31,80 +34,80 @@ import io.github.blueprintplatform.codegen.testsupport.templating.CapturingTempl
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 @Tag("unit")
 @Tag("adapter")
-class AbstractSingleTemplateArtifactAdapterTest {
+class AbstractJavaSourceFileAdapterTest {
 
   private static final String BASE_PATH = "springboot/java/";
 
-  private static ProjectBlueprint projectBlueprint() {
-    ProjectMetadata metadata =
-        new ProjectMetadata(
-            new ProjectIdentity(
-                new GroupId("io.github.blueprintplatform"), new ArtifactId("greeting")),
-            new ProjectName("Greeting"),
-            new ProjectDescription("Greeting sample service"),
-            new PackageName("io.github.blueprintplatform.greeting"));
-
-    PlatformSpec platform =
-        new PlatformSpec(
-            new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA),
-            new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5));
-
-    ArchitectureSpec architecture =
-        new ArchitectureSpec(
-            ProjectLayout.STANDARD, ArchitectureGovernance.none(), SampleCodeOptions.none());
-
-    return ProjectBlueprint.of(metadata, platform, architecture, Dependencies.of(List.of()));
-  }
-
   @Test
-  @DisplayName("generate() should use first template, render with model, and return single file")
-  void generate_shouldRenderSingleTemplateAndReturnFile() {
+  @DisplayName("generate() should build correct path, model and return single file")
+  void generate_shouldBuildOutPathAndModelAndReturnFile() {
     CapturingTemplateRenderer renderer = new CapturingTemplateRenderer();
 
-    TemplateSpec templateSpec = new TemplateSpec("test-template.ftl", "output/test.txt");
+    TemplateSpec templateSpec = new TemplateSpec("java-class.ftl", "src/main/java");
 
     ArtifactSpec artifactSpec = new ArtifactSpec(BASE_PATH, List.of(templateSpec));
 
-    TestSingleTemplateAdapter adapter = new TestSingleTemplateAdapter(renderer, artifactSpec);
+    StringCaseFormatter formatter = new StringCaseFormatter();
 
-    ProjectBlueprint blueprint = projectBlueprint();
+    TestJavaSourceFileAdapter adapter =
+        new TestJavaSourceFileAdapter(renderer, artifactSpec, formatter);
 
-    Path relativePath = Path.of("output/test.txt");
+    ProjectBlueprint blueprint =
+        ProjectBlueprint.of(
+            new ProjectMetadata(
+                new ProjectIdentity(new GroupId("com.acme"), new ArtifactId("demo-app")),
+                new ProjectName("Demo App"),
+                new ProjectDescription("Sample Project"),
+                new PackageName("com.acme.demo")),
+            new PlatformSpec(
+                new TechStack(Framework.SPRING_BOOT, BuildTool.MAVEN, Language.JAVA),
+                new SpringBootJvmTarget(JavaVersion.JAVA_21, SpringBootVersion.V3_5)),
+            new ArchitectureSpec(
+                ProjectLayout.STANDARD, ArchitectureGovernance.none(), SampleCodeOptions.none()),
+            Dependencies.of(List.of()));
+
+    Path expectedPath = Path.of("src/main/java/com/acme/demo/DemoApplication.java");
+
     GeneratedTextResource expectedFile =
-        new GeneratedTextResource(relativePath, "rendered-content", StandardCharsets.UTF_8);
+        new GeneratedTextResource(expectedPath, "class DemoApplication {}", StandardCharsets.UTF_8);
     renderer.nextFile = expectedFile;
 
     Iterable<? extends GeneratedResource> result = adapter.generate(blueprint);
 
-    assertThat(renderer.capturedOutPath).isEqualTo(relativePath);
-    assertThat(renderer.capturedTemplateName).isEqualTo(BASE_PATH + "test-template.ftl");
-    assertThat(renderer.capturedModel).isEqualTo(Map.of("key", "value"));
-
     assertThat(result).singleElement().isSameAs(expectedFile);
+
+    assertThat(renderer.capturedOutPath).isEqualTo(expectedPath);
+    assertThat(renderer.capturedTemplateName).isEqualTo(BASE_PATH + "java-class.ftl");
+
+    assertThat(renderer.capturedModel)
+        .isNotNull()
+        .containsEntry("projectPackageName", "com.acme.demo")
+        .containsEntry("className", "DemoApplication");
   }
 
-  private static final class TestSingleTemplateAdapter
-      extends AbstractSingleTemplateArtifactAdapter {
+  private static final class TestJavaSourceFileAdapter extends AbstractJavaSourceFileAdapter {
 
-    TestSingleTemplateAdapter(TemplateRenderer renderer, ArtifactSpec artifactSpec) {
-      super(renderer, artifactSpec);
+    TestJavaSourceFileAdapter(
+        TemplateRenderer renderer,
+        ArtifactSpec artifactSpec,
+        StringCaseFormatter stringCaseFormatter) {
+      super(renderer, artifactSpec, stringCaseFormatter);
     }
 
     @Override
-    protected Map<String, Object> buildModel(ProjectBlueprint blueprint) {
-      return Map.of("key", "value");
+    protected String buildClassName(ProjectBlueprint blueprint) {
+      return "DemoApplication";
     }
 
     @Override
     public ArtifactKey artifactKey() {
-      return null;
+      return ArtifactKey.MAIN_SOURCE_ENTRY_POINT;
     }
   }
 }

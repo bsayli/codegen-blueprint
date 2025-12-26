@@ -1,17 +1,17 @@
 package io.github.blueprintplatform.codegen.bootstrap.wiring.out.profile;
 
 import io.github.blueprintplatform.codegen.adapter.error.exception.artifact.ArtifactKeyMismatchException;
-import io.github.blueprintplatform.codegen.adapter.out.build.maven.shared.PomDependencyMapper;
+import io.github.blueprintplatform.codegen.adapter.out.build.shared.BuildDependencyMapper;
+import io.github.blueprintplatform.codegen.adapter.out.framework.springboot.java.config.ApplicationYamlAdapter;
+import io.github.blueprintplatform.codegen.adapter.out.framework.springboot.java.doc.ProjectDocumentationAdapter;
+import io.github.blueprintplatform.codegen.adapter.out.framework.springboot.java.governance.ArchitectureGovernanceAdapter;
+import io.github.blueprintplatform.codegen.adapter.out.framework.springboot.java.ignore.GitIgnoreAdapter;
+import io.github.blueprintplatform.codegen.adapter.out.framework.springboot.java.sample.SampleCodeAdapter;
+import io.github.blueprintplatform.codegen.adapter.out.framework.springboot.java.source.MainSourceEntrypointAdapter;
+import io.github.blueprintplatform.codegen.adapter.out.framework.springboot.java.source.SourceLayoutAdapter;
+import io.github.blueprintplatform.codegen.adapter.out.framework.springboot.java.source.TestSourceEntrypointAdapter;
 import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.SpringBootMavenJavaArtifactsAdapter;
 import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.build.MavenPomBuildConfigurationAdapter;
-import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.config.ApplicationYamlAdapter;
-import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.doc.ProjectDocumentationAdapter;
-import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.governance.ArchitectureGovernanceAdapter;
-import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.ignore.GitIgnoreAdapter;
-import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.sample.SampleCodeAdapter;
-import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.source.MainSourceEntrypointAdapter;
-import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.source.SourceLayoutAdapter;
-import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.source.TestSourceEntrypointAdapter;
 import io.github.blueprintplatform.codegen.adapter.out.profile.springboot.maven.java.wrapper.MavenWrapperBuildToolFilesAdapter;
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactPipelineExecutor;
 import io.github.blueprintplatform.codegen.adapter.out.shared.artifact.ArtifactSpec;
@@ -41,12 +41,12 @@ public class SpringBootMavenJavaConfig {
       TemplateRenderer renderer,
       CodegenProfilesRegistry registry,
       ArtifactSpecMapper artifactSpecMapper,
-      PomDependencyMapper pomDependencyMapper) {
+      BuildDependencyMapper buildDependencyMapper) {
 
     ArtifactSpec spec =
         artifactSpecMapper.from(registry.requireArtifact(PROFILE_KEY, ArtifactKey.BUILD_CONFIG));
 
-    return new MavenPomBuildConfigurationAdapter(renderer, spec, pomDependencyMapper);
+    return new MavenPomBuildConfigurationAdapter(renderer, spec, buildDependencyMapper);
   }
 
   @Bean
@@ -139,12 +139,12 @@ public class SpringBootMavenJavaConfig {
       TemplateRenderer renderer,
       CodegenProfilesRegistry registry,
       ArtifactSpecMapper mapper,
-      PomDependencyMapper pomDependencyMapper) {
+      BuildDependencyMapper buildDependencyMapper) {
 
     ArtifactSpec spec =
         mapper.from(registry.requireArtifact(PROFILE_KEY, ArtifactKey.PROJECT_DOCUMENTATION));
 
-    return new ProjectDocumentationAdapter(renderer, spec, pomDependencyMapper);
+    return new ProjectDocumentationAdapter(renderer, spec, buildDependencyMapper);
   }
 
   @Bean

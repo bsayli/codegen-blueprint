@@ -24,16 +24,11 @@ class CodegenProfilesRegistryTest {
   private static final String PROFILE_KEY = ProfileKeys.SPRING_BOOT_MAVEN_JAVA;
   private static final ArtifactKey ARTIFACT_KEY = ArtifactKey.BUILD_CONFIG;
   private static final String ARTIFACT_MAP_KEY = ARTIFACT_KEY.key();
-  private static final String TEMPLATE_BASE_PATH = "springboot/maven/java/";
 
-  private static CodegenProfilesRegistry registryWithBlankBasePath() {
-    TemplateDefinition templateDefinition = new TemplateDefinition("pom.ftl", "pom.xml");
-    ArtifactDefinition artifactDefinition =
-        new ArtifactDefinition(null, List.of(templateDefinition));
-
+  private static CodegenProfilesRegistry registryWithArtifact(
+      ArtifactDefinition artifactDefinition) {
     ProfileProperties profileProperties =
-        new ProfileProperties(
-            "  ", List.of(ARTIFACT_KEY), Map.of(ARTIFACT_MAP_KEY, artifactDefinition));
+        new ProfileProperties(List.of(ARTIFACT_KEY), Map.of(ARTIFACT_MAP_KEY, artifactDefinition));
 
     CodegenProfilesProperties properties =
         new CodegenProfilesProperties(Map.of(PROFILE_KEY, profileProperties));
@@ -42,28 +37,19 @@ class CodegenProfilesRegistryTest {
   }
 
   @Test
-  @DisplayName(
-      "requireArtifact() should return ArtifactDefinition with profile basePath and artifact templates")
-  void requireArtifact_shouldReturnDefinitionWithProfileBasePathAndArtifactTemplates() {
+  @DisplayName("requireArtifact() should return ArtifactDefinition as-is when present")
+  void requireArtifact_shouldReturnArtifactDefinition() {
     TemplateDefinition templateDefinition = new TemplateDefinition("pom.ftl", "pom.xml");
     ArtifactDefinition artifactDefinition =
         new ArtifactDefinition("artifact-specific/", List.of(templateDefinition));
 
-    ProfileProperties profileProperties =
-        new ProfileProperties(
-            TEMPLATE_BASE_PATH,
-            List.of(ARTIFACT_KEY),
-            Map.of(ARTIFACT_MAP_KEY, artifactDefinition));
-
-    CodegenProfilesProperties properties =
-        new CodegenProfilesProperties(Map.of(PROFILE_KEY, profileProperties));
-
-    CodegenProfilesRegistry registry = new CodegenProfilesRegistry(properties);
+    CodegenProfilesRegistry registry = registryWithArtifact(artifactDefinition);
 
     ArtifactDefinition result = registry.requireArtifact(PROFILE_KEY, ARTIFACT_KEY);
 
-    assertThat(result.basePath()).isEqualTo(TEMPLATE_BASE_PATH);
-    assertThat(result.templates()).isSameAs(artifactDefinition.templates());
+    assertThat(result).isSameAs(artifactDefinition);
+    assertThat(result.templateBasePath()).isEqualTo("artifact-specific/");
+    assertThat(result.templates()).containsExactly(templateDefinition);
   }
 
   @Test
@@ -87,8 +73,7 @@ class CodegenProfilesRegistryTest {
   @DisplayName(
       "requireArtifact() should throw ProfileConfigurationException when artifact is missing")
   void requireArtifact_shouldThrowWhenArtifactMissing() {
-    ProfileProperties profileProperties =
-        new ProfileProperties(TEMPLATE_BASE_PATH, List.of(ARTIFACT_KEY), Map.of());
+    ProfileProperties profileProperties = new ProfileProperties(List.of(ARTIFACT_KEY), Map.of());
 
     CodegenProfilesProperties properties =
         new CodegenProfilesProperties(Map.of(PROFILE_KEY, profileProperties));
@@ -106,10 +91,28 @@ class CodegenProfilesRegistryTest {
   }
 
   @Test
+  @DisplayName("requireArtifact() should NOT require templateBasePath when templates is empty")
+  void requireArtifact_emptyTemplates_shouldNotRequireTemplateBasePath() {
+    ArtifactDefinition artifactDefinition = new ArtifactDefinition(null, List.of());
+
+    CodegenProfilesRegistry registry = registryWithArtifact(artifactDefinition);
+
+    ArtifactDefinition result = registry.requireArtifact(PROFILE_KEY, ARTIFACT_KEY);
+
+    assertThat(result).isSameAs(artifactDefinition);
+    assertThat(result.templates()).isEmpty();
+    assertThat(result.templateBasePath()).isNull();
+  }
+
+  @Test
   @DisplayName(
-      "requireArtifact() should throw ProfileConfigurationException when templateBasePath is blank")
-  void requireArtifact_shouldThrowWhenTemplateBasePathBlank() {
-    CodegenProfilesRegistry registry = registryWithBlankBasePath();
+      "requireArtifact() should throw ProfileConfigurationException when templates exist and templateBasePath is blank")
+  void requireArtifact_templatesExist_templateBasePathBlank_shouldThrow() {
+    TemplateDefinition templateDefinition = new TemplateDefinition("pom.ftl", "pom.xml");
+    ArtifactDefinition artifactDefinition =
+        new ArtifactDefinition("   ", List.of(templateDefinition));
+
+    CodegenProfilesRegistry registry = registryWithArtifact(artifactDefinition);
 
     assertThatThrownBy(() -> registry.requireArtifact(PROFILE_KEY, ARTIFACT_KEY))
         .isInstanceOfSatisfying(
@@ -117,7 +120,27 @@ class CodegenProfilesRegistryTest {
             ex -> {
               assertThat(ex.getMessageKey())
                   .isEqualTo(ProfileConfigurationException.KEY_TEMPLATE_BASE_MISSING);
-              assertThat(ex.getArgs()).containsExactly(PROFILE_KEY);
+              assertThat(ex.getArgs()).containsExactly(ARTIFACT_MAP_KEY, PROFILE_KEY);
+            });
+  }
+
+  @Test
+  @DisplayName(
+      "requireArtifact() should throw ProfileConfigurationException when templates exist and templateBasePath is null")
+  void requireArtifact_templatesExist_templateBasePathNull_shouldThrow() {
+    TemplateDefinition templateDefinition = new TemplateDefinition("pom.ftl", "pom.xml");
+    ArtifactDefinition artifactDefinition =
+        new ArtifactDefinition(null, List.of(templateDefinition));
+
+    CodegenProfilesRegistry registry = registryWithArtifact(artifactDefinition);
+
+    assertThatThrownBy(() -> registry.requireArtifact(PROFILE_KEY, ARTIFACT_KEY))
+        .isInstanceOfSatisfying(
+            ProfileConfigurationException.class,
+            ex -> {
+              assertThat(ex.getMessageKey())
+                  .isEqualTo(ProfileConfigurationException.KEY_TEMPLATE_BASE_MISSING);
+              assertThat(ex.getArgs()).containsExactly(ARTIFACT_MAP_KEY, PROFILE_KEY);
             });
   }
 }

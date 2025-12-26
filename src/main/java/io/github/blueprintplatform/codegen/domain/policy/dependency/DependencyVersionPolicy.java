@@ -42,9 +42,9 @@ public final class DependencyVersionPolicy {
 
   private static void validate(String value) {
     Rule<String> rule =
-            CompositeRule.of(
-                    new LengthBetweenRule(MIN, MAX, CODE_LENGTH),
-                    new RegexMatchRule(ALLOWED, CODE_INVALID_CHARS));
+        CompositeRule.of(
+            new LengthBetweenRule(MIN, MAX, CODE_LENGTH),
+            new RegexMatchRule(ALLOWED, CODE_INVALID_CHARS));
     rule.check(value);
   }
 }

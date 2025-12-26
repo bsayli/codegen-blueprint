@@ -208,12 +208,14 @@ Codegen Blueprint today delivers:
 
 ### 🧪 Executable Architecture — Proof
 
-Codegen Blueprint does not rely on conventions or documentation to protect architecture.
+Codegen Blueprint does not rely on conventions, guidelines, or documentation
+to protect architectural intent.
 
-When strict enforcement is enabled, architectural boundaries are translated into
+When **strict enforcement** is enabled, architectural boundaries are translated into
 **generated, executable rules** that are evaluated during the build.
+Violations are not discussed — they **fail the build deterministically**.
 
-👉 **See the full step-by-step executable architecture proof:**  
+👉 **See the full, reproducible executable architecture proof:**  
 [Executable Architecture Proof](docs/demo/executable-architecture-proof.md)
 
 ---

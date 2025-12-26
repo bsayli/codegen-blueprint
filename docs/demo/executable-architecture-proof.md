@@ -1,11 +1,27 @@
 # Executable Architecture Proof — Architecture Enforcement Walkthrough
 
-This document is the **full, step-by-step proof** that Codegen Blueprint can generate **executable architectural guardrails** that **fail the build deterministically** when boundaries drift.
+## Fast Proof (Console-First)
+
+If you want the **GREEN → RED → GREEN** proof in a single command
+(no screenshots, just console output):
+
+```bash
+cd docs/demo
+chmod +x proof-runner.sh
+CODEGEN_JAR=../../target/codegen-blueprint-1.0.0.jar ./proof-runner.sh
+```
+
+The walkthrough below is the **high-resolution proof**:
+screenshots, explanation, and exactly **what failed and why**.
+
+---
+
+This document is the **full, step-by-step proof** that Codegen Blueprint can generate
+**executable architectural guardrails** that **fail the build deterministically**
+when boundaries drift.
 
 > This is not a diagram.
-
 > This is not a convention.
-
 > This is **architecture enforced at build time**.
 
 ---

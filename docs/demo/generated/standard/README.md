@@ -1,4 +1,4 @@
-# Greeting (Standard Layered)
+# Greeting
 
 Greeting sample built with standard layered architecture
 
@@ -24,7 +24,6 @@ Greeting sample built with standard layered architecture
 - [Project Summary](#-project-summary)
 - [Coordinates](#-coordinates)
 - [Quick Start](#-quick-start)
-- [Auto Configuration Notes](#-auto-configuration-notes)
 - [Project Layout](#-project-layout)
 - [Architecture Enforcement](#-architecture-enforcement)
 - [Included Sample (Basic)](#-included-sample-basic)
@@ -64,24 +63,6 @@ Greeting sample built with standard layered architecture
 > ```
 
 > If Maven is installed globally, you may also use `mvn` instead of the wrapper.
-
----
-
-## ⚙️ Auto Configuration Notes
-
-### H2 (for JPA)
-
-This project includes an **in-memory H2 database** configuration because `spring-boot-starter-data-jpa` was selected.
-
-* JDBC URL: `jdbc:h2:mem:greeting-standard`
-* Console: `/h2-console` (if enabled)
-
-### Actuator
-
-Basic actuator exposure is enabled:
-
-* `/actuator/health`
-* `/actuator/info`
 
 
 ---
@@ -258,8 +239,6 @@ If you are comfortable with this structure, you are well-positioned to understan
 ## 📚 Selected Dependencies
 | Dependency | Scope |
 |-----------|-------|
-| `org.springframework.boot:spring-boot-starter-actuator` | default |
-| `org.springframework.boot:spring-boot-starter-data-jpa` | default |
 | `org.springframework.boot:spring-boot-starter-web` | default |
 
 ---

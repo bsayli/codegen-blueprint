@@ -383,8 +383,6 @@ java -jar codegen-blueprint-1.0.0.jar \
   --enforcement strict \
   --sample-code basic \
   --dependency web \
-  --dependency data_jpa \
-  --dependency actuator \
   --target-dir /path/to/output
 ```
 
@@ -431,6 +429,12 @@ devtools
 ```
 
 Invalid or unknown aliases will fail fast during CLI execution.
+
+> `--dependency` is **repeatable**. Multiple aliases may be specified:
+>
+> ```bash
+> --dependency web --dependency actuator --dependency data_jpa
+> ```
 
 ---
 

@@ -374,8 +374,12 @@ java -jar codegen-blueprint-1.0.0.jar \
   --package-name io.github.blueprintplatform.greeting \
   --layout hexagonal \
   --enforcement strict \
-  --sample-code basic
+  --sample-code basic \
+  --dependency web \
+  --target-dir /path/to/output
 ```
+> Note: Additional `--dependency` flags may be provided.  
+> This example keeps the focus on **architecture and use-case boundaries**, not infrastructure breadth.
 
 ---
 

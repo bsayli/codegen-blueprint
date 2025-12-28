@@ -108,9 +108,7 @@ java -jar codegen-blueprint-1.0.0.jar \
   --layout hexagonal \
   --enforcement strict \
   --sample-code basic \
-  --dependency web \
-  --dependency data_jpa \
-  --dependency actuator
+  --dependency web
 ```
 
 Strict enforcement is enabled from the start.
@@ -214,15 +212,13 @@ java -jar codegen-blueprint-1.0.0.jar \
   --cli springboot \
   --group-id io.github.blueprintplatform \
   --artifact-id greeting-standard \
-  --name "Greeting (Standard Layered)" \
+  --name "Greeting" \
   --description "Greeting sample built with standard layered architecture" \
   --package-name io.github.blueprintplatform.greeting \
   --layout standard \
   --enforcement strict \
   --sample-code basic \
-  --dependency web \
-  --dependency data_jpa \
-  --dependency actuator
+  --dependency web
 ```
 
 The same enforcement mode is used, but **different architectural rules apply**.

@@ -39,7 +39,7 @@ CLI_ARGS=(
   --description "$DESCRIPTION"
   --package-name "$PACKAGE_NAME"
   --layout "$LAYOUT"
-  --guardrails "GUARDRAILS"
+  --guardrails "$GUARDRAILS"
   --sample-code "$SAMPLE_CODE"
   --java "$JAVA_VERSION"
   --boot "$BOOT_VERSION"

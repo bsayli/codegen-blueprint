@@ -11,13 +11,13 @@
           <mxGeometry x="240" y="70" width="1120" height="70" as="geometry" />
         </mxCell>
         <mxCell id="whoBox" value="Who benefits&#xa;&#xa;• Platform Engineering&#xa;• Lead Architects&#xa;• Developers&#xa;• New Team Members" style="rounded=1;arcSize=18;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontStyle=1;fontSize=18;strokeColor=#7aa8e6;fillColor=#dbe9ff;spacingTop=14;spacingBottom=14;spacingLeft=18;spacingRight=18;" parent="1" vertex="1">
-          <mxGeometry x="120" y="250" width="360" height="210" as="geometry" />
+          <mxGeometry x="110" y="250" width="370" height="210" as="geometry" />
         </mxCell>
-        <mxCell id="engineBox" value="Codegen Blueprint engine&#xa;&#xa;• Profile-driven generation&#xa;• Architecture-aware layouts (standard | hexagonal)&#xa;• Executable guardrails (optional)&#xa;• Framework-agnostic core domain" style="rounded=1;arcSize=18;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontStyle=1;fontSize=18;strokeColor=#c9a94a;fillColor=#fff0c9;spacingTop=14;spacingBottom=14;spacingLeft=18;spacingRight=18;" parent="1" vertex="1">
+        <mxCell id="engineBox" value="Codegen Blueprint engine&lt;br&gt;&lt;br&gt;• Profile-driven generation&lt;br&gt;• Architecture-aware layouts (standard | hexagonal)&lt;br&gt;• Optional executable guardrails&lt;br&gt;• Framework-agnostic core domain" style="rounded=1;arcSize=18;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontStyle=1;fontSize=18;strokeColor=#c9a94a;fillColor=#fff0c9;spacingTop=14;spacingBottom=14;spacingLeft=18;spacingRight=18;" parent="1" vertex="1">
           <mxGeometry x="560" y="230" width="520" height="250" as="geometry" />
         </mxCell>
         <mxCell id="servicesBox" value="Generated projects&#xa;&#xa;• Clean, consistent Spring Boot foundation&#xa;• Layout choice: standard | hexagonal&#xa;• Architecture guardrails (generated ArchUnit tests)&#xa;• Build-time feedback from day zero" style="rounded=1;arcSize=18;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontStyle=1;fontSize=18;strokeColor=#7fb36a;fillColor=#dff3d6;spacingTop=14;spacingBottom=14;spacingLeft=18;spacingRight=18;" parent="1" vertex="1">
-          <mxGeometry x="1160" y="250" width="360" height="210" as="geometry" />
+          <mxGeometry x="1160" y="250" width="370" height="210" as="geometry" />
         </mxCell>
         <mxCell id="profilesBox" value="Profiles &amp; templates&#xa;(YAML + FreeMarker)&#xa;&#xa;• spring-boot-maven-java profile&#xa;• Stack + conventions encoded as rules&#xa;• Guardrails level: none | basic | strict&#xa;• Ordered artifact generation pipeline" style="rounded=1;arcSize=18;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontStyle=1;fontSize=18;strokeColor=#c46f6f;fillColor=#f6d6d6;spacingTop=14;spacingBottom=14;spacingLeft=18;spacingRight=18;" parent="1" vertex="1">
           <mxGeometry x="520" y="560" width="600" height="220" as="geometry" />

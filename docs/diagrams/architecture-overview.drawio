@@ -1,6 +1,6 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.0.3 Chrome/140.0.7339.249 Electron/38.7.0 Safari/537.36" version="29.0.3">
   <diagram id="codegen-blueprint-overview" name="Executable Architecture Overview">
-    <mxGraphModel dx="1571" dy="935" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
+    <mxGraphModel dx="1676" dy="997" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -40,7 +40,7 @@
         <mxCell id="appTitle" value="Application layer&#xa;(use cases &amp; orchestration)" style="text;html=1;align=center;verticalAlign=middle;fontSize=13;fontStyle=1;whiteSpace=wrap;" parent="1" vertex="1">
           <mxGeometry x="430" y="205" width="420" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="appText" value="• Orchestrates generation flow&#xa;• Selects profile + pipeline order&#xa;• Ports: ProjectArtifactsPort, ArtifactPort&#xa;• Optional guardrails (none|basic|strict)" style="text;html=1;align=left;verticalAlign=top;fontSize=12;whiteSpace=wrap;" parent="1" vertex="1">
+        <mxCell id="appText" value="• Orchestrates generation flow&lt;br&gt;• Selects profile + pipeline order&lt;br&gt;• Ports: ProjectArtifactsPort, ArtifactPort&lt;br&gt;• Optional architecture guardrails (none|basic|strict)" style="text;html=1;align=left;verticalAlign=top;fontSize=12;whiteSpace=wrap;" parent="1" vertex="1">
           <mxGeometry x="450" y="250" width="380" height="110" as="geometry" />
         </mxCell>
         <mxCell id="domain" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8DADA;strokeColor=#C05A5A;strokeWidth=2;" parent="1" vertex="1">

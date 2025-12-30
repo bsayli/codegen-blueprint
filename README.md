@@ -671,16 +671,21 @@ From Day Zero to Production — architecture remains **intentional**, **testable
 
 ### 🧭 Roadmap Principles (Order Matters)
 
-Blueprint evolves in layers — to protect the core promise:
+Blueprint evolves in intentional layers — to protect its core promise and avoid premature surface expansion.
+
+Each phase builds on proven contracts and executable proof, not assumptions.
 
 1. **Strengthen the contract & proof**  
-   (determinism, guardrails, reproducible demos)
+   (determinism, architecture guardrails, reproducible demos)
 2. **Add new delivery surfaces**  
-   (CLI today → REST tomorrow) without changing the core
+   (CLI today → REST tomorrow) **without changing the core engine**
 3. **Introduce capabilities via libraries + governance**  
    (standardize behavior, don’t copy-paste it)
 4. **Expand profiles cautiously**  
    (Gradle/Kotlin/etc. increase surface area — scheduled after proof maturity)
+
+> 📌 Ordering matters.  
+> Capabilities and profiles are introduced **only after** architectural intent is proven executable.
 
 ---
 
@@ -688,9 +693,13 @@ Blueprint evolves in layers — to protect the core promise:
 
 #### 🔹 Phase 1 — Architecture-First Generation (Today)
 
-* Hexagonal / Standard (Layered) generation (opt-in)
-* Architecture guardrails via **generated ArchUnit checks** (`none | basic | strict`)
-* CLI-driven, profile-based generation (Spring Boot · Maven · Java 21)
+This phase establishes the **executable architectural foundation**.
+
+* Hexagonal / Standard (Layered) project generation (opt-in)
+* Architecture guardrails via **generated ArchUnit checks**  
+  (`none | basic | strict`)
+* CLI-driven, profile-based generation  
+  (Spring Boot · Maven · Java 21)
 * Framework-free domain core by construction
 * End-to-end **buildable output** evaluated in CI  
   (generated projects verified with `mvn verify`)
@@ -701,8 +710,14 @@ Blueprint evolves in layers — to protect the core promise:
 
 #### 🔹 Phase 2 — New Delivery Surface (Planned)
 
-* REST inbound adapter (same core engine, new entry point)
-* Interactive onboarding / configuration UX (still contract-first)
+This phase expands **access**, not responsibility.
+
+The core engine remains unchanged.
+
+* REST inbound adapter  
+  (same architecture engine, new entry point)
+* Interactive onboarding / configuration UX  
+  (still contract-first)
 * Safer defaults and clearer intent capture  
   (without widening the domain surface)
 
@@ -712,32 +727,51 @@ Blueprint evolves in layers — to protect the core promise:
 
 #### 🔹 Phase 3 — Capability-Driven Architecture (Planned)
 
-Cross-cutting concerns are not generated as boilerplate code.  
-They are delivered as **versioned capabilities**, evaluated and governed consistently across services.
+This phase operates at the **Blueprint Platform level**,  
+not inside the generator itself.
 
-* 🔐 Security capability (OAuth2 / Keycloak)
-* 🔍 Observability capability (tracing, logs, metrics)
-* 📡 Resilience capability (retries, timeouts, policies)
-* 🧩 Optional enterprise service kits (API / Domain / Infra)
-* 🔁 Generics-aware OpenAPI clients (separate Blueprint module)
+Cross-cutting concerns are **not generated as boilerplate code**.  
+They are delivered as **versioned capabilities**, governed and upgraded consistently across services.
 
-📌 Goal → consistent behavior and upgrades in one place, not duplicated across services
+`codegen-blueprint` acts as the **entry point and wiring engine**, enabling teams to **adopt, configure, and govern** these capabilities — not to implement them.
+
+Planned capability areas include:
+
+* 🔐 Security capability  
+  (OAuth2 / Keycloak)
+* 🔍 Observability capability  
+  (tracing, logs, metrics)
+* 📡 Resilience capability  
+  (retries, timeouts, policies)
+* 🏛️ Architecture policy packs  
+  (versioned guardrails rulesets applied consistently across services)
+* 🧩 Optional enterprise service kits  
+  (API / Domain / Infra)
+* 🔁 Generics-aware OpenAPI clients  
+  (separate Blueprint module)
+
+📌 Goal → consistent behavior, architectural boundaries, and upgrades  
+**in one place — not duplicated across services**
 
 ---
 
 #### 🔹 Phase 4 — Profile Expansion (Roadmap)
 
-Profiles accelerate adoption but **increase surface area**
+Profiles accelerate adoption but **increase surface area**  
 (templates, tests, compatibility, support).
 
+They are introduced only after architectural contracts and governance mature.
+
 * Gradle support (profile)
-* Kotlin support (profile, higher surface area than Gradle)
+* Kotlin support  
+  (higher surface area than Gradle)
 * Quarkus and future stack profiles
 * Visual UI — configure → generate → download
-* Governance at scale: drift detection & remediation ideas
+* Governance at scale  
+  (drift detection & remediation ideas)
 * Platform telemetry for architecture health (opt-in)
 
-📌 Goal → expand stacks **after** the proof and contract are mature
+📌 Goal → expand stacks **after** proof and contracts are stable
 
 ---
 

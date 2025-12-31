@@ -36,7 +36,7 @@ public class GetGreetingHandler implements GetGreetingPort {
     @Override
     public GetGreetingResult getPersonal(GetGreetingQuery query) {
         Greeting greeting;
-        if (query.name() == null) {
+        if (query == null || query.name() == null) {
             greeting = greetingService.defaultGreeting();
         } else {
             greeting = greetingService.createPersonalGreeting(query.name());

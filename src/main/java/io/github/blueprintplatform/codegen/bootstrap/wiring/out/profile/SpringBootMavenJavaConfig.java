@@ -194,7 +194,9 @@ public class SpringBootMavenJavaConfig {
                   ArtifactPort port = springBootMavenJavaArtifactRegistry.get(key);
                   if (port == null) {
                     throw new ProfileConfigurationException(
-                        "bootstrap.requireArtifact.not.found", key.key(), PROFILE_KEY);
+                        ProfileConfigurationException.KEY_ARTIFACT_NOT_FOUND,
+                        key.key(),
+                        PROFILE_KEY);
                   }
                   if (!port.artifactKey().equals(key)) {
                     throw new ArtifactKeyMismatchException(key, port.artifactKey().key());

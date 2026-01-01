@@ -48,7 +48,6 @@ class ProjectDescriptionTest {
   @Test
   @DisplayName("too short description should fail LENGTH rule")
   void tooShortDescription_shouldFailLengthRule() {
-    // 9 karakter, MIN = 10 altında
     String shortText = "too short";
 
     assertThatThrownBy(() -> new ProjectDescription(shortText))

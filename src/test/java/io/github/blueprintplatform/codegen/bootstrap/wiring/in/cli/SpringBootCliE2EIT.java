@@ -193,7 +193,6 @@ class SpringBootCliE2EIT {
       }
     } else {
       assertThat(io.exitCode()).isEqualTo(1);
-
       assertThat(Files.exists(archivePath))
           .as("Archive should NOT be created for incompatible target")
           .isFalse();

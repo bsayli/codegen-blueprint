@@ -5,7 +5,9 @@
 If you want to see the **GREEN → RED → GREEN** proof **purely via the console** —
 no screenshots, no explanations, just deterministic build output — run:
 
+
 ```bash
+# From the repository root
 cd docs/demo
 chmod +x proof-runner.sh
 CODEGEN_JAR=../../target/codegen-blueprint-1.0.0.jar ./proof-runner.sh
@@ -31,7 +33,7 @@ This single command demonstrates — end to end — that Codegen Blueprint can:
 * fail the build **deterministically** when a boundary is violated
 * return to green immediately once the violation is removed
 
-No application startup.
+No app server run, only build-time tests.
 No runtime checks.
 No custom test harness.
 

@@ -33,10 +33,10 @@ class StandardStrictLayerDependencyRulesTest {
 
     static final String BASE_PACKAGE = "${projectPackageName}";
 
-    private static final String CONTROLLERS = BASE_PACKAGE + ".controller..";
-    private static final String SERVICES = BASE_PACKAGE + ".service..";
-    private static final String REPOSITORIES = BASE_PACKAGE + ".repository..";
-    private static final String DOMAIN_SERVICES = BASE_PACKAGE + ".domain.service..";
+    private static final String CONTROLLERS = BASE_PACKAGE + "..controller..";
+    private static final String SERVICES = BASE_PACKAGE + "..service..";
+    private static final String REPOSITORIES = BASE_PACKAGE + "..repository..";
+    private static final String DOMAIN_SERVICES = BASE_PACKAGE + "..domain.service..";
 
     @ArchTest
     static final ArchRule controllers_must_not_depend_on_repositories =

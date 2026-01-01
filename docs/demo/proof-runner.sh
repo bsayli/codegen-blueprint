@@ -41,7 +41,6 @@ run_verify() {
   popd >/dev/null
 }
 
-
 run_verify_expect_fail() {
   local project_dir="$1"
   local label="$2"
@@ -97,21 +96,6 @@ generate_project() {
   local project_dir="${OUT_DIR}/${artifact_id}"
   [[ -d "$project_dir" ]] || die "Generated project dir not found: $project_dir"
   echo "$project_dir"
-}
-
-find_controller_file() {
-  local project_dir="$1"
-  local base="${project_dir}/src/main/java"
-
-  [[ -d "$base" ]] || die "No src/main/java found in ${project_dir}"
-
-  local f
-  f="$(grep -RIl --include='*Controller.java' -m 1 '@RestController' "$base" || true)"
-  if [[ -z "$f" ]]; then
-    f="$(find "$base" -type f -name '*Controller.java' | head -n 1 || true)"
-  fi
-  [[ -n "$f" ]] || die "Could not find a controller file in ${project_dir}. (Is sample-code basic enabled?)"
-  echo "$f"
 }
 
 backup_file() {
@@ -176,19 +160,49 @@ insert_field_after_class_open_if_missing() {
   fi
 
   awk -v t="$type_simple" '
+    BEGIN { injected=0 }
     {
       print
-      if ($0 ~ /class[[:space:]]+[A-Za-z0-9_]+[[:space:]]*\{/) {
+      if (injected==0 && $0 ~ /\{/) {
         print ""
         print "    private " t " __archViolation = null;"
+        injected=1
       }
     }
-  ' "$file" > "${file}.tmp" && mv "${file}.tmp" "$file"
+    END {
+      if (injected==0) {
+        exit 42
+      }
+    }
+  ' "$file" > "${file}.tmp"
+
+  local rc=$?
+  if [[ $rc -ne 0 ]]; then
+    rm -f "${file}.tmp"
+    die "Failed to inject __archViolation field into ${file} (no opening brace found)"
+  fi
+
+  mv "${file}.tmp" "$file"
+  grep -q "__archViolation" "$file" || die "Failed to inject __archViolation field into ${file}"
+}
+
+find_controller_file() {
+  local project_dir="$1"
+  local base="${project_dir}/src/main/java"
+
+  [[ -d "$base" ]] || die "No src/main/java found in ${project_dir}"
+
+  local f
+  f="$(grep -RIl --include='*Controller.java' -m 1 '@RestController' "$base" || true)"
+  if [[ -z "$f" ]]; then
+    f="$(find "$base" -type f -name '*Controller.java' | head -n 1 || true)"
+  fi
+  [[ -n "$f" ]] || die "Could not find a controller file in ${project_dir}. (Is sample-code basic enabled?)"
+  echo "$f"
 }
 
 find_hex_application_impl_type_file() {
   local project_dir="$1"
-
   local src="${project_dir}/src/main/java"
   local f
 
@@ -205,33 +219,25 @@ find_hex_application_impl_type_file() {
   echo "$f"
 }
 
-find_standard_repository_type_file() {
+find_hex_adapter_type_file() {
   local project_dir="$1"
-
   local src="${project_dir}/src/main/java"
   local f
 
-  f="$(find "$src" -type f -name '*Repository.java' | grep '/repository/' | head -n 1 || true)"
-
+  f="$(grep -RIl --include='*Controller.java' -m 1 '@RestController' "$src" | head -n 1 || true)"
   if [[ -z "$f" ]]; then
-    f="$(find "$src" -type f -name '*Repository.java' | head -n 1 || true)"
+    f="$(find "$src" -type f -name '*.java' | grep '/adapter/' | head -n 1 || true)"
   fi
 
-  if [[ -z "$f" ]]; then
-    f="$(grep -RIl --include='*.java' -m 1 '@Repository' "$src" || true)"
-  fi
-
-  [[ -n "$f" ]] || die "STD: Could not find a repository type (*Repository.java or @Repository). (Is sample-code basic enabled?)"
+  [[ -n "$f" ]] || die "HEX: Could not find an adapter class under /adapter/. (Is sample-code basic enabled?)"
   echo "$f"
 }
 
-
-inject_hex_violation_ports_isolation() {
+inject_hex_violation_adapter_depends_on_application_impl() {
   local project_dir="$1"
-  local controller_file="$2"
 
-  log "Inject HEX violation (adapter -> application implementation): ${controller_file}"
-  backup_file "$controller_file"
+  local adapter_file
+  adapter_file="$(find_hex_adapter_type_file "$project_dir")"
 
   local impl_file
   impl_file="$(find_hex_application_impl_type_file "$project_dir")"
@@ -242,10 +248,31 @@ inject_hex_violation_ports_isolation() {
   local impl_simple
   impl_simple="$(simple_name_from_fqcn "$impl_fqcn")"
 
-  insert_import_after_package_if_missing "$controller_file" "$impl_fqcn"
-  insert_field_after_class_open_if_missing "$controller_file" "$impl_simple"
+  log "Inject HEX violation (adapter -> application impl): ${adapter_file}"
+  backup_file "$adapter_file"
 
-  grep -q "__archViolation" "$controller_file" || die "HEX: Failed to inject violation into controller."
+  insert_import_after_package_if_missing "$adapter_file" "$impl_fqcn"
+  insert_field_after_class_open_if_missing "$adapter_file" "$impl_simple"
+
+  grep -q "__archViolation" "$adapter_file" || die "HEX: Failed to inject violation into adapter."
+  echo "$adapter_file"
+}
+
+find_standard_repository_type_file() {
+  local project_dir="$1"
+  local src="${project_dir}/src/main/java"
+  local f
+
+  f="$(find "$src" -type f -name '*Repository.java' | grep '/repository/' | head -n 1 || true)"
+  if [[ -z "$f" ]]; then
+    f="$(find "$src" -type f -name '*Repository.java' | head -n 1 || true)"
+  fi
+  if [[ -z "$f" ]]; then
+    f="$(grep -RIl --include='*.java' -m 1 '@Repository' "$src" || true)"
+  fi
+
+  [[ -n "$f" ]] || die "STD: Could not find a repository type (*Repository.java or @Repository). (Is sample-code basic enabled?)"
+  echo "$f"
 }
 
 inject_standard_violation_controller_depends_on_repository() {
@@ -308,11 +335,10 @@ main() {
   run_verify "$hex_dir" "HEX baseline"
   run_verify "$std_dir" "STD baseline"
 
-  local hex_controller
-  hex_controller="$(find_controller_file "$hex_dir")"
-  inject_hex_violation_ports_isolation "$hex_dir" "$hex_controller"
+  local hex_adapter_touched
+  hex_adapter_touched="$(inject_hex_violation_adapter_depends_on_application_impl "$hex_dir")"
   run_verify_expect_fail "$hex_dir" "HEX violation"
-  restore_file "$hex_controller"
+  restore_file "$hex_adapter_touched"
   run_verify "$hex_dir" "HEX fixed"
 
   local std_controller

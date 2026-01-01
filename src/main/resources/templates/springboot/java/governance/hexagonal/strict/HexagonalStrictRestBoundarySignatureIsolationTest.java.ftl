@@ -32,8 +32,8 @@ import org.springframework.web.bind.annotation.RestController;
 class HexagonalStrictRestBoundarySignatureIsolationTest {
 
     static final String BASE_PACKAGE = "${projectPackageName}";
-    private static final String DOMAIN_PREFIX = BASE_PACKAGE + ".domain.";
-    private static final String INBOUND_ADAPTERS = BASE_PACKAGE + ".adapter.in..";
+    private static final String DOMAIN_PREFIX = BASE_PACKAGE + "..domain..";
+    private static final String INBOUND_ADAPTERS = BASE_PACKAGE + "..adapter.in..";
 
     @ArchTest
     static final ArchRule rest_controllers_must_not_expose_domain_types_in_signatures =

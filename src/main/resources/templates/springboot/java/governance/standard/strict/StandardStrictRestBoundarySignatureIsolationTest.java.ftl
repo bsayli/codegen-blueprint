@@ -32,9 +32,9 @@ class StandardStrictRestBoundarySignatureIsolationTest {
 
     static final String BASE_PACKAGE = "${projectPackageName}";
 
-    private static final String DOMAIN_PREFIX = BASE_PACKAGE + ".domain.";
+    private static final String DOMAIN_PREFIX = BASE_PACKAGE + "..domain..";
 
-    private static final String CONTROLLERS = BASE_PACKAGE + ".controller..";
+    private static final String CONTROLLERS = BASE_PACKAGE + "..controller..";
 
     @ArchTest
     static final ArchRule rest_controllers_must_not_expose_domain_types_in_signatures =

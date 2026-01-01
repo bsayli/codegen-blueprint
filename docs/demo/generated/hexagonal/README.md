@@ -55,16 +55,20 @@ Greeting sample built with hexagonal architecture
 ./mvnw verify
 ```
 
+> **Why `mvn verify` matters**
+>
+> This project includes **generated architecture guardrails**
+> that are evaluated at **build time**.
+>
+> Running `mvn verify` executes these guardrails and serves as
+> the **proof of the architectural contract**.
+>
+> Any boundary violation will **fail the build immediately**.
+
 ```bash
 # Run the application
 ./mvnw spring-boot:run
 ```
-
-> **Why `mvn verify` matters**
->
-> This project includes **generated architecture guardrails** evaluated at build time.
-> Running `mvn verify` executes these guardrails and serves as the **proof of the architectural contract**.
-> Any boundary violation will fail the build immediately.
 
 > **macOS / Linux note**
 >
@@ -174,7 +178,6 @@ For **Hexagonal Architecture**, strict guardrails evaluate:
 * **Package cycle prevention**
   * No cyclic dependencies across top-level packages
   * No cycles inside adapter subpackages
-
 ### How guardrails work
 
 * Rules are generated automatically based on:
@@ -185,7 +188,8 @@ For **Hexagonal Architecture**, strict guardrails evaluate:
 * Guardrails run at **build time only** — no runtime checks
 
 ```bash
-mvn verify # surfaces violations and fails fast
+# surfaces violations and fails fast
+mvn verify
 ```
 
 ### Where the rules live
@@ -197,16 +201,30 @@ src/test/java/io/github/blueprintplatform/greeting/architecture/archunit/
 > These rules are generated code.
 > They represent the **architecture guardrails contract** selected at generation time.
 
+
+
 ---
 
 ## 🧪 Included Sample (Basic)
 
-Because `--sample-code basic` was selected, the project includes a minimal end-to-end **Greeting** slice that demonstrates:
+Because `--sample-code basic` was selected, the project includes a minimal
+end-to-end **Greeting** slice.
+
+The sample is intentionally isolated under a dedicated package to keep
+your own application code clean and to make removal straightforward.
+
+```text
+io.github.blueprintplatform.greeting.bp.sample
+```
+
+This keeps user-owned packages clean and makes the sample removable as a single subtree.
+
+### What this sample demonstrates
 
 * an inbound **REST adapter**
-* an application **use case** via an input port
-* domain/application models
-* mapping of use case output to HTTP response DTO
+* an application **use case** exposed via an **input port**
+* domain + application models
+* mapping of use case output to HTTP response DTOs
 
 ### Sample REST endpoints
 
@@ -235,23 +253,31 @@ curl -s "http://localhost:8080/api/v1/sample/greetings?name=John" | jq
 
 ### Where to look in the code
 
+Start here:
+
 * **Inbound REST adapter**
-  * `adapter/sample/in/rest/GreetingController`
+  * `bp/sample/adapter/in/rest/GreetingController`
 
 ---
 
 * **Application port (input)**
-  * `application/sample/port/in/GetGreetingPort`
+  * `bp/sample/application/port/in/GetGreetingPort`
 
 ---
 
 * **Use case implementation**
-  * `application/sample/usecase/...` (varies by generator version)
+  * `bp/sample/application/usecase/...`
+
+---
+
+* **Domain model + domain service**
+  * `bp/sample/domain/model/...`
+  * `bp/sample/domain/service/...`
 
 You can use this sample in two ways:
 
-* as a **teaching reference** for the hexagonal boundaries in this codebase
-* as a **starting slice** to evolve into your real business modules
+* as a **teaching reference** for hexagonal boundaries
+* as a **starting slice** you can copy/adapt into your own user-owned packages
 
 ---
 

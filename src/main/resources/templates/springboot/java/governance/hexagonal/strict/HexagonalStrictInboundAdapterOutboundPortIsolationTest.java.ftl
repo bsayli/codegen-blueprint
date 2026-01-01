@@ -22,8 +22,8 @@ class HexagonalStrictInboundAdapterOutboundPortIsolationTest {
 
     static final String BASE_PACKAGE = "${projectPackageName}";
 
-    private static final String INBOUND_ADAPTERS = BASE_PACKAGE + ".adapter.in..";
-    private static final String DOMAIN_OUTBOUND_PORTS = BASE_PACKAGE + ".domain.port.out..";
+    private static final String INBOUND_ADAPTERS = BASE_PACKAGE + "..adapter.in..";
+    private static final String DOMAIN_OUTBOUND_PORTS = BASE_PACKAGE + "..domain.port.out..";
 
     @ArchTest
     static final ArchRule inbound_adapters_must_not_depend_on_domain_outbound_ports =

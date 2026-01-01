@@ -28,12 +28,14 @@ class StandardBasicArchitectureRulesTest {
 
     static final String BASE_PACKAGE = "${projectPackageName}";
 
-    private static final String CONTROLLER = BASE_PACKAGE + ".controller..";
-    private static final String SERVICE = BASE_PACKAGE + ".service..";
-    private static final String REPOSITORY = BASE_PACKAGE + ".repository..";
-    private static final String DOMAIN = BASE_PACKAGE + ".domain..";
+    private static final String CONTROLLER = BASE_PACKAGE + "..controller..";
+    private static final String SERVICE = BASE_PACKAGE + "..service..";
+    private static final String REPOSITORY = BASE_PACKAGE + "..repository..";
+    private static final String DOMAIN = BASE_PACKAGE + "..domain..";
 
-    private static final String DOMAIN_SERVICES = BASE_PACKAGE + ".domain.service..";
+    private static final String DOMAIN_SERVICES = BASE_PACKAGE + "..domain.service..";
+
+    private static final String TOP_LEVEL_SLICE_PATTERN = BASE_PACKAGE + ".(*)..";
 
     @ArchTest
     static final ArchRule controllers_must_not_depend_on_repositories =
@@ -78,7 +80,7 @@ class StandardBasicArchitectureRulesTest {
     @ArchTest
     static final ArchRule top_level_packages_must_be_free_of_cycles =
             slices()
-                    .matching(BASE_PACKAGE + ".(*)..")
+                    .matching(TOP_LEVEL_SLICE_PATTERN)
                     .should()
                     .beFreeOfCycles()
                     .allowEmptyShould(true);

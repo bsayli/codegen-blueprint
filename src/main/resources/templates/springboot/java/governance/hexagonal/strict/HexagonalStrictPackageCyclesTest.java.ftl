@@ -24,10 +24,13 @@ class HexagonalStrictPackageCyclesTest {
 
     static final String BASE_PACKAGE = "${projectPackageName}";
 
+    private static final String TOP_LEVEL_SLICE_PATTERN = BASE_PACKAGE + ".(*)..";
+    private static final String ADAPTER_SUBPACKAGE_SLICE_PATTERN = BASE_PACKAGE + "..adapter.(*)..";
+
     @ArchTest
     static final ArchRule top_level_packages_must_be_free_of_cycles =
             slices()
-                    .matching(BASE_PACKAGE + ".(*)..")
+                    .matching(TOP_LEVEL_SLICE_PATTERN)
                     .should()
                     .beFreeOfCycles()
                     .allowEmptyShould(true);
@@ -35,7 +38,7 @@ class HexagonalStrictPackageCyclesTest {
     @ArchTest
     static final ArchRule adapter_subpackages_must_be_free_of_cycles =
             slices()
-                    .matching(BASE_PACKAGE + ".adapter.(*)..")
+                    .matching(ADAPTER_SUBPACKAGE_SLICE_PATTERN)
                     .should()
                     .beFreeOfCycles()
                     .allowEmptyShould(true);

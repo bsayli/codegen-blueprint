@@ -21,8 +21,8 @@ class HexagonalStrictAdapterDirectionRulesTest {
 
     static final String BASE_PACKAGE = "${projectPackageName}";
 
-    private static final String INBOUND_ADAPTERS = BASE_PACKAGE + ".adapter.in..";
-    private static final String OUTBOUND_ADAPTERS = BASE_PACKAGE + ".adapter.out..";
+    private static final String INBOUND_ADAPTERS = BASE_PACKAGE + "..adapter.in..";
+    private static final String OUTBOUND_ADAPTERS = BASE_PACKAGE + "..adapter.out..";
 
     @ArchTest
     static final ArchRule inbound_adapters_must_not_depend_on_outbound_adapters =

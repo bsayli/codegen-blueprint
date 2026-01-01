@@ -25,18 +25,23 @@ class HexagonalStrictPortsIsolationTest {
 
     static final String BASE_PACKAGE = "${projectPackageName}";
 
-    private static final String ADAPTERS = BASE_PACKAGE + ".adapter..";
-    private static final String APPLICATION_PREFIX = BASE_PACKAGE + ".application.";
+    private static final String ADAPTERS = BASE_PACKAGE + "..adapter..";
+
+    private static final String BASE_PREFIX = BASE_PACKAGE + ".";
+    private static final String APPLICATION_SEGMENT = ".application.";
+    private static final String PORT_SEGMENT = ".port.";
 
     private static final DescribedPredicate<JavaClass> APPLICATION_IMPLEMENTATION_TYPES =
-            new DescribedPredicate<>("reside in application but are not ports (outside '..port..')") {
+            new DescribedPredicate<>("reside in application but are not ports (outside '.port.')") {
                 @Override
                 public boolean test(JavaClass c) {
                     var pkg = c.getPackageName();
                     if (pkg == null || pkg.isBlank()) {
                         return false;
                     }
-                    return pkg.startsWith(APPLICATION_PREFIX) && !pkg.contains(".port.");
+                    return pkg.startsWith(BASE_PREFIX)
+                            && pkg.contains(APPLICATION_SEGMENT)
+                            && !pkg.contains(PORT_SEGMENT);
                 }
             };
 

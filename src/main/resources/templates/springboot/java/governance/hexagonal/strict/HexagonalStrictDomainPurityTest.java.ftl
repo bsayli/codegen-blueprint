@@ -26,8 +26,10 @@ class HexagonalStrictDomainPurityTest {
 
     static final String BASE_PACKAGE = "${projectPackageName}";
 
-    private static final String DOMAIN = BASE_PACKAGE + ".domain..";
-    private static final String DOMAIN_ROOT_PREFIX = BASE_PACKAGE + ".domain.";
+    private static final String DOMAIN = BASE_PACKAGE + "..domain..";
+
+    private static final String BASE_PREFIX = BASE_PACKAGE + ".";
+    private static final String DOMAIN_SEGMENT = ".domain.";
 
     @ArchTest
     static final ArchRule domain_must_depend_only_on_jdk_and_domain =
@@ -54,6 +56,6 @@ class HexagonalStrictDomainPurityTest {
             return true;
         }
 
-        return pkg.startsWith(DOMAIN_ROOT_PREFIX);
+        return pkg.startsWith(BASE_PREFIX) && pkg.contains(DOMAIN_SEGMENT);
     }
 }

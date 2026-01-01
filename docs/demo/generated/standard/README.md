@@ -55,16 +55,20 @@ Greeting sample built with standard layered architecture
 ./mvnw verify
 ```
 
+> **Why `mvn verify` matters**
+>
+> This project includes **generated architecture guardrails**
+> that are evaluated at **build time**.
+>
+> Running `mvn verify` executes these guardrails and serves as
+> the **proof of the architectural contract**.
+>
+> Any boundary violation will **fail the build immediately**.
+
 ```bash
 # Run the application
 ./mvnw spring-boot:run
 ```
-
-> **Why `mvn verify` matters**
->
-> This project includes **generated architecture guardrails** evaluated at build time.
-> Running `mvn verify` executes these guardrails and serves as the **proof of the architectural contract**.
-> Any boundary violation will fail the build immediately.
 
 > **macOS / Linux note**
 >
@@ -129,7 +133,6 @@ Any architectural drift will **break the build deterministically**.
 
 ### What strict guardrails evaluate
 
-
 For **Standard (Layered) Architecture**, strict guardrails evaluate:
 
 * **Layer dependency direction and bypass prevention**
@@ -164,7 +167,8 @@ For **Standard (Layered) Architecture**, strict guardrails evaluate:
 * Guardrails run at **build time only** — no runtime checks
 
 ```bash
-mvn verify # surfaces violations and fails fast
+# surfaces violations and fails fast
+mvn verify
 ```
 
 ### Where the rules live
@@ -175,13 +179,30 @@ src/test/java/io/github/blueprintplatform/greeting/architecture/archunit/
 
 > These rules are generated code.
 > They represent the **architecture guardrails contract** selected at generation time.
+
+
+
 ---
 
 ## 🧪 Included Sample (Basic)
 
-Because `--sample-code basic` was selected, the project includes a minimal end-to-end **Greeting** slice that demonstrates a classic **standard (layered) architecture** in its simplest, most readable form.
+Because `--sample-code basic` was selected, the project includes a minimal
+end-to-end **Greeting** slice that demonstrates a classic
+**standard (layered) architecture** in its simplest, most readable form.
 
-This sample is intentionally small. Its purpose is **not** to showcase advanced patterns, but to provide a clear baseline for how layers collaborate in a traditional Spring Boot application.
+This sample is intentionally small.
+Its purpose is **not** to showcase advanced patterns,
+but to provide a clear baseline for how layers collaborate
+in a traditional Spring Boot application.
+
+The sample is intentionally isolated under a dedicated package
+to keep your own application code clean and to make removal straightforward.
+
+```text
+io.github.blueprintplatform.greeting.bp.sample
+```
+
+This keeps user-owned packages clean and makes the sample removable as a single subtree.
 
 ### What this sample demonstrates
 
@@ -229,23 +250,23 @@ curl -s "http://localhost:8080/api/v1/sample/greetings?name=John" | jq
 To understand the sample, start with these classes:
 
 * **REST controller**
-  * `controller/sample/GreetingController`
+  * `bp/sample/controller/GreetingController`
 
 ---
 
 * **Application / use-case service**
-  * `service/sample/GreetingService`
+  * `bp/sample/service/GreetingService`
 
 ---
 
 * **Pure domain logic**
-  * `domain/sample/service/GreetingDomainService`
-  * `domain/sample/model/Greeting`
+  * `bp/sample/domain/service/GreetingDomainService`
+  * `bp/sample/domain/model/Greeting`
 
 ---
 
 * **Audit side effect**
-  * `repository/sample/GreetingAuditRepository`
+  * `bp/sample/repository/GreetingAuditRepository`
 
 Each layer has a single, focused responsibility and communicates only with the layer directly below it.
 
@@ -259,8 +280,6 @@ You can use this sample in two ways:
 
 This sample is intentionally conservative by design.
 It favors clarity over abstraction, and explicit flow over indirection.
-
-If you are comfortable with this structure, you are well-positioned to understand and adopt more advanced architectural styles later on.
 
 ---
 

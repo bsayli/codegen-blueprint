@@ -60,18 +60,22 @@ ${projectDescription}
 # Runs generated ArchUnit tests and fails fast on architectural violations
 ./mvnw verify
 ```
+
+> **Why `mvn verify` matters**
+>
+> This project includes **generated architecture guardrails**
+> that are evaluated at **build time**.
+>
+> Running `mvn verify` executes these guardrails and serves as
+> the **proof of the architectural contract**.
+>
+> Any boundary violation will **fail the build immediately**.
 </#if>
 
 ```bash
 # Run the application
 ./mvnw spring-boot:run
 ```
-
-> **Why `mvn verify` matters**
->
-> This project includes **generated architecture guardrails** evaluated at build time.
-> Running `mvn verify` executes these guardrails and serves as the **proof of the architectural contract**.
-> Any boundary violation will fail the build immediately.
 
 > **macOS / Linux note**
 >
@@ -284,7 +288,6 @@ For **Hexagonal Architecture**, strict guardrails evaluate:
   * No cyclic dependencies across top-level packages
   * No cycles inside adapter subpackages
 </#if>
-
 <#if layout == "standard">
 For **Standard (Layered) Architecture**, strict guardrails evaluate:
 
@@ -321,7 +324,8 @@ For **Standard (Layered) Architecture**, strict guardrails evaluate:
 * Guardrails run at **build time only** — no runtime checks
 
 ```bash
-mvn verify # surfaces violations and fails fast
+# surfaces violations and fails fast
+mvn verify
 ```
 
 ### Where the rules live
@@ -333,18 +337,44 @@ src/test/java/${packageName?replace('.', '/')}/architecture/archunit/
 > These rules are generated code.
 > They represent the **architecture guardrails contract** selected at generation time.
 </#if>
+
+<#if sampleCode != "none">
+<#--
+Sample isolation contract (GA):
+
+Generated sample code is placed under
+${packageName}.bp.sample
+
+This keeps user-owned packages clean and allows the sample
+to be removed as a single, isolated subtree without affecting
+production code.
+-->
+</#if>
+
 <#if layout == "hexagonal" && sampleCode == "basic">
 
 ---
 
 ## 🧪 Included Sample (Basic)
 
-Because `--sample-code basic` was selected, the project includes a minimal end-to-end **Greeting** slice that demonstrates:
+Because `--sample-code basic` was selected, the project includes a minimal
+end-to-end **Greeting** slice.
+
+The sample is intentionally isolated under a dedicated package to keep
+your own application code clean and to make removal straightforward.
+
+```text
+${packageName}.bp.sample
+```
+
+This keeps user-owned packages clean and makes the sample removable as a single subtree.
+
+### What this sample demonstrates
 
 * an inbound **REST adapter**
-* an application **use case** via an input port
-* domain/application models
-* mapping of use case output to HTTP response DTO
+* an application **use case** exposed via an **input port**
+* domain + application models
+* mapping of use case output to HTTP response DTOs
 
 ### Sample REST endpoints
 
@@ -373,32 +403,55 @@ curl -s "http://localhost:8080/api/v1/sample/greetings?name=John" | jq
 
 ### Where to look in the code
 
+Start here:
+
 * **Inbound REST adapter**
-  * `adapter/sample/in/rest/GreetingController`
+  * `bp/sample/adapter/in/rest/GreetingController`
 
 ---
 
 * **Application port (input)**
-  * `application/sample/port/in/GetGreetingPort`
+  * `bp/sample/application/port/in/GetGreetingPort`
 
 ---
 
 * **Use case implementation**
-  * `application/sample/usecase/...` (varies by generator version)
+  * `bp/sample/application/usecase/...`
+
+---
+
+* **Domain model + domain service**
+  * `bp/sample/domain/model/...`
+  * `bp/sample/domain/service/...`
 
 You can use this sample in two ways:
 
-* as a **teaching reference** for the hexagonal boundaries in this codebase
-* as a **starting slice** to evolve into your real business modules
+* as a **teaching reference** for hexagonal boundaries
+* as a **starting slice** you can copy/adapt into your own user-owned packages
 </#if>
 <#if layout == "standard" && sampleCode == "basic">
+
 ---
 
 ## 🧪 Included Sample (Basic)
 
-Because `--sample-code basic` was selected, the project includes a minimal end-to-end **Greeting** slice that demonstrates a classic **standard (layered) architecture** in its simplest, most readable form.
+Because `--sample-code basic` was selected, the project includes a minimal
+end-to-end **Greeting** slice that demonstrates a classic
+**standard (layered) architecture** in its simplest, most readable form.
 
-This sample is intentionally small. Its purpose is **not** to showcase advanced patterns, but to provide a clear baseline for how layers collaborate in a traditional Spring Boot application.
+This sample is intentionally small.
+Its purpose is **not** to showcase advanced patterns,
+but to provide a clear baseline for how layers collaborate
+in a traditional Spring Boot application.
+
+The sample is intentionally isolated under a dedicated package
+to keep your own application code clean and to make removal straightforward.
+
+```text
+${packageName}.bp.sample
+```
+
+This keeps user-owned packages clean and makes the sample removable as a single subtree.
 
 ### What this sample demonstrates
 
@@ -446,23 +499,23 @@ curl -s "http://localhost:8080/api/v1/sample/greetings?name=John" | jq
 To understand the sample, start with these classes:
 
 * **REST controller**
-  * `controller/sample/GreetingController`
+  * `bp/sample/controller/GreetingController`
 
 ---
 
 * **Application / use-case service**
-  * `service/sample/GreetingService`
+  * `bp/sample/service/GreetingService`
 
 ---
 
 * **Pure domain logic**
-  * `domain/sample/service/GreetingDomainService`
-  * `domain/sample/model/Greeting`
+  * `bp/sample/domain/service/GreetingDomainService`
+  * `bp/sample/domain/model/Greeting`
 
 ---
 
 * **Audit side effect**
-  * `repository/sample/GreetingAuditRepository`
+  * `bp/sample/repository/GreetingAuditRepository`
 
 Each layer has a single, focused responsibility and communicates only with the layer directly below it.
 
@@ -476,8 +529,6 @@ You can use this sample in two ways:
 
 This sample is intentionally conservative by design.
 It favors clarity over abstraction, and explicit flow over indirection.
-
-If you are comfortable with this structure, you are well-positioned to understand and adopt more advanced architectural styles later on.
 </#if>
 
 ---

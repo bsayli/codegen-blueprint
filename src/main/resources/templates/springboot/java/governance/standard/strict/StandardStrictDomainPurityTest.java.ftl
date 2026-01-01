@@ -13,11 +13,9 @@ import com.tngtech.archunit.lang.ArchRule;
  * Strict domain purity for STANDARD (layered) layout.
  * Guarantees:
  * - Domain depends only on JDK types
- * - Domain depends only on other domain types
- *
+ * - Domain depends only on other domain types (any package under base package containing '.domain.')
  * Contract note:
  * - Rule scope is the generated base package.
- * - Package matchers are fully qualified to avoid accidental matches.
  */
 @AnalyzeClasses(
         packages = StandardStrictDomainPurityTest.BASE_PACKAGE,
@@ -27,8 +25,8 @@ class StandardStrictDomainPurityTest {
 
     static final String BASE_PACKAGE = "${projectPackageName}";
 
-    private static final String DOMAIN = BASE_PACKAGE + ".domain..";
-    private static final String DOMAIN_ROOT_PREFIX = BASE_PACKAGE + ".domain.";
+    private static final String DOMAIN = BASE_PACKAGE + "..domain..";
+    private static final String BASE_PACKAGE_PREFIX = BASE_PACKAGE + ".";
 
     @ArchTest
     static final ArchRule domain_must_depend_only_on_jdk_and_domain =
@@ -55,6 +53,10 @@ class StandardStrictDomainPurityTest {
             return true;
         }
 
-        return pkg.startsWith(DOMAIN_ROOT_PREFIX);
+        if (!pkg.startsWith(BASE_PACKAGE_PREFIX)) {
+            return false;
+        }
+
+        return pkg.contains(".domain.");
     }
 }

@@ -25,8 +25,8 @@ class HexagonalStrictInboundAdapterDomainIsolationTest {
 
     static final String BASE_PACKAGE = "${projectPackageName}";
 
-    private static final String INBOUND_ADAPTERS = BASE_PACKAGE + ".adapter.in..";
-    private static final String DOMAIN_SERVICES = BASE_PACKAGE + ".domain.service..";
+    private static final String INBOUND_ADAPTERS = BASE_PACKAGE + "..adapter.in..";
+    private static final String DOMAIN_SERVICES = BASE_PACKAGE + "..domain.service..";
 
     @ArchTest
     static final ArchRule inbound_adapters_must_not_depend_on_domain_services =

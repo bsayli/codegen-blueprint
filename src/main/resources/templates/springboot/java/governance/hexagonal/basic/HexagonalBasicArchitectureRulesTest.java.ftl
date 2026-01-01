@@ -26,9 +26,9 @@ class HexagonalBasicArchitectureRulesTest {
 
     static final String BASE_PACKAGE = "${projectPackageName}";
 
-    private static final String APPLICATION = BASE_PACKAGE + ".application..";
-    private static final String ADAPTERS = BASE_PACKAGE + ".adapter..";
-    private static final String BOOTSTRAP = BASE_PACKAGE + ".bootstrap..";
+    private static final String APPLICATION = BASE_PACKAGE + "..application..";
+    private static final String ADAPTERS = BASE_PACKAGE + "..adapter..";
+    private static final String BOOTSTRAP = BASE_PACKAGE + "..bootstrap..";
 
     @ArchTest
     static final ArchRule application_must_not_depend_on_adapters =

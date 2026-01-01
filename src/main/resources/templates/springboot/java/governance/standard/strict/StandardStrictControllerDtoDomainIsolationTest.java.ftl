@@ -22,8 +22,8 @@ class StandardStrictControllerDtoDomainIsolationTest {
 
     static final String BASE_PACKAGE = "${projectPackageName}";
 
-    private static final String CONTROLLER_DTOS = BASE_PACKAGE + ".controller..dto..";
-    private static final String DOMAIN = BASE_PACKAGE + ".domain..";
+    private static final String CONTROLLER_DTOS = BASE_PACKAGE + "..controller..dto..";
+    private static final String DOMAIN = BASE_PACKAGE + "..domain..";
 
     @ArchTest
     static final ArchRule controller_dtos_must_not_depend_on_domain =

@@ -23,8 +23,8 @@ class HexagonalStrictInboundDtoDomainIsolationTest {
 
     static final String BASE_PACKAGE = "${projectPackageName}";
 
-    private static final String INBOUND_ADAPTER_DTOS = BASE_PACKAGE + ".adapter.in..dto..";
-    private static final String DOMAIN = BASE_PACKAGE + ".domain..";
+    private static final String INBOUND_ADAPTER_DTOS = BASE_PACKAGE + "..adapter.in..dto..";
+    private static final String DOMAIN = BASE_PACKAGE + "..domain..";
 
     @ArchTest
     static final ArchRule inbound_adapter_dtos_must_not_depend_on_domain =

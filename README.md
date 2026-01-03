@@ -68,9 +68,9 @@ cd docs/demo
 * ❌ `mvn verify` fails **deterministically** with a generated ArchUnit rule
 * ✅ The violation is reverted and the build returns to green
 
-👉 Full walkthrough (screenshots + exact failures):
+Full walkthrough (screenshots + exact failures):
 
-[Executable Architecture Proof](docs/demo/executable-architecture-proof.md)
+👉 [Executable Architecture Proof](docs/demo/executable-architecture-proof.md)
 
 ---
 

@@ -181,7 +181,21 @@ src
 
 ---
 
+<#if guardrails != "none">
 ## 🧩 Architecture Guardrails
+
+**Authoritative references**
+  * **Authoritative Rule Reference (contract semantics):**
+    * [Architecture Guardrails Rulebook](https://github.com/blueprint-platform/codegen-blueprint/blob/main/docs/architecture/architecture-guardrails-rulebook.md)
+    _(Defines guardrails semantics, vocabulary, and versioning guarantees)_
+
+  * **Canonical Vocabulary (generated contract surface):**
+    <#if layout == "hexagonal">
+    * Hexagonal: `src/test/java/${packageName?replace('.', '/')}/architecture/archunit/HexagonalGuardrailsScope.java`
+    </#if>
+    <#if layout == "standard">
+    * Standard: `src/test/java/${packageName?replace('.', '/')}/architecture/archunit/StandardGuardrailsScope.java`
+    </#if>
 
 > **Architecture Contract Notice**
 >
@@ -196,15 +210,17 @@ src
 ### What guardrails are (and are not)
 
 Guardrails are:
-  * **Generated** (not handwritten)
-  * **Executable** (evaluated as tests)
-  * **Deterministic** (same input → same outcome)
-  * **Build-time only** (no runtime checks)
+
+* **Generated** (not handwritten)
+* **Executable** (evaluated as tests)
+* **Deterministic** (same input → same outcome)
+* **Build-time only** (no runtime checks)
 
 They are **not**:
-  * Documentation
-  * Conventions
-  * Runtime safety nets
+
+* Documentation
+* Conventions
+* Runtime safety nets
 
 Guardrails exist to make architectural boundaries **observable, enforceable, and non-bypassable**.
 
@@ -217,8 +233,6 @@ Guardrails are evaluated during:
 ```bash
 ./mvnw verify
 ```
-
-*If guardrails are disabled (`none`), no architecture tests are generated and `mvn verify` will not fail for architecture reasons.*
 
 ---
 
@@ -237,18 +251,22 @@ These tests are **generated code**. They represent the architecture contract sel
 All guardrails fall into three categories:
 
 1. **Dependency guardrails**
+
 Control allowed and forbidden dependency directions between layers/components.
 
 2. **Boundary guardrails**
+
 Protect public boundaries (e.g., REST) from leaking internal or domain types.
 
 3. **Schema & contract guardrails**
+
 Protect the **meaning and scope** of guardrails by validating the package schema and bounded-context detection.
 
 > Schema guardrails are critical: without them, dependency rules can be accidentally bypassed by refactoring package names.
 
 ---
 
+</#if>
 <#if guardrails == "none">
 ### Guardrails status: disabled (`none`)
 

@@ -163,6 +163,17 @@ Schema guardrails ensure that the **structural contract itself remains intact**.
 
 They exist to prevent guardrails from being silently disabled or rendered meaningless through refactoring.
 
+### Canonical vocabulary and generated contract surface
+
+Canonical package vocabulary is not only described in this rulebook — it is also **generated as code** in every project.
+
+* The canonical vocabulary tokens used by guardrails are generated under:
+  * `src/test/java/<projectPackage>/architecture/archunit/*GuardrailsScope.java`
+* This rulebook defines **guardrails semantics and interpretation**.
+* The generated `*GuardrailsScope` classes define the **authoritative vocabulary tokens** referenced by the generated ArchUnit tests.
+
+If these vocabulary tokens are renamed or relocated, this is treated as a **contract change** (not a refactor) and may cause guardrails to fail by design.
+
 ### What schema guardrails enforce
 
 * Canonical package vocabulary is part of the **architecture contract**

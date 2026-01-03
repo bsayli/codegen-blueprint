@@ -1,6 +1,7 @@
 package ${projectPackageName}.architecture.archunit;
 
 /**
+ * This file is part of the generated project contract surface.
  * Canonical vocabulary for HEXAGONAL architecture guardrails.
  * <h2>What this is</h2>
  * This class is the authoritative <b>package contract</b> for the generated HEXAGONAL layout.

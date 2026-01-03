@@ -1,6 +1,8 @@
 package ${projectPackageName}.architecture.archunit;
 
 /**
+ * This file is part of the generated project contract surface.
+ *
  * Canonical vocabulary for STANDARD (layered) architecture guardrails.
  * <h2>What this is</h2>
  * This class is the authoritative <b>package contract</b> for the generated STANDARD layout.

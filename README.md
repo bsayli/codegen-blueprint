@@ -69,6 +69,7 @@ cd docs/demo
 * ✅ The violation is reverted and the build returns to green
 
 👉 Full walkthrough (screenshots + exact failures):
+
 [Executable Architecture Proof](docs/demo/executable-architecture-proof.md)
 
 ---
@@ -123,7 +124,9 @@ Starting from **1.0.0 GA**, guarantees around generation determinism, structure,
 and executable architecture guardrails are intentional and protected.
 
 Breaking changes are introduced **only in major versions** and are never silent.
+
 For details, see:
+
 👉 [Release Discipline](docs/policies/release-discipline.md)
 
 ### What We Explicitly Do NOT Guarantee
@@ -132,6 +135,7 @@ Codegen Blueprint is intentionally **constrained by design**.
 Some things are not supported — not by accident, but to protect architectural integrity.
 
 Before adopting the project, please review what is **explicitly out of scope**:
+
 👉 [What We Do NOT Guarantee](docs/policies/what-we-do-not-guarantee.md)
 
 ### 🧾 Project History (Short)
@@ -305,6 +309,7 @@ With **strict guardrails** enabled:
 * drift surfaces early, while context is still fresh
 
 👉 See the full, reproducible walkthrough:  
+
 [Executable Architecture Proof](docs/demo/executable-architecture-proof.md)
 
 ---
@@ -338,6 +343,7 @@ Spring Boot is the first delivery adapter — not the foundation.
   describing *the full rule surface*, *how boundaries are interpreted*,  
   and *which rule families exist across layouts and modes*.  
   *(Engine capability reference — **not** a 1.0.0 GA guarantee)*  
+
   → [Architecture Guardrails Rulebook](docs/architecture/architecture-guardrails-rulebook.md)
 
 ---
@@ -346,13 +352,15 @@ Spring Boot is the first delivery adapter — not the foundation.
   The **authoritative contract** defining **exactly what Codegen Blueprint guarantees — and only guarantees —**  
   at generation and build time in the **1.0.0 GA release**.  
   *(If something is not explicitly listed in this document, it is intentionally **not guaranteed** in GA)*  
+
   → [Executable Architecture Contract — 1.0.0 GA](docs/architecture/executable-architecture-contract.md)
 
 ---
 
 - 🧭 **How to Explore This Codebase (Hexagonal Guide)**  
   A practical guide to understanding ports, adapters, boundaries,  
-  and how profile-driven execution shapes the system.  
+  and how profile-driven execution shapes the system.
+
   → [Hexagonal Architecture Guide](docs/guides/how-to-explore-hexagonal-architecture.md)
 
 ---
@@ -360,6 +368,7 @@ Spring Boot is the first delivery adapter — not the foundation.
 - 🧠 **Architecture Governance & AI Collaboration Protocol**  
   Describes how architectural decisions are **made visible**, **reviewed**,  
   and **kept consistent** in AI-assisted and multi-contributor environments.  
+
   → [Architecture Governance & AI Protocol](docs/architecture/architecture-governance-and-ai-protocol.md)
 
 ---
@@ -954,6 +963,7 @@ They are introduced only after architectural contracts and governance mature.
 ---
 
 📌 Community-driven priorities:  
+
 🔗 Participate via [GitHub Discussions](https://github.com/blueprint-platform/codegen-blueprint/discussions)
 
 ---
@@ -985,7 +995,9 @@ We welcome:
 * Template & documentation enhancements
 
 Start here →
+
 - 🔗 [GitHub Discussions](https://github.com/blueprint-platform/codegen-blueprint/discussions)
+
 - 🔗 [GitHub Issues](https://github.com/blueprint-platform/codegen-blueprint/issues)
 
 ---
@@ -1001,7 +1013,9 @@ If this project saves your team time or headaches,
 Creator & Maintainer
 
 * GitHub: [https://github.com/bsayli](https://github.com/bsayli)
+
 * LinkedIn: [https://www.linkedin.com/in/bsayli](https://www.linkedin.com/in/bsayli)
+
 * Medium: [https://medium.com/@baris.sayli](https://medium.com/@baris.sayli)
 
 ---

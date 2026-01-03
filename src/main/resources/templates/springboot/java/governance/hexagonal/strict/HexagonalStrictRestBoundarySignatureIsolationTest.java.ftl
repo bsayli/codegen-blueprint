@@ -20,21 +20,14 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * Strict REST boundary signature isolation (HEXAGONAL).
- * Guarantees:
- * - REST controllers must NOT expose domain types in method signatures
- *   (return types, parameters, generics)
- * Notes:
- * - DTO domain isolation is enforced by a separate rule
- * - This rule focuses solely on API surface leakage
- * - Structural by nature and independent of package root shape
- */
 @AnalyzeClasses(
         packages = BASE_PACKAGE,
         importOptions = ImportOption.DoNotIncludeTests.class
 )
 class HexagonalStrictRestBoundarySignatureIsolationTest {
+
+    private static final String BASE_PREFIX = BASE_PACKAGE + ".";
+    private static final String DOMAIN_DOTTED_TOKEN = "." + FAMILY_DOMAIN + ".";
 
     @ArchTest
     static final ArchRule rest_controllers_must_not_expose_domain_types_in_signatures =
@@ -68,23 +61,23 @@ class HexagonalStrictRestBoundarySignatureIsolationTest {
 
             var rawReturn = method.getRawReturnType();
             if (isDomainType(rawReturn)) {
-                violations.add(message("return type leaks domain", method, rawReturn.getFullName()));
+                violations.add(message(method, "return type leaks domain", rawReturn));
             }
 
             for (var p : method.getRawParameterTypes()) {
                 if (isDomainType(p)) {
-                    violations.add(message("parameter type leaks domain", method, p.getFullName()));
+                    violations.add(message(method, "parameter type leaks domain", p));
                 }
             }
 
             var returnType = method.getReturnType();
             if (containsDomainInTypeTree(returnType)) {
-                violations.add(message("generic return type leaks domain", method, returnType.getName()));
+                violations.add(message(method, "generic return type leaks domain", returnType));
             }
 
             for (var pt : method.getParameterTypes()) {
                 if (containsDomainInTypeTree(pt)) {
-                    violations.add(message("generic parameter type leaks domain", method, pt.getName()));
+                    violations.add(message(method, "generic parameter type leaks domain", pt));
                 }
             }
 
@@ -108,19 +101,18 @@ class HexagonalStrictRestBoundarySignatureIsolationTest {
                 return false;
             }
             var pkg = c.getPackageName();
-            return pkg != null && pkg.contains(domainToken());
+            if (pkg == null || pkg.isBlank()) {
+                return false;
+            }
+            return pkg.startsWith(BASE_PREFIX) && pkg.contains(DOMAIN_DOTTED_TOKEN);
         }
 
-        private static String message(String reason, JavaMethod method, String type) {
+        private static String message(JavaMethod method, String reason, Object type) {
             return reason + ": " + method.getFullName() + " -> " + type;
         }
     }
 
     private static String inboundAdapterPattern() {
         return BASE_PACKAGE + ".." + FAMILY_ADAPTER + "." + ADAPTER_IN + "..";
-    }
-
-    private static String domainToken() {
-        return "." + FAMILY_DOMAIN + ".";
     }
 }

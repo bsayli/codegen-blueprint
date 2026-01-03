@@ -2,7 +2,8 @@
 
 **Build-time architectural guardrails generated and evaluated by Codegen Blueprint.**
 
-This document defines the **authoritative architecture guardrails contract** that Codegen Blueprint is capable of generating and enforcing at build time.
+This document defines the **authoritative guardrails contract vocabulary and rule semantics**
+that Codegen Blueprint is capable of generating and evaluating at build time.
 
 > ⚠️ **Important**
 >
@@ -127,6 +128,7 @@ Basic mode enforces:
 
 It intentionally avoids **strict contract/vocabulary policing** (e.g., rename-escape / near-miss detection)
 and does not attempt full **contract integrity** enforcement beyond minimal schema integrity checks.
+
 ---
 
 ### strict
@@ -185,28 +187,38 @@ Schema guardrails ensure that **dependency and boundary rules continue to mean w
 
 ### Hexagonal — Basic
 
-**Guaranteed rules**
+**Rules enforced by Hexagonal Basic mode**
 
-* Application layer must **not depend on adapters**.
-* Bootstrap layer is a **leaf**: non-bootstrap packages must not depend on `bootstrap`.
+When Hexagonal layout is selected and guardrails are enabled in **`basic` mode**,
+the following rules are generated and evaluated at build time.
+
+* The application layer must **not depend on adapters**.
+* The bootstrap layer is treated as a **leaf**:
+  non-bootstrap packages must not depend on `bootstrap`.
 * For each detected bounded context root, there must be **no cyclic dependencies across first-segment slices**
-  under that context root (e.g., `adapter` / `application` / `domain` / `bootstrap`).
+  under that context root (e.g. `adapter` / `application` / `domain` / `bootstrap`).
 * Each detected hexagonal bounded context must contain the canonical families:
   * `application`
   * `adapter`
   * `domain`
-* Guardrails scope must **not be empty** (fails fast to prevent “silent green builds” after root package refactors).
+* Guardrails scope must **not be empty**,
+  failing fast to prevent “silent green builds” after root package refactors.
+
+---
 
 **Intent**
 
-Hexagonal Basic:
+Hexagonal Basic is designed to provide **early, adoption-friendly structural protection**:
 
-* Protects core use cases from infrastructure concerns (application cannot drift into adapters).
-* Preserves replaceable bootstrapping by preventing bootstrap from becoming a shared dependency hub.
-* Detects structural drift early via:
+* It protects core use cases from infrastructure concerns
+  (the application layer cannot drift into adapters).
+* It preserves replaceable bootstrapping by preventing `bootstrap`
+  from becoming a shared dependency hub.
+* It detects structural drift early via:
   * bounded-context schema completeness checks, and
   * bounded-context cycle checks,
-    without enforcing strict vocabulary policing.
+
+without enforcing strict vocabulary policing or full contract rigidity.
 
 ---
 
@@ -299,23 +311,38 @@ violates hexagonal separation of concerns.
 
 ### Standard — Basic
 
-Standard Basic guardrails define a **safe, low-friction baseline** for classic layered architectures.
-They focus on **directional correctness** and **structural integrity**, without enforcing strict vocabulary
-or framework-level isolation.
+Standard Basic guardrails define a **safe, low-friction architectural baseline**
+for classic layered systems.
+
+They are designed for **early adoption** and focus on:
+
+* **Directional dependency correctness**
+* **Minimal structural integrity**
+* **Early detection of obvious architectural drift**
+
+They intentionally avoid strict vocabulary policing and framework-level isolation,
+which are deferred to **Standard — Strict**.
 
 ---
 
-#### Guaranteed rules
+#### Rules enforced when Standard Basic guardrails are enabled
 
 ##### Controller ↔ Repository isolation
 
-* Controllers (`controller`) must **not depend on repositories** (`repository`).
-* Repositories must **not depend on controllers**.
+When guardrails are enabled in **Standard — Basic** mode:
 
-This prevents:
+* Controllers (`controller`) **must not depend on** repositories (`repository`)
+* Repositories (`repository`) **must not depend on** controllers (`controller`)
+
+This enforces a minimal layered boundary and prevents:
+
 * Bypassing the service layer
 * Mixing delivery concerns with persistence logic
 * Accidental tight coupling between entrypoints and data access
+
+> This rule enforces **dependency isolation**, not call ordering.
+> It ensures that delivery and persistence concerns remain structurally decoupled,
+> even in early-stage or low-friction layered architectures.
 
 ---
 
@@ -526,40 +553,53 @@ They are:
 ## Versioning guarantee
 
 This guardrails rulebook defines the **stable contract vocabulary and rule semantics**
-for Codegen Blueprint **1.0.0 GA**.
+that Codegen Blueprint is capable of generating and evaluating at build time.
 
-It guarantees that:
+It guarantees that, within a **GA release line**:
 
-* The **meaning, scope, and intent** of documented guardrails are versioned and stable within a GA line
-* Any change to guardrail **semantics or contract interpretation** is treated as a **contract change**
+* The **meaning, scope, and intent** of documented guardrails are stable and versioned
+* Any change to guardrail **semantics or interpretation** is treated as a **contract change**
 * Contract changes require an **explicit version upgrade**
-* No silent or implicit guardrails behavior changes occur within a GA line
+* No silent or implicit changes to guardrails behavior occur within the same GA line
+
+> 📌 Important clarification  
+> This rulebook describes **engine-level guardrails semantics and vocabulary**.  
+> It does **not** define which guardrails are guaranteed, enabled, or active by default in a given release.
+
+---
 
 ### Activation and defaults (important)
 
-This rulebook defines **what guardrails mean**, not **which guardrails are active by default**.
+This rulebook defines **what guardrails mean**,  
+not **which guardrails are enabled in a generated project**.
 
-Whether a generated project enables:
+Whether a project enables:
+
 * `none`
 * `basic`
-* or `strict`
+* `strict`
 
-is determined **explicitly by CLI flags and release-level defaults**, not by this document.
+is determined **explicitly by CLI flags and release-level defaults**,  
+not by this document.
 
-For Codegen Blueprint **1.0.0**:
+For **Codegen Blueprint 1.0.0 GA**:
 
 * The default guardrails mode is **`basic`**
-* `strict` guardrails are **opt-in**
+* **`strict`** guardrails are **explicitly opt-in**
 * No project is forced into strict enforcement unless explicitly requested
 
-CLI flags and release notes are the **authoritative source** for:
+The **authoritative source** for:
+
 * default guardrails mode
-* opt-in behavior
+* opt-in / opt-out behavior
 * availability of guardrails per layout
 
+is the **CLI contract and the release notes**, not this rulebook.
+
 This separation is intentional:
-* The rulebook defines the **contract**
-* The CLI defines the **activation**
+
+* The **rulebook** defines guardrails **semantics and vocabulary**
+* The **CLI and release artifacts** define **activation and guarantees**
 
 ---
 

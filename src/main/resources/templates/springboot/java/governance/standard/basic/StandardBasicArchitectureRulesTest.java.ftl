@@ -105,7 +105,10 @@ class StandardBasicArchitectureRulesTest {
         var contexts = detectContextRoots(classes);
 
         if (contexts.isEmpty()) {
-            return;
+            Assertions.fail(
+                    "No STANDARD bounded context was detected under scope '" + BASE_PACKAGE + "'. "
+                            + "A bounded context is inferred by presence of a '" + FAMILY_CONTROLLER + "' package."
+            );
         }
 
         var violations = new ArrayList<String>();

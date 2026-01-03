@@ -378,8 +378,12 @@ Strict guardrails are generated **because this project was created with `--guard
 Strict mode enforces:
 
 * **Full dependency direction contracts** (layout-specific)
+  <#if layout == "hexagonal">
   * Hexagonal: `application` must not depend on `adapter`; `bootstrap` remains a strict leaf
+  </#if>
+  <#if layout == "standard">
   * Standard: strict layered direction rules between `controller/service/repository/domain/config`
+  </#if>
 * **Domain purity**
   * Domain may depend only on **JDK types** and **other domain types**
   * No framework / delivery / persistence dependencies

@@ -212,7 +212,6 @@ Strict mode enforces:
 
 * **Full dependency direction contracts** (layout-specific)
   * Hexagonal: `application` must not depend on `adapter`; `bootstrap` remains a strict leaf
-  * Standard: strict layered direction rules between `controller/service/repository/domain/config`
 * **Domain purity**
   * Domain may depend only on **JDK types** and **other domain types**
   * No framework / delivery / persistence dependencies

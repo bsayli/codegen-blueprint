@@ -2,6 +2,10 @@ package ${projectPackageName}.architecture.archunit;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices;
+import static ${projectPackageName}.architecture.archunit.HexagonalGuardrailsScope.ADAPTER;
+import static ${projectPackageName}.architecture.archunit.HexagonalGuardrailsScope.APPLICATION;
+import static ${projectPackageName}.architecture.archunit.HexagonalGuardrailsScope.BASE_PACKAGE;
+import static ${projectPackageName}.architecture.archunit.HexagonalGuardrailsScope.BOOTSTRAP;
 
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
@@ -14,21 +18,18 @@ import com.tngtech.archunit.lang.ArchRule;
  * - Application does not depend on adapters
  * - Bootstrap is a leaf (nobody depends on it)
  * - No cycles across top-level packages
+ * Notes:
+ * - Works for both flat package roots and nested sub-root structures
+ * - Architectural rules remain valid even if domain sub-packages are introduced
  * Contract note:
- * - Rule scope is the generated base package: ${projectPackageName}
- * - Package matchers use fully qualified patterns to avoid accidental matches.
+ * - Rule scope is the generated application base package
+ * - Package matchers are fully qualified to avoid accidental matches
  */
 @AnalyzeClasses(
-        packages = HexagonalBasicArchitectureRulesTest.BASE_PACKAGE,
+        packages = BASE_PACKAGE,
         importOptions = ImportOption.DoNotIncludeTests.class
 )
 class HexagonalBasicArchitectureRulesTest {
-
-    static final String BASE_PACKAGE = "${projectPackageName}";
-
-    private static final String APPLICATION = BASE_PACKAGE + "..application..";
-    private static final String ADAPTERS = BASE_PACKAGE + "..adapter..";
-    private static final String BOOTSTRAP = BASE_PACKAGE + "..bootstrap..";
 
     @ArchTest
     static final ArchRule application_must_not_depend_on_adapters =
@@ -37,7 +38,7 @@ class HexagonalBasicArchitectureRulesTest {
                     .resideInAnyPackage(APPLICATION)
                     .should()
                     .dependOnClassesThat()
-                    .resideInAnyPackage(ADAPTERS)
+                    .resideInAnyPackage(ADAPTER)
                     .allowEmptyShould(true);
 
     @ArchTest

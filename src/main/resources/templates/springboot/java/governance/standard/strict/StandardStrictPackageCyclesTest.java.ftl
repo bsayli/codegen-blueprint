@@ -1,5 +1,11 @@
 package ${projectPackageName}.architecture.archunit;
 
+import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.BASE_PACKAGE;
+import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.CONFIG_SLICE;
+import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.CONTROLLER_SLICE;
+import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.DOMAIN_SLICE;
+import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.REPOSITORY_SLICE;
+import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.SERVICE_SLICE;
 import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices;
 
 import com.tngtech.archunit.core.importer.ImportOption;
@@ -8,29 +14,59 @@ import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 
 /**
- * Strict package cycle rules for STANDARD (layered) architecture.
+ * Strict package cycle rules (STANDARD).
  * Guarantees:
- * - No cyclic dependencies between top-level packages (under base package)
+ * - No cyclic dependencies inside each layered package family
+ *   (controller/service/repository/domain/config).
  * Notes:
- * - Empty projects are allowed (no false negatives)
+ * - Works for both flat package roots and nested sub-root structures.
+ * - Empty projects are allowed (no false negatives).
  * Contract note:
- * - Rule scope is the generated base package.
- * - Slice matching uses fully qualified patterns to avoid accidental matches.
+ * - Rule scope is the generated application base package.
+ * - Slice matchers are fully qualified to ensure deterministic behavior.
  */
 @AnalyzeClasses(
-        packages = StandardStrictPackageCyclesTest.BASE_PACKAGE,
+        packages = BASE_PACKAGE,
         importOptions = ImportOption.DoNotIncludeTests.class
 )
 class StandardStrictPackageCyclesTest {
 
-    static final String BASE_PACKAGE = "${projectPackageName}";
-
-    private static final String TOP_LEVEL_SLICE_PATTERN = BASE_PACKAGE + ".(*)..";
+    @ArchTest
+    static final ArchRule controller_packages_must_be_free_of_cycles =
+            slices()
+                    .matching(CONTROLLER_SLICE)
+                    .should()
+                    .beFreeOfCycles()
+                    .allowEmptyShould(true);
 
     @ArchTest
-    static final ArchRule top_level_packages_must_be_free_of_cycles =
+    static final ArchRule service_packages_must_be_free_of_cycles =
             slices()
-                    .matching(TOP_LEVEL_SLICE_PATTERN)
+                    .matching(SERVICE_SLICE)
+                    .should()
+                    .beFreeOfCycles()
+                    .allowEmptyShould(true);
+
+    @ArchTest
+    static final ArchRule repository_packages_must_be_free_of_cycles =
+            slices()
+                    .matching(REPOSITORY_SLICE)
+                    .should()
+                    .beFreeOfCycles()
+                    .allowEmptyShould(true);
+
+    @ArchTest
+    static final ArchRule domain_packages_must_be_free_of_cycles =
+            slices()
+                    .matching(DOMAIN_SLICE)
+                    .should()
+                    .beFreeOfCycles()
+                    .allowEmptyShould(true);
+
+    @ArchTest
+    static final ArchRule config_packages_must_be_free_of_cycles =
+            slices()
+                    .matching(CONFIG_SLICE)
                     .should()
                     .beFreeOfCycles()
                     .allowEmptyShould(true);

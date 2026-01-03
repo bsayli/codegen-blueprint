@@ -13,7 +13,7 @@
   <img src="docs/images/cover/cover.png" alt="Executable Architecture — From Day Zero" width="700" />
 </p>
 
-> **Codegen Blueprint** is for teams who care less about *how fast a project starts*  
+> **Codegen Blueprint** is for teams who care less about *how fast a project starts*
 > and more about *how well its architecture survives over time*.
 
 ---
@@ -35,11 +35,11 @@ Codegen Blueprint exists for that exact moment.
 * Java 21
 * Maven 3.9+
 * macOS or Linux
-* **Windows:** use **WSL2 (Ubuntu recommended)** — the proof runner requires `bash`, `unzip`, and executable permissions (`chmod`)
 
 > Goal: see **GREEN → RED → GREEN** purely via **build-time architecture guardrails**.
 >
-> No app startup. No runtime checks. Just deterministic feedback during `mvn verify`.
+> No application startup. No runtime checks.
+> Just deterministic feedback during `mvn verify`.
 
 ---
 
@@ -51,17 +51,12 @@ mvn -q clean package
 
 ---
 
-### 2) Run the console-first executable proof
+### 2) Run the executable architecture proof
 
 ```bash
 cd docs/demo
-chmod +x proof-runner.sh
-CODEGEN_JAR=../../target/codegen-blueprint-1.0.0.jar ./proof-runner.sh
+./proof-runner.sh
 ```
-
-> **Windows note**
->
-> Run the commands above **inside WSL2**. The proof runner is a Bash script and relies on standard Unix tooling.
 
 ---
 
@@ -82,6 +77,7 @@ CODEGEN_JAR=../../target/codegen-blueprint-1.0.0.jar ./proof-runner.sh
 > If you want architecture that stays **observable and executable** over time, start here.
 
 ---
+
 
 ### 🤔 Should I clone this repository?
 
@@ -111,8 +107,13 @@ turning architectural intent into a **living contract** rather than a set of gui
 When boundaries are crossed, the build does not silently succeed —
 it **signals the drift clearly**, while context is still fresh and easy to correct.
 
-This is not about punishment or restriction.  
+This is not about punishment or restriction.
 It is about **protecting architectural intent as the system evolves**.
+
+> **Contract clarity**
+>
+> The authoritative GA guarantee surface is defined only by the
+> **Executable Architecture Contract — 1.0.0 GA**.
 
 ## Release & Compatibility Discipline
 
@@ -122,7 +123,7 @@ Starting from **1.0.0 GA**, guarantees around generation determinism, structure,
 and executable architecture guardrails are intentional and protected.
 
 Breaking changes are introduced **only in major versions** and are never silent.
-For details, see:  
+For details, see:
 👉 [Release Discipline](docs/policies/release-discipline.md)
 
 ### What We Explicitly Do NOT Guarantee
@@ -130,7 +131,7 @@ For details, see:
 Codegen Blueprint is intentionally **constrained by design**.
 Some things are not supported — not by accident, but to protect architectural integrity.
 
-Before adopting the project, please review what is **explicitly out of scope**:  
+Before adopting the project, please review what is **explicitly out of scope**:
 👉 [What We Do NOT Guarantee](docs/policies/what-we-do-not-guarantee.md)
 
 ### 🧾 Project History (Short)
@@ -143,28 +144,29 @@ Earlier `0.x` tags are kept for historical context and experimentation, but they
 
 ## 🧭 Architecture as a Product
 
-> In Blueprint, **Executable Architecture** is the outcome,  
-> **guardrails** are the mechanism that enforce it at build time,  
-> and **governance** is how those rules evolve safely over time.
+> In Blueprint, **Executable Architecture** is the outcome,
+> **guardrails** are the mechanism that enforce it at build time,
+> and **contract evolution discipline (governance)** is how those guardrails change safely over time.
 >
-> **Governance is the discipline of evolving the guardrails contract
+> **Contract evolution discipline** means evolving the guardrails contract
 > (today implemented as generated ArchUnit rules)
-> without silently changing what the build guarantees.**
+> without silently changing what the build guarantees.
 >
 > **Guardrails** here means **explicit, non-negotiable architectural constraints**
 > that are **evaluated automatically during `mvn verify`**
 > (not guidelines, not documentation).
 
-Most teams don’t fail because they chose the wrong framework.  
+Most teams don’t fail because they chose the wrong framework.
 They fail because **architecture slowly drifts once the project is “up and running.”**
 
 What starts as a clean design turns into:
-- shortcuts under delivery pressure
-- blurred boundaries between layers
-- domain logic leaking into frameworks
-- “we’ll fix it later” decisions that never get fixed
 
-Traditional project generators help you **start fast** —  
+* shortcuts under delivery pressure
+* blurred boundaries between layers
+* domain logic leaking into frameworks
+* “we’ll fix it later” decisions that never get fixed
+
+Traditional project generators help you **start fast** —
 but they disappear the moment the first commit is made.
 
 **Codegen Blueprint exists to address what happens *after* generation.**
@@ -184,20 +186,18 @@ It treats architecture as a **first-class, executable product** that:
 
 ---
 
-
 🔗 Part of the **Blueprint Platform** → [blueprint-platform](https://github.com/blueprint-platform)
 
 🤝 [Contributing](#-contributing)
 
 ---
 
-
 ### 🎯 Who is this for?
 
 | Role                 | Problem Solved                                              |
 | -------------------- | ----------------------------------------------------------- |
 | Platform Engineering | Org-wide standards made **explicit and verifiable**         |
-| Lead Architects      | Governance as Code — constraints **made observable**        |
+| Lead Architects      | Guardrails contracts made **observable**                    |
 | Developers           | No boilerplate — productivity from day zero                 |
 | New Team Members     | Architecture learning curve reduced by executable structure |
 
@@ -210,7 +210,7 @@ It treats architecture as a **first-class, executable product** that:
 | Capability Focus         | Spring Initializr / JHipster | Codegen Blueprint |
 | ------------------------ | ---------------------------- | ----------------- |
 | Folder scaffolding       | ✔                            | ✔                 |
-| Architecture governance  | ⚠️                           | **✔**             |
+| Architecture guardrails  | ⚠️                           | **✔**             |
 | Framework‑free domain    | ❌                            | **✔**             |
 | Profile‑driven evolution | ⚠️                           | **✔**             |
 | Anti‑drift roadmap       | ❌                            | **✔**             |
@@ -219,17 +219,17 @@ It treats architecture as a **first-class, executable product** that:
 
 ### 🧩 Generate vs Deliver Capabilities (Cross-Cutting Concerns)
 
-Most generators **generate code** for cross-cutting concerns.  
+Most generators **generate code** for cross-cutting concerns.
 That approach does not scale.
 
 **Codegen Blueprint makes a deliberate distinction:**
 
-| Approach                 | What happens                                                     | Long-term effect                             |
-| ------------------------ | ---------------------------------------------------------------- | -------------------------------------------- |
-| Generate code            | Copies security, logging, error handling into each service       | ❌ Drift, copy-paste, painful upgrades        |
-| Deliver as capabilities  | Centralized, versioned, opt-in behavior via shared libraries     | **✔ Consistency, easier upgrades, alignment** |
+| Approach                | What happens                                                 | Long-term effect                              |
+| ----------------------- | ------------------------------------------------------------ | --------------------------------------------- |
+| Generate code           | Copies security, logging, error handling into each service   | ❌ Drift, copy-paste, painful upgrades         |
+| Deliver as capabilities | Centralized, versioned, opt-in behavior via shared libraries | **✔ Consistency, easier upgrades, alignment** |
 
-> **Not everything should be generated.**  
+> **Not everything should be generated.**
 > Cross-cutting concerns should be **delivered as capabilities**, not duplicated as code.
 
 With Blueprint Platform:
@@ -241,7 +241,7 @@ With Blueprint Platform:
 
 This is why Blueprint is not a template collection.
 
-> **It is architecture as an executable product —  
+> **It is architecture as an executable product —
 > where behavior is shared, aligned, and evolves safely over time.**
 
 ---
@@ -249,6 +249,7 @@ This is why Blueprint is not a template collection.
 > 🧩 Same simplicity — **stronger long-term alignment**
 
 ---
+
 
 ## 📑 Table of Contents
 
@@ -307,15 +308,23 @@ With **strict guardrails** enabled:
 [Executable Architecture Proof](docs/demo/executable-architecture-proof.md)
 
 ---
+
 ## 🧱 Architecture Overview
 
 Architecture isn’t only drawn — it **executes** here.
 
 Hexagonal Architecture is not a stylistic preference in Codegen Blueprint.  
-It is a **structural foundation** that keeps architectural intent intact as systems evolve.
+It provides the **strongest architectural contract**, designed to keep architectural intent intact as systems evolve.
 
 > Generate once.  
 > Evolve across frameworks, runtimes, and languages — **without rewriting the core**.
+
+**Standard (layered) architecture is supported as a first-class option**, with guardrails
+**intentionally tailored to layered systems**, while Hexagonal offers stricter guarantees
+through ports-and-adapters boundaries.
+
+Both layouts are first-class and intentional — they differ not in importance,
+but in **the strength and scope of the architectural contract they enforce**.
 
 Spring Boot is the first delivery adapter — not the foundation.
 
@@ -325,18 +334,18 @@ Spring Boot is the first delivery adapter — not the foundation.
 ---
 
 - 📜 **Architecture Guardrails Rulebook**  
-  A complete reference of the **architecture rules the engine can generate**,  
-  explaining *what can be validated*, *how boundaries are interpreted*,  
-  and *when different rule sets apply*.  
-  *(Conceptual and technical reference — not a GA guarantee)*  
+  A complete reference of the **architecture guardrails the engine is capable of generating**,  
+  describing *the full rule surface*, *how boundaries are interpreted*,  
+  and *which rule families exist across layouts and modes*.  
+  *(Engine capability reference — **not** a 1.0.0 GA guarantee)*  
   → [Architecture Guardrails Rulebook](docs/architecture/architecture-guardrails-rulebook.md)
 
 ---
 
 - 🔒 **Executable Architecture Contract — 1.0.0 GA**  
-  The **authoritative contract** defining what Codegen Blueprint **1.0.0 GA guarantees**  
-  at generation and build time — no assumptions, no ambiguity.  
-  *(If it’s not listed here, it is intentionally not guaranteed in GA)*  
+  The **authoritative contract** defining **exactly what Codegen Blueprint guarantees — and only guarantees —**  
+  at generation and build time in the **1.0.0 GA release**.  
+  *(If something is not explicitly listed in this document, it is intentionally **not guaranteed** in GA)*  
   → [Executable Architecture Contract — 1.0.0 GA](docs/architecture/executable-architecture-contract.md)
 
 ---

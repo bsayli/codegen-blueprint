@@ -1,5 +1,9 @@
 package ${projectPackageName}.architecture.archunit;
 
+import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.BASE_PACKAGE;
+import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.BASE_PREFIX;
+import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.CONTROLLER;
+import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.DOMAIN_SEGMENT;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 
 import com.tngtech.archunit.core.domain.JavaClass;
@@ -17,31 +21,29 @@ import java.util.List;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Strict REST boundary signature isolation for STANDARD (layered) architecture.
+ * Strict REST boundary signature isolation (STANDARD).
  * Guarantees:
  * - REST controllers must NOT expose domain types in method signatures
- *   (return types, parameters, generics)
+ *   (return types, parameters, generics).
  * Notes:
  * - Controller DTO domain isolation is enforced separately.
+ * - Works for both flat package roots and nested sub-root structures.
+ * Contract note:
+ * - Rule scope is the generated application base package.
+ * - Package matchers are fully qualified to avoid accidental matches.
  */
 @AnalyzeClasses(
-        packages = StandardStrictRestBoundarySignatureIsolationTest.BASE_PACKAGE,
+        packages = BASE_PACKAGE,
         importOptions = ImportOption.DoNotIncludeTests.class
 )
 class StandardStrictRestBoundarySignatureIsolationTest {
-
-    static final String BASE_PACKAGE = "${projectPackageName}";
-
-    private static final String DOMAIN_PREFIX = BASE_PACKAGE + "..domain..";
-
-    private static final String CONTROLLERS = BASE_PACKAGE + "..controller..";
 
     @ArchTest
     static final ArchRule rest_controllers_must_not_expose_domain_types_in_signatures =
             methods()
                     .that()
                     .areDeclaredInClassesThat()
-                    .resideInAnyPackage(CONTROLLERS)
+                    .resideInAnyPackage(CONTROLLER)
                     .and()
                     .areDeclaredInClassesThat()
                     .areAnnotatedWith(RestController.class)
@@ -52,7 +54,7 @@ class StandardStrictRestBoundarySignatureIsolationTest {
         return new ArchCondition<>("not expose domain types in REST controller method signatures") {
             @Override
             public void check(JavaMethod method, ConditionEvents events) {
-                for (String violation : SignatureDomainLeakage.findViolations(method)) {
+                for (var violation : SignatureDomainLeakage.findViolations(method)) {
                     events.add(SimpleConditionEvent.violated(method, violation));
                 }
             }
@@ -77,8 +79,9 @@ class StandardStrictRestBoundarySignatureIsolationTest {
                 }
             }
 
-            if (containsDomainInTypeTree(method.getReturnType())) {
-                violations.add(message(method, "generic return type leaks domain", method.getReturnType()));
+            var returnType = method.getReturnType();
+            if (containsDomainInTypeTree(returnType)) {
+                violations.add(message(method, "generic return type leaks domain", returnType));
             }
 
             for (var pt : method.getParameterTypes()) {
@@ -107,7 +110,7 @@ class StandardStrictRestBoundarySignatureIsolationTest {
                 return false;
             }
             var pkg = c.getPackageName();
-            return pkg != null && pkg.startsWith(DOMAIN_PREFIX);
+            return pkg != null && pkg.startsWith(BASE_PREFIX) && pkg.contains(DOMAIN_SEGMENT);
         }
 
         private static String message(JavaMethod method, String reason, Object type) {

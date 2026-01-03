@@ -15,12 +15,10 @@ CODEGEN_JAR=../../target/codegen-blueprint-1.0.0.jar ./proof-runner.sh
 
 ### Environment assumptions
 
-* The proof runner is a **bash script** and uses standard Unix tools (`bash`, `unzip`, `chmod`).
-* **macOS / Linux**: works out of the box.
-* **Windows**: run the proof inside **WSL2 (Ubuntu recommended)**.
+The proof runner uses standard Unix tooling (`bash`, `unzip`) and is intended to be run on **macOS**, **Linux**, or **Windows via WSL2**.
 
-> The generated projects themselves are **pure Maven + Java**.
-> The Unix tooling is required **only for the proof automation**, not for the generator or the generated output.
+> The generated projects themselves are **pure Maven + Java**.  
+> Unix tooling is required **only for the proof automation**, not for the generator or the generated output.
 
 ---
 
@@ -136,12 +134,15 @@ Nothing is started. Nothing is deployed.
 
 ## Preconditions
 
-To reproduce this walkthrough, you only need:
+To reproduce this walkthrough, you need:
 
-* Codegen Blueprint **1.0.0 (or later)**
-* A project generated via CLI
-* `--guardrails strict` enabled
-* No manual modification of the generated guardrails rules
+* **Codegen Blueprint 1.0.0 (or later)**
+* A project generated via the **CLI**
+* Architecture guardrails enabled in **`strict`** mode
+* The generated guardrails rules left **unchanged** (no manual edits)
+
+No application startup, runtime configuration, or external infrastructure is required.  
+All validations happen **at build time** via `mvn verify`.
 
 ---
 

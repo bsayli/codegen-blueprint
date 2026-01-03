@@ -1,5 +1,8 @@
 package ${projectPackageName}.architecture.archunit;
 
+import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.BASE_PACKAGE;
+import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.CONTROLLER_DTO;
+import static ${projectPackageName}.architecture.archunit.StandardGuardrailsScope.DOMAIN;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 
 import com.tngtech.archunit.core.importer.ImportOption;
@@ -12,24 +15,22 @@ import com.tngtech.archunit.lang.ArchRule;
  * Guarantees:
  * - Controller DTOs must not depend on domain types.
  * Notes:
- * - Uses fully qualified package patterns under the generated base package to avoid accidental matches.
+ * - Works for both flat package roots and nested sub-root structures.
+ * Contract note:
+ * - Rule scope is the generated application base package.
+ * - Package matchers are fully qualified to avoid accidental matches.
  */
 @AnalyzeClasses(
-        packages = StandardStrictControllerDtoDomainIsolationTest.BASE_PACKAGE,
+        packages = BASE_PACKAGE,
         importOptions = ImportOption.DoNotIncludeTests.class
 )
 class StandardStrictControllerDtoDomainIsolationTest {
-
-    static final String BASE_PACKAGE = "${projectPackageName}";
-
-    private static final String CONTROLLER_DTOS = BASE_PACKAGE + "..controller..dto..";
-    private static final String DOMAIN = BASE_PACKAGE + "..domain..";
 
     @ArchTest
     static final ArchRule controller_dtos_must_not_depend_on_domain =
             noClasses()
                     .that()
-                    .resideInAnyPackage(CONTROLLER_DTOS)
+                    .resideInAnyPackage(CONTROLLER_DTO)
                     .should()
                     .dependOnClassesThat()
                     .resideInAnyPackage(DOMAIN)

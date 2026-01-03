@@ -19,6 +19,7 @@ class DependencyDirectionArchitectureTest {
   private static final String APPLICATION_ROOT = BASE_PACKAGE + ".application..";
   private static final String APPLICATION_PORTS = BASE_PACKAGE + ".application.port..";
   private static final String ADAPTER_ROOT = BASE_PACKAGE + ".adapter..";
+  private static final String BOOTSTRAP_ROOT = BASE_PACKAGE + ".bootstrap..";
 
   @ArchTest
   static final ArchRule application_implementation_must_not_depend_on_adapters =
@@ -40,8 +41,6 @@ class DependencyDirectionArchitectureTest {
           .should()
           .dependOnClassesThat(applicationImplementation())
           .allowEmptyShould(true);
-
-  private static final String BOOTSTRAP_ROOT = BASE_PACKAGE + ".bootstrap..";
 
   @ArchTest
   static final ArchRule bootstrap_must_not_be_depended_on =

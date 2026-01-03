@@ -1,5 +1,8 @@
 package ${projectPackageName}.architecture.archunit;
 
+import static ${projectPackageName}.architecture.archunit.HexagonalGuardrailsScope.ADAPTER_IN;
+import static ${projectPackageName}.architecture.archunit.HexagonalGuardrailsScope.BASE_PACKAGE;
+import static ${projectPackageName}.architecture.archunit.HexagonalGuardrailsScope.DOMAIN;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 
 import com.tngtech.archunit.core.domain.JavaClass;
@@ -17,30 +20,29 @@ import java.util.List;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Strict REST boundary signature isolation for HEXAGONAL architecture.
+ * Strict REST boundary signature isolation (HEXAGONAL).
  * Guarantees:
  * - REST controllers must NOT expose domain types in method signatures
  *   (return types, parameters, generics)
  * Notes:
- * - DTO domain isolation is enforced separately.
- * - This rule is structural and relies on the generated package layout.
+ * - DTO domain isolation is enforced by a separate rule
+ * - This rule focuses solely on API surface leakage
+ * - Structural by nature and independent of package root shape
+ * Contract note:
+ * - Rule scope is the generated application boundary
  */
 @AnalyzeClasses(
-        packages = HexagonalStrictRestBoundarySignatureIsolationTest.BASE_PACKAGE,
+        packages = BASE_PACKAGE,
         importOptions = ImportOption.DoNotIncludeTests.class
 )
 class HexagonalStrictRestBoundarySignatureIsolationTest {
-
-    static final String BASE_PACKAGE = "${projectPackageName}";
-    private static final String DOMAIN_PREFIX = BASE_PACKAGE + "..domain..";
-    private static final String INBOUND_ADAPTERS = BASE_PACKAGE + "..adapter.in..";
 
     @ArchTest
     static final ArchRule rest_controllers_must_not_expose_domain_types_in_signatures =
             methods()
                     .that()
                     .areDeclaredInClassesThat()
-                    .resideInAnyPackage(INBOUND_ADAPTERS)
+                    .resideInAnyPackage(ADAPTER_IN)
                     .and()
                     .areDeclaredInClassesThat()
                     .areAnnotatedWith(RestController.class)
@@ -107,7 +109,7 @@ class HexagonalStrictRestBoundarySignatureIsolationTest {
                 return false;
             }
             var pkg = c.getPackageName();
-            return pkg != null && pkg.startsWith(DOMAIN_PREFIX);
+            return pkg != null && pkg.startsWith(DOMAIN);
         }
 
         private static String message(String reason, JavaMethod method, Object type) {

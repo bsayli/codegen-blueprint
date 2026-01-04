@@ -48,7 +48,7 @@ EXCERPT_DIR="${RUN_DIR}/excerpts"
 mkdir -p "${LOG_DIR}" "${EXCERPT_DIR}"
 
 ENV_FILE="${RUN_DIR}/env.txt"
-SUMMARY_FILE="${RUN_DIR}/steps.json"
+SUMMARY_FILE="${RUN_DIR}/proof-summary.txt"
 
 # backup store OUTSIDE generated project tree (temp)
 BACKUP_DIR="${WORK_DIR}/.backup"
@@ -732,12 +732,12 @@ main() {
   require_file "$CODEGEN_JAR"
   require_cmd "$JAVA_BIN"
 
-  # RUN_DIR/LOG_DIR/EXCERPT_DIR bu noktada init edilmiş olmalı:
-  #   RUN_DIR=docs/demo/proof-output/<timestamp>
-  #   LOG_DIR=${RUN_DIR}/logs
-  #   EXCERPT_DIR=${RUN_DIR}/excerpts
-  #   ENV_FILE=${RUN_DIR}/env.txt
-  #   SUMMARY_FILE=${RUN_DIR}/steps.json (veya summary.json)
+  # RUN_DIR/LOG_DIR/EXCERPT_DIR
+  # RUN_DIR=docs/demo/proof-output/<timestamp>
+  # LOG_DIR=${RUN_DIR}/logs
+  # EXCERPT_DIR=${RUN_DIR}/excerpts
+  # ENV_FILE=${RUN_DIR}/env.txt
+  # SUMMARY_FILE=${RUN_DIR}/proof-summary.txt
   log "Workspace (temp): ${WORK_DIR}"
   log "Using CODEGEN_JAR: ${CODEGEN_JAR}"
   log "Proof output (run): ${RUN_DIR}"

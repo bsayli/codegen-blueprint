@@ -1,10 +1,9 @@
 # Executable Architecture Proof — Guardrails Enforcement Walkthrough
 
-## Fast Proof (Console-First)
+## Fast Proof (Console‑First)
 
 If you want to see the **GREEN → RED → GREEN** proof **purely via the console** —
 no screenshots, no explanations, just deterministic build output — run:
-
 
 ```bash
 # From the repository root
@@ -13,12 +12,7 @@ chmod +x proof-runner.sh
 CODEGEN_JAR=../../target/codegen-blueprint-1.0.0.jar ./proof-runner.sh
 ```
 
-### Environment assumptions
-
-The proof runner uses standard Unix tooling (`bash`, `unzip`) and is intended to be run on **macOS**, **Linux**, or **Windows via WSL2**.
-
-> The generated projects themselves are **pure Maven + Java**.  
-> Unix tooling is required **only for the proof automation**, not for the generator or the generated output.
+The command exits with a **non‑zero code on any unexpected behavior** and prints a concise, step‑by‑step status to the console.
 
 ---
 
@@ -31,7 +25,7 @@ This single command demonstrates — end to end — that Codegen Blueprint can:
 * fail the build **deterministically** when a boundary is violated
 * return to green immediately once the violation is removed
 
-No app server run, only build-time tests.
+No app server run.
 No runtime checks.
 No custom test harness.
 
@@ -39,9 +33,9 @@ No custom test harness.
 
 ---
 
-## Proof Flow (High-Level)
+## Proof Flow (High‑Level)
 
-The script executes the following sequence:
+The script executes the following sequence for **both Hexagonal and Standard (Layered)** architectures:
 
 ```
 Generate project
@@ -52,7 +46,126 @@ Generate project
 → mvn verify (GREEN)
 ```
 
-This is performed for **real generated code**, not mocks or examples.
+This is performed for **real generated code**, not mocks, examples, or pre‑canned test fixtures.
+
+---
+
+## Proof Output (Persistent, Inspectable Artifacts)
+
+In addition to console output, **each run produces a durable proof bundle** under the repository:
+
+```
+docs/demo/proof-output/
+```
+
+### Per‑run directory structure
+
+Each execution creates a **timestamped run directory**:
+
+```
+docs/demo/proof-output/
+└── 20260104-180325/
+    ├── logs/
+    │   ├── HEX_baseline.log
+    │   ├── HEX_violation.log
+    │   ├── HEX_fixed.log
+    │   ├── STD_baseline.log
+    │   ├── STD_schema_violation.log
+    │   ├── STD_schema_fixed.log
+    │   ├── STD_violation.log
+    │   └── STD_fixed.log
+    ├── excerpts/
+    │   ├── HEX_violation.excerpt.txt
+    │   ├── STD_schema_violation.excerpt.txt
+    │   └── STD_violation.excerpt.txt
+    ├── env.txt
+    └── proof-summary.txt
+```
+
+A convenience pointer is also maintained:
+
+```
+docs/demo/proof-output/latest/
+```
+
+which always refers to the **most recent run**.
+
+---
+
+## What each artifact means
+
+### `logs/`
+
+* Full, raw build output (`mvn verify`) for each proof step
+* Contains complete ArchUnit failure messages and stack traces
+* Suitable for deep inspection, CI attachments, or audits
+
+### `excerpts/`
+
+* Focused slices extracted from logs
+* Centered around **ArchUnit / guardrails violations**
+* Designed for fast human review without scanning full logs
+
+### `env.txt`
+
+Captured execution context, including:
+
+* OS and shell
+* Java version
+* Maven version
+* Codegen Blueprint JAR path
+* Timestamp of the run
+
+This ensures the proof is **reproducible and attributable**.
+
+### `proof-summary.txt`
+
+A machine‑readable and human‑readable execution ledger:
+
+* ordered proof steps
+* PASS / EXPECTED_FAIL / UNEXPECTED_PASS statuses
+* exact log and excerpt file references
+* final proof result
+
+This file is the **contractual evidence** that the proof executed as intended.
+
+---
+
+## Why this matters
+
+Console output proves **something happened**.
+
+The `proof-output` directory proves:
+
+* **what** happened
+* **where** it failed
+* **why** it failed
+* **that it recovered deterministically**
+
+This transforms guardrails from:
+
+*"trust me, it works"*
+
+into:
+
+> **inspectable, replayable, build‑time evidence**.
+
+---
+
+## Notes
+* Each run is append‑only; older runs are preserved unless manually removed
+* For deeper inspection of generated projects, run with:
+
+```bash
+KEEP_WORK_DIR=1 ./proof-runner.sh
+```
+
+---
+
+> This is not documentation.
+> This is not convention.
+>
+> **This is architecture enforced, evaluated, and proven at build time.**
 
 ---
 

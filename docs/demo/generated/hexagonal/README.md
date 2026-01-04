@@ -80,7 +80,6 @@ Greeting sample built with hexagonal architecture
 
 > If Maven is installed globally, you may also use `mvn` instead of the wrapper.
 
-
 ---
 
 ## 📁 Project Layout
@@ -133,7 +132,11 @@ src
 > The generated layout is **part of the architecture contract**.
 >
 > Refactors that rename canonical package families, move code outside detected bounded contexts,
-> or introduce unexpected top-level families may be detected as **architecture drift** and fail the build.
+> or introduce rename-based escapes at the base package level
+> are treated as **schema integrity violations** and will fail the build.
+>
+> These checks exist to prevent guardrails from being silently disabled
+> through package refactoring or anchor masking.
 
 ---
 
@@ -197,7 +200,6 @@ Protect the **meaning and scope** of guardrails by validating the package schema
 ---
 
 
-
 ### Guardrails status: enabled (`strict`)
 
 **Strict** mode treats architecture as a **non-negotiable contract**.
@@ -219,7 +221,8 @@ Strict mode enforces:
   * REST controllers must not expose domain types in method signatures
   * Boundary DTOs must not depend on domain types
 * **Schema & rename enforcement**
-  * Within each detected bounded context, classes must reside under the **canonical families**
+  * Within each detected bounded context, schema integrity and canonical family discovery
+  are strictly enforced to prevent rename-based or structural bypass.
   * This prevents silent bypass via package renaming or “unknown family” drift
 * **Family-local cycle prevention**
   * Cycles are forbidden **inside each canonical family** (and adapter sub-families where applicable)
@@ -254,7 +257,8 @@ Strict mode enforces:
   * other domain types
 
 **Schema & rename enforcement (contract integrity)**
-  * Within each detected bounded context, classes must reside under the canonical families
+  * Within each detected bounded context, schema integrity and canonical family discovery
+  are strictly enforced to prevent rename-based or structural bypass.
 
 * Within each detected bounded context, every class must reside under one of:
   * `adapter`
@@ -283,7 +287,6 @@ Strict mode enforces:
 
 Strict mode is intentionally fail-fast.
 If you want adoption-first enforcement with fewer constraints, use **Basic** instead.
-
 
 
 ---

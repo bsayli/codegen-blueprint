@@ -4,25 +4,224 @@ set -euo pipefail
 # ---------------------------------------------
 # Executable Architecture Proof
 # Generate -> Verify (GREEN) -> Violate -> Verify (RED) -> Fix -> Verify (GREEN)
+#
+# Adds:
+# - repo-root detection (run from anywhere)
+# - env metadata capture
+# - step tracking + deterministic proof summary
+# - optional export of logs/excerpts/summary via PROOF_EXPORT_DIR
+# - always prints a single PROOF RESULT line at the end (PASS/FAIL)
 # ---------------------------------------------
-
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-DEMO_DIR="${ROOT_DIR}/demo"
-
-CODEGEN_JAR="${CODEGEN_JAR:-${ROOT_DIR}/target/codegen-blueprint-1.0.0.jar}"
-
+# -------------------------
+# Config (env-overridable)
+# -------------------------
 GROUP_ID="${GROUP_ID:-io.github.blueprintplatform}"
 PACKAGE_NAME="${PACKAGE_NAME:-io.github.blueprintplatform.greeting}"
 JAVA_BIN="${JAVA_BIN:-java}"
 
+KEEP_WORK_DIR="${KEEP_WORK_DIR:-0}"
+
+# If set, additionally copy proof artifacts there (optional)
+PROOF_EXPORT_DIR="${PROOF_EXPORT_DIR:-}"
+
+# -------------------------
+# Globals (late-init)
+# -------------------------
+ROOT_DIR=""
+CODEGEN_JAR=""
+
 WORK_DIR="$(mktemp -d -t codegen-proof-XXXXXX)"
 OUT_DIR="${WORK_DIR}/out"
 
+# --- Proof output (in-repo, easy to find) ---
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DEMO_DIR="${SCRIPT_DIR}"                       # script lives in docs/demo
+PROOF_OUTPUT_ROOT="${PROOF_OUTPUT_ROOT:-${DEMO_DIR}/proof-output}"
+
+RUN_TS="$(date +%Y%m%d-%H%M%S)"
+RUN_DIR="${PROOF_OUTPUT_ROOT}/${RUN_TS}"
+LATEST_DIR="${PROOF_OUTPUT_ROOT}/latest"
+
+LOG_DIR="${RUN_DIR}/logs"
+EXCERPT_DIR="${RUN_DIR}/excerpts"
+
+mkdir -p "${LOG_DIR}" "${EXCERPT_DIR}"
+
+ENV_FILE="${RUN_DIR}/env.txt"
+SUMMARY_FILE="${RUN_DIR}/steps.json"
+
+# backup store OUTSIDE generated project tree (temp)
+BACKUP_DIR="${WORK_DIR}/.backup"
+mkdir -p "$BACKUP_DIR"
+
+# step tracking (label|status|log|excerpt)
+declare -a STEPS=()
+
+SCRIPT_EXIT_CODE=0
+
+# -------------------------
+# UX helpers
+# -------------------------
 log() { printf "\n\033[1m[%s]\033[0m %s\n" "$(date +%H:%M:%S)" "$*" >&2; }
 die() { printf "\n\033[31mERROR:\033[0m %s\n" "$*" >&2; exit 1; }
 
 require_file() { [[ -f "$1" ]] || die "Required file not found: $1"; }
 require_cmd() { command -v "$1" >/dev/null 2>&1 || die "Required command not found on PATH: $1"; }
+
+# -------------------------
+# New: repo root detection
+# -------------------------
+ensure_repo_root() {
+  # Prefer git if available and we are inside a repo
+  if command -v git >/dev/null 2>&1; then
+    local git_root
+    git_root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+    if [[ -n "$git_root" && -d "$git_root" ]]; then
+      echo "$git_root"
+      return 0
+    fi
+  fi
+
+  # Fallback: assume script is under <repo>/docs/demo or similar and go up 2 levels
+  local script_dir
+  script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  local guess
+  guess="$(cd "${script_dir}/../.." && pwd)"
+
+  [[ -d "$guess" ]] || die "Could not infer repository root. Run from inside the repo or install git."
+  echo "$guess"
+}
+
+# -------------------------
+# New: label normalization
+# -------------------------
+normalize_label() {
+  local s="$1"
+  # filesystem-safe, stable:
+  # - trim
+  # - spaces -> _
+  # - anything not [A-Za-z0-9._-] -> _
+  s="${s#"${s%%[![:space:]]*}"}"
+  s="${s%"${s##*[![:space:]]}"}"
+  s="${s// /_}"
+  s="$(printf "%s" "$s" | sed 's/[^A-Za-z0-9._-]/_/g')"
+  echo "$s"
+}
+
+normalize_label() {
+  local s="$1"
+  # filesystem-safe: spaces->_, trim weird chars, collapse repeats
+  s="${s// /_}"
+  s="$(printf '%s' "$s" | tr -cd '[:alnum:]_.-')"
+  # avoid empty
+  [[ -n "$s" ]] || s="step"
+  echo "$s"
+}
+
+log_file_for_label() {
+  local label="$1"
+  echo "${LOG_DIR}/$(normalize_label "$label").log"
+}
+
+# excerpts artık ayrı klasöre
+excerpt_file_for_label() {
+  local label="$1"
+  echo "${EXCERPT_DIR}/$(normalize_label "$label").excerpt.txt"
+}
+
+record_step() {
+  local label="$1" status="$2" log_file="$3" excerpt_file="${4:-}"
+  local rel_log rel_excerpt
+  rel_log="${log_file#${RUN_DIR}/}"
+  rel_excerpt="${excerpt_file#${RUN_DIR}/}"
+  STEPS+=("${label}|${status}|${rel_log}|${rel_excerpt}")
+}
+
+# -------------------------
+# Excerpt writer (slightly more deterministic for ArchUnit/Maven)
+# -------------------------
+write_excerpt() {
+  local log_file="$1"
+  local excerpt_file="$2"
+
+  awk '
+    /Architecture Violation|ArchUnit|guardrails|Violation|violat|Rules? were violated|STANDARD package schema integrity failure|FAILED|<<< FAILURE!/ {hit=NR}
+    {lines[NR]=$0}
+    END{
+      if(NR==0){exit 0}
+      if(hit==0){hit=NR}
+      start=hit-50; if(start<1) start=1
+      end=hit+120; if(end>NR) end=NR
+      for(i=start;i<=end;i++) print lines[i]
+    }
+  ' "$log_file" > "$excerpt_file"
+}
+
+# -------------------------
+# New: env metadata capture
+# -------------------------
+collect_env_metadata() {
+  {
+    echo "timestamp: $(date -Iseconds)"
+    echo "pwd: $(pwd)"
+    echo "root_dir: ${ROOT_DIR}"
+    echo "codegen_jar: ${CODEGEN_JAR}"
+    echo "java_bin: ${JAVA_BIN}"
+    echo
+
+    echo "java -version:"
+    ( "$JAVA_BIN" -version 2>&1 || true )
+    echo
+
+    echo "maven:"
+    if [[ -x "${ROOT_DIR}/mvnw" ]]; then
+      ( "${ROOT_DIR}/mvnw" -v 2>&1 || true )
+    elif command -v mvn >/dev/null 2>&1; then
+      ( mvn -v 2>&1 || true )
+    else
+      echo "mvn not found on PATH"
+    fi
+    echo
+
+    if command -v shasum >/dev/null 2>&1; then
+      echo "codegen_jar_sha256:"
+      ( shasum -a 256 "${CODEGEN_JAR}" 2>/dev/null || true )
+      echo
+    elif command -v sha256sum >/dev/null 2>&1; then
+      echo "codegen_jar_sha256:"
+      ( sha256sum "${CODEGEN_JAR}" 2>/dev/null || true )
+      echo
+    fi
+
+    echo "git:"
+    if command -v git >/dev/null 2>&1 && git -C "${ROOT_DIR}" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+      echo "  branch: $(git -C "${ROOT_DIR}" rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
+      echo "  commit: $(git -C "${ROOT_DIR}" rev-parse HEAD 2>/dev/null || true)"
+      echo "  dirty:  $(git -C "${ROOT_DIR}" status --porcelain 2>/dev/null | wc -l | tr -d " ") file(s)"
+    else
+      echo "  not a git worktree"
+    fi
+  } > "$ENV_FILE"
+}
+
+# -------------------------
+# Maven runner with mvnw chmod fix
+# -------------------------
+run_maven_verify() {
+  # expects to run in project dir
+  if [[ -f "./mvnw" && ! -x "./mvnw" ]]; then
+    chmod +x ./mvnw 2>/dev/null || true
+  fi
+
+  if [[ -x "./mvnw" ]]; then
+    ./mvnw -q -ntp clean verify
+    return $?
+  fi
+
+  require_cmd mvn
+  mvn -q -ntp clean verify
+  return $?
+}
 
 run_verify() {
   local project_dir="$1"
@@ -31,14 +230,27 @@ run_verify() {
   log "${label}: clean verify"
   pushd "$project_dir" >/dev/null
 
-  if [[ -x "./mvnw" ]]; then
-    ./mvnw -q -ntp clean verify
-  else
-    require_cmd mvn
-    mvn -q -ntp clean verify
-  fi
+  local log_file
+  log_file="$(log_file_for_label "$label")"
+
+  set +e
+  local rc
+  run_maven_verify 2>&1 | tee "$log_file"
+  rc=${PIPESTATUS[0]}
+  set -e
 
   popd >/dev/null
+
+  if [[ $rc -ne 0 ]]; then
+    local excerpt_file
+    excerpt_file="$(excerpt_file_for_label "$label")"
+    write_excerpt "$log_file" "$excerpt_file"
+    record_step "$label" "FAIL" "$log_file" "$excerpt_file"
+    die "${label}: build FAILED (rc=${rc}). log: ${log_file} excerpt: ${excerpt_file}"
+  fi
+
+  record_step "$label" "PASS" "$log_file" ""
+  log "${label}: PASS confirmed (log=${log_file})"
 }
 
 run_verify_expect_fail() {
@@ -46,27 +258,31 @@ run_verify_expect_fail() {
   local label="$2"
 
   log "${label}: clean verify (expected FAIL)"
-  set +e
   pushd "$project_dir" >/dev/null
 
-  local rc
-  if [[ -x "./mvnw" ]]; then
-    ./mvnw -q -ntp clean verify
-    rc=$?
-  else
-    require_cmd mvn
-    mvn -q -ntp clean verify
-    rc=$?
-  fi
+  local log_file
+  log_file="$(log_file_for_label "$label")"
 
-  popd >/dev/null
+  set +e
+  local rc
+  run_maven_verify 2>&1 | tee "$log_file"
+  rc=${PIPESTATUS[0]}
   set -e
 
+  popd >/dev/null
+
   if [[ $rc -eq 0 ]]; then
-    die "${label}: build PASSED but was expected to FAIL after violation. (Either violation didn't apply or rules differ.)"
+    record_step "$label" "UNEXPECTED_PASS" "$log_file" ""
+    die "${label}: build PASSED but was expected to FAIL after violation. log: ${log_file}"
   fi
 
-  log "${label}: FAIL confirmed (rc=${rc})"
+  local excerpt_file
+  excerpt_file="$(excerpt_file_for_label "$label")"
+  write_excerpt "$log_file" "$excerpt_file"
+  record_step "$label" "EXPECTED_FAIL" "$log_file" "$excerpt_file"
+
+  log "${label}: FAIL confirmed (rc=${rc}, log=${log_file})"
+  log "${label}: excerpt written: ${excerpt_file}"
 }
 
 generate_project() {
@@ -98,30 +314,71 @@ generate_project() {
   echo "$project_dir"
 }
 
-backup_file() {
-  local file="$1"
-  local backup="${file}.bak"
+# -------------------------
+# Backup / Restore (file OR dir) - OUTSIDE project tree
+# -------------------------
+backup_key_for_path() {
+  local path="$1"
+  local rel="$path"
+  rel="${rel#${WORK_DIR}/}"
+  printf "%s" "$rel" | sed 's#/#__#g'
+}
 
-  if [[ -f "$backup" ]]; then
+backup_path() {
+  local path="$1"
+  [[ -e "$path" ]] || die "Backup source not found: $path"
+
+  local key backup
+  key="$(backup_key_for_path "$path")"
+  backup="${BACKUP_DIR}/${key}"
+
+  if [[ -e "$backup" ]]; then
     return 0
   fi
 
-  cp "$file" "$backup"
-}
+  rm -rf "$backup"
+  mkdir -p "$(dirname "$backup")"
 
-restore_file() {
-  local file="$1"
-  local backup="${file}.bak"
-
-  [[ -f "$backup" ]] || die "Backup not found: $backup"
-  log "Restore original file: ${file}"
-  mv -f "$backup" "$file"
-
-  if grep -q "__archViolation" "$file"; then
-    die "Restore failed: __archViolation still present in $file"
+  if [[ -d "$path" ]]; then
+    cp -R "$path" "$backup"
+  else
+    cp "$path" "$backup"
   fi
 }
 
+restore_path() {
+  local path="$1"
+
+  local key backup
+  key="$(backup_key_for_path "$path")"
+  backup="${BACKUP_DIR}/${key}"
+
+  [[ -e "$backup" ]] || die "Backup not found: $backup"
+  log "Restore original path: ${path}"
+
+  rm -rf "$path"
+  mkdir -p "$(dirname "$path")"
+  mv -f "$backup" "$path"
+
+  if [[ -f "$path" ]] && grep -q "__archViolation" "$path"; then
+    die "Restore failed: __archViolation still present in $path"
+  fi
+}
+
+backup_file() { backup_path "$1"; }
+restore_file() { restore_path "$1"; }
+
+restore_files() {
+  local f
+  while IFS= read -r f; do
+    [[ -n "$f" ]] || continue
+    restore_path "$f"
+  done
+}
+
+# -------------------------
+# Violation injectors (unchanged logic)
+# -------------------------
 fqcn_from_java_path() {
   local project_dir="$1"
   local java_file="$2"
@@ -170,9 +427,7 @@ insert_field_after_class_open_if_missing() {
       }
     }
     END {
-      if (injected==0) {
-        exit 42
-      }
+      if (injected==0) exit 42
     }
   ' "$file" > "${file}.tmp"
 
@@ -297,18 +552,204 @@ inject_standard_violation_controller_depends_on_repository() {
   grep -q "__archViolation" "$controller_file" || die "STD: Failed to inject violation into controller."
 }
 
+replace_package_segment_once() {
+  local file="$1"
+  local from_segment="$2"
+  local to_segment="$3"
+
+  awk -v from="${from_segment}" -v to="${to_segment}" '
+    BEGIN { done=0 }
+    /^package[[:space:]]+/ && done==0 {
+      if (index($0, "." from ";") > 0) {
+        gsub("\\." from ";", "." to ";")
+        done=1
+      } else if (index($0, "." from ".") > 0) {
+        gsub("\\." from "\\.", "." to ".")
+        done=1
+      } else {
+        exit 43
+      }
+    }
+    { print }
+    END { if (done==0) exit 42 }
+  ' "$file" > "${file}.tmp"
+
+  local rc=$?
+  if [[ $rc -ne 0 ]]; then
+    rm -f "${file}.tmp"
+    die "Package segment replace failed for ${file} (rc=${rc})"
+  fi
+
+  mv "${file}.tmp" "$file"
+}
+
+inject_standard_schema_violation_controller_package_rename() {
+  local project_dir="$1"
+
+  local base_path
+  base_path="$(printf '%s' "$PACKAGE_NAME" | tr '.' '/')"
+
+  local main_base="${project_dir}/src/main/java/${base_path}"
+  local test_base="${project_dir}/src/test/java/${base_path}"
+
+  local main_controller_dir="${main_base}/controller"
+  local main_controllerx_dir="${main_base}/controllerx"
+
+  [[ -d "$main_controller_dir" ]] || die "STD schema inject: root controller dir not found: ${main_controller_dir}"
+
+  log "Inject STD schema violation (rename root controller dir -> controllerx) (STRUCTURAL + SEMANTIC)"
+  log "  main dir: ${main_controller_dir}"
+
+  backup_path "$main_controller_dir"
+  mv "$main_controller_dir" "$main_controllerx_dir"
+
+  find "$main_controllerx_dir" -type f -name '*.java' -print0 | while IFS= read -r -d '' f; do
+    replace_package_segment_once "$f" "controller" "controllerx"
+  done
+
+  local test_controller_dir="${test_base}/controller"
+  local test_controllerx_dir="${test_base}/controllerx"
+
+  if [[ -d "$test_controller_dir" ]]; then
+    log "  test dir: ${test_controller_dir}"
+    backup_path "$test_controller_dir"
+    mv "$test_controller_dir" "$test_controllerx_dir"
+    find "$test_controllerx_dir" -type f -name '*.java' -print0 | while IFS= read -r -d '' f; do
+      replace_package_segment_once "$f" "controller" "controllerx"
+    done
+  fi
+
+  [[ ! -d "$main_base/controller" ]] || die "STD schema inject failed: controller dir still exists under ${main_base}"
+  [[ -d "$main_base/controllerx" ]] || die "STD schema inject failed: controllerx dir not created under ${main_base}"
+
+  printf "%s\n" "$main_controller_dir"
+  if [[ -d "$test_controllerx_dir" ]]; then
+    printf "%s\n" "$test_controller_dir"
+  fi
+}
+
+# -------------------------
+# New: summary + result line
+# -------------------------
+finalize_proof_status() {
+  local exit_code="$1"
+
+  {
+    echo "Executable Architecture Proof — Summary"
+    echo "timestamp: $(date -Iseconds)"
+    echo "exit_code: ${exit_code}"
+    echo
+
+    echo "Environment:"
+    echo "  root_dir: ${ROOT_DIR}"
+    echo "  codegen_jar: ${CODEGEN_JAR}"
+    echo "  logs_dir: ${LOG_DIR}"
+    echo
+
+    echo "Steps:"
+    if [[ ${#STEPS[@]} -eq 0 ]]; then
+      echo "  (no steps recorded)"
+    else
+      local s label status lf ef
+      for s in "${STEPS[@]}"; do
+        IFS='|' read -r label status lf ef <<< "$s"
+        printf "  - %-20s : %-14s : %s\n" "$label" "$status" "$lf"
+        if [[ -n "$ef" ]]; then
+          printf "      excerpt: %s\n" "$ef"
+        fi
+      done
+    fi
+    echo
+
+    if [[ $exit_code -eq 0 ]]; then
+      echo "PROOF RESULT: PASS (GREEN → RED → GREEN)"
+    else
+      echo "PROOF RESULT: FAIL (exit_code=${exit_code})"
+    fi
+  } > "$SUMMARY_FILE"
+
+  # Single deterministic console line (what a reader/CI needs)
+  if [[ $exit_code -eq 0 ]]; then
+    log "PROOF RESULT: PASS (GREEN → RED → GREEN)"
+  else
+    log "PROOF RESULT: FAIL (exit_code=${exit_code})"
+  fi
+}
+
+# -------------------------
+# New: export artifacts
+# -------------------------
+export_proof_artifacts() {
+  [[ -n "$PROOF_EXPORT_DIR" ]] || return 0
+
+  local export_dir="$PROOF_EXPORT_DIR"
+  mkdir -p "$export_dir"
+
+  # Copy logs + excerpts + env + summary
+  cp -f "$ENV_FILE" "$export_dir/" 2>/dev/null || true
+  cp -f "$SUMMARY_FILE" "$export_dir/" 2>/dev/null || true
+  cp -f "${LOG_DIR}/"*.log "$export_dir/" 2>/dev/null || true
+  cp -f "${LOG_DIR}/"*.excerpt.txt "$export_dir/" 2>/dev/null || true
+
+  log "Exported proof artifacts to: ${export_dir}"
+}
+# -------------------------
+# Cleanup / trap (export before cleanup)
+# -------------------------
 cleanup() {
+  if [[ "$KEEP_WORK_DIR" == "1" ]]; then
+    log "KEEP_WORK_DIR=1 -> workspace preserved: ${WORK_DIR}"
+    return 0
+  fi
   log "Cleanup temp dir: ${WORK_DIR}"
   rm -rf "$WORK_DIR"
 }
-trap cleanup EXIT
 
+on_exit() {
+  local rc=$?
+  SCRIPT_EXIT_CODE=$rc
+
+  # Always write env + summary, then export (even on failure), then cleanup
+  if [[ -n "${ROOT_DIR}" && -n "${CODEGEN_JAR}" ]]; then
+    collect_env_metadata || true
+  fi
+
+  finalize_proof_status "$SCRIPT_EXIT_CODE" || true
+  export_proof_artifacts || true
+  cleanup || true
+
+  exit "$SCRIPT_EXIT_CODE"
+}
+trap on_exit EXIT
+
+# -------------------------
+# Main
+# -------------------------
 main() {
+  ROOT_DIR="$(ensure_repo_root)"
+  CODEGEN_JAR="${CODEGEN_JAR:-${ROOT_DIR}/target/codegen-blueprint-1.0.0.jar}"
+
   require_file "$CODEGEN_JAR"
   require_cmd "$JAVA_BIN"
 
-  log "Workspace: ${WORK_DIR}"
+  # RUN_DIR/LOG_DIR/EXCERPT_DIR bu noktada init edilmiş olmalı:
+  #   RUN_DIR=docs/demo/proof-output/<timestamp>
+  #   LOG_DIR=${RUN_DIR}/logs
+  #   EXCERPT_DIR=${RUN_DIR}/excerpts
+  #   ENV_FILE=${RUN_DIR}/env.txt
+  #   SUMMARY_FILE=${RUN_DIR}/steps.json (veya summary.json)
+  log "Workspace (temp): ${WORK_DIR}"
   log "Using CODEGEN_JAR: ${CODEGEN_JAR}"
+  log "Proof output (run): ${RUN_DIR}"
+  log "  logs:     ${LOG_DIR}"
+  log "  excerpts: ${EXCERPT_DIR}"
+
+  if [[ -n "$PROOF_EXPORT_DIR" ]]; then
+    log "PROOF_EXPORT_DIR: ${PROOF_EXPORT_DIR}"
+  fi
+
+  # env first so even early failures have a baseline artifact
+  collect_env_metadata
 
   local hex_dir
   local std_dir
@@ -341,6 +782,12 @@ main() {
   restore_file "$hex_adapter_touched"
   run_verify "$hex_dir" "HEX fixed"
 
+  local std_schema_touched
+  std_schema_touched="$(inject_standard_schema_violation_controller_package_rename "$std_dir")"
+  run_verify_expect_fail "$std_dir" "STD schema violation"
+  restore_files <<< "$std_schema_touched"
+  run_verify "$std_dir" "STD schema fixed"
+
   local std_controller
   std_controller="$(find_controller_file "$std_dir")"
   inject_standard_violation_controller_depends_on_repository "$std_dir" "$std_controller"
@@ -349,6 +796,14 @@ main() {
   run_verify "$std_dir" "STD fixed"
 
   log "DONE: Proof completed successfully (GREEN → RED → GREEN)"
+  log "Proof output: ${RUN_DIR}"
+  log "Latest pointer: ${LATEST_DIR}"
+
+  if [[ -n "$PROOF_EXPORT_DIR" ]]; then
+    log "Artifacts exported to: ${PROOF_EXPORT_DIR}"
+  fi
+
+  log "Tip: set KEEP_WORK_DIR=1 to inspect generated projects under ${WORK_DIR}"
 }
 
 main "$@"

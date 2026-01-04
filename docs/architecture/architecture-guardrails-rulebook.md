@@ -26,8 +26,9 @@ that Codegen Blueprint is capable of generating and evaluating at build time.
   * [strict](#strict)
 * [Guardrails categories](#guardrails-categories)
 * [Schema & contract guardrails (core concept)](#schema--contract-guardrails-core-concept)
-  * [What schema guardrails enforce](#what-schema-guardrails-enforce)
-  * [What schema guardrails do NOT do](#what-schema-guardrails-do-not-do)
+  * [Guardrails scope sanity](#1-guardrails-scope-sanity)
+  * [Base anchor drift detection](#2-base-anchor-drift-detection)
+  * [Bounded context schema completeness](#3-bounded-context-schema-completeness)
 * [Hexagonal architecture guardrails](#hexagonal-architecture-guardrails)
   * [Hexagonal — Basic](#hexagonal--basic)
   * [Hexagonal — Strict](#hexagonal--strict)
@@ -58,6 +59,17 @@ It is **enforced structure**.
 ---
 
 ## Guardrails overview
+
+### Structural drift vs architectural drift
+
+The term *drift* is used deliberately but refers to **two distinct risks**:
+
+* **Schema drift** — changes that disable or invalidate guardrails themselves
+  (e.g. scope emptiness, base-anchor rename escapes)
+* **Architectural drift** — violations of dependency direction or boundary rules
+
+Basic mode protects against **schema drift** and obvious architectural violations.
+Strict mode enforces **full architectural contract integrity**.
 
 ### Mechanism
 
@@ -118,16 +130,18 @@ Basic mode focuses on:
 
 * Preventing **obvious architectural violations**
 * Preserving **minimal structural sanity**
-* Detecting early **structural drift**
+* Detecting early **structural drift**, including guardrails-disabling schema drift
 
 Basic mode enforces:
 
 * Core dependency direction rules
 * Bounded-context **schema completeness**
-* Guardrails scope sanity (no false-green builds)
+* Guardrails **scope sanity** (no false-green builds)
+* **Base-level anchor drift detection** to prevent rename-based guardrails escape
 
-It intentionally avoids **strict contract/vocabulary policing** (e.g., rename-escape / near-miss detection)
-and does not attempt full **contract integrity** enforcement beyond minimal schema integrity checks.
+Basic mode intentionally avoids **strict contract rigidity** and **full vocabulary policing**.
+It does **not** enforce bounded-context–internal rename rules or deep contract integrity checks.
+Those are reserved for **strict** mode.
 
 ---
 
@@ -161,36 +175,36 @@ Understanding this distinction is essential to reading guardrails correctly.
 
 Schema guardrails ensure that the **structural contract itself remains intact**.
 
-They exist to prevent guardrails from being silently disabled or rendered meaningless through refactoring.
+They exist to prevent guardrails from being silently disabled or rendered meaningless through refactoring,
+package drift, or rename-based escapes.
 
-### Canonical vocabulary and generated contract surface
+Schema & contract guardrails are split into **three distinct responsibilities**:
 
-Canonical package vocabulary is not only described in this rulebook — it is also **generated as code** in every project.
+### 1. Guardrails scope sanity
 
-* The canonical vocabulary tokens used by guardrails are generated under:
-  * `src/test/java/<projectPackage>/architecture/archunit/*GuardrailsScope.java`
-* This rulebook defines **guardrails semantics and interpretation**.
-* The generated `*GuardrailsScope` classes define the **authoritative vocabulary tokens** referenced by the generated ArchUnit tests.
+* Ensures the configured base package actually contains production classes
+* Prevents “silent green builds” when the root package is refactored
+* Fails fast if no classes are discovered under the configured guardrails scope
 
-If these vocabulary tokens are renamed or relocated, this is treated as a **contract change** (not a refactor) and may cause guardrails to fail by design.
+### 2. Base anchor drift detection
 
-### What schema guardrails enforce
+* Detects rename-based escapes at the **base package level**
+* Fails if required canonical families are missing but near-miss variants exist
+  (e.g. `controller → controllers`, `application → applicationx`)
+* Protects guardrails discovery and prevents accidental schema bypass
 
-* Canonical package vocabulary is part of the **architecture contract**
-* Bounded contexts are detected deterministically via package heuristics
-* Required package families must exist per detected bounded context
-* Guardrails scope must not be empty (no silent green builds)
+This detection is **structural integrity protection**, not strict vocabulary policing.
 
-Schema guardrails validate **completeness and integrity**, not stylistic preference.
 
-### What schema guardrails do NOT do
+### 3. Bounded context schema completeness
 
-* They do not enforce dependency direction
-* They do not prescribe internal design patterns
-* They do not forbid all renames or alternative internal structures
-* They do not police code outside detected bounded contexts
+* Detects bounded contexts deterministically via canonical family package segments
+* Requires required canonical families to exist per detected bounded context
+* Supports multiple, nested, or sibling bounded contexts
+* Ignores packages outside detected bounded contexts
 
-Schema guardrails ensure that **dependency and boundary rules continue to mean what they claim to mean**.
+Schema guardrails validate **contract integrity and completeness** —
+they do not enforce dependency direction, internal design patterns, or stylistic conventions.
 
 ---
 
@@ -391,16 +405,17 @@ A cyclic dependency always indicates unclear responsibility boundaries and must 
 
 For each detected bounded context:
 
-* If a `controller` package exists, then:
-  * `service` **must** exist
-  * `domain` **must** exist
+* If **any required canonical family evidence** exists under a context root
+  (`controller`, `service`, or `domain`),
+  then the **full required family set must be present**:
+  * `controller`
+  * `service`
+  * `domain`
 
 Notes:
 * `repository` is intentionally **optional**
 * Persistence is not mandatory for every bounded context
 * Read-only or orchestration-only contexts remain valid
-
-This rule prevents **half-defined bounded contexts** that silently drift over time.
 
 ---
 
@@ -553,11 +568,18 @@ Architecture guardrails are generated under:
 src/test/java/<projectPackage>/architecture/archunit/**
 ```
 
-They are:
+This generated guardrails contract surface includes:
 
-* Deterministic
-* Generated from templates
-* Versioned as part of the GA contract
+* **Canonical vocabulary**
+  * `*GuardrailsScope.java`
+* **Schema integrity guardrails**
+  * `*ScopeSanityTest`
+  * `*AnchorDriftTest`
+  * `*PackageSchemaSanityTest`
+* **Dependency and boundary guardrails**
+  * Layout- and mode-specific ArchUnit rule tests
+
+All generated tests are deterministic, versioned, and evaluated at build time.
 
 ---
 
@@ -619,9 +641,13 @@ This separation is intentional:
 This appendix defines the **contract language** used by guardrails.
 It explains how rules should be *read*, not how code should be written.
 
+---
+
 ### Canonical package family
 
-A **canonical package family** is a vocabulary token emitted by the generator and referenced by guardrails (e.g. `application`, `adapter`, `domain`).
+A **canonical package family** is a vocabulary token emitted by the generator
+and referenced by guardrails (e.g. `application`, `adapter`, `domain`,
+`controller`, `service`).
 
 It is:
 
@@ -629,7 +655,32 @@ It is:
 * Not a stylistic recommendation
 * Not a forced internal structure
 
-Changing a canonical family name is a **contract change**, not a refactor.
+Canonical families serve as **anchors** for architecture discovery and guardrails evaluation.
+
+Changing, removing, or masking a canonical family is a **contract change**,
+not a refactor.
+
+---
+
+### Schema integrity vs vocabulary rigidity
+
+Canonical vocabulary participates in the architecture contract at **two levels**:
+
+1. **Vocabulary level**
+  * Defines the canonical names referenced by guardrails
+  * Used consistently across generated tests and documentation
+
+2. **Schema integrity level**
+  * Ensures guardrails remain discoverable and meaningful
+  * Prevents rename-based escapes that disable guardrails evaluation
+
+For this reason:
+
+* Rename-based escapes (e.g. `controller → controllers`, `application → applicationx`)
+  are treated as **schema integrity violations**, even if stylistically intentional.
+* These checks exist to protect **guardrails semantics**, not naming aesthetics.
+
+These schema integrity violations are detected explicitly by generated **base-anchor drift guardrails** to prevent silent guardrails bypass.
 
 ---
 
@@ -637,26 +688,30 @@ Changing a canonical family name is a **contract change**, not a refactor.
 
 A bounded context is **inferred**, not declared.
 
-Blueprint detects bounded contexts via deterministic package heuristics (e.g. presence of `application` or `controller`).
+Blueprint detects bounded contexts via deterministic package heuristics
+based on **canonical family anchors** (e.g. `application`, `controller`).
 
-Guardrails apply **per detected context**, not globally.
+Guardrails apply **per detected bounded context**, not globally.
+
+If no canonical anchor exists but near-miss variants are present,
+this is treated as a **schema escape**, not a valid bounded context.
 
 ---
 
 ### Application use case vs domain service
 
 * **Application use cases** live in the application layer
-
   * Orchestration
   * Transaction boundaries
   * Coordination of ports
 
 * **Domain services** live in the domain layer
-
   * Pure business behavior
   * No infrastructure or framework dependencies
 
-Renaming `usecase` to `handler` is allowed **only if the contract is updated intentionally**.
+Renaming `usecase` to `handler` (or similar)
+is allowed **only if the contract is updated intentionally**
+and guardrails are updated accordingly.
 
 ---
 
@@ -665,22 +720,25 @@ Renaming `usecase` to `handler` is allowed **only if the contract is updated int
 * Ports define **allowed dependency directions**
 * Implementations are **replaceable details**
 
-Guardrails enforce *who may depend on which abstraction*, not how implementations are written.
+Guardrails enforce *who may depend on which abstraction*,
+not how implementations are written.
 
 ---
 
 ### Contract change vs refactor
 
-A refactor preserves the contract.
-A contract change modifies what guardrails mean.
+A **refactor** preserves the architecture contract.
+A **contract change** modifies what guardrails mean or how they are evaluated.
 
-Examples of **contract changes**:
+Examples of **contract changes** include:
 
-* Renaming canonical families
+* Renaming or removing canonical families
+* Introducing rename-based escapes that mask canonical anchors
 * Moving code outside detected bounded contexts
-* Collapsing or removing required families
+* Collapsing or omitting required families within a bounded context
 
-Contract changes are allowed — but **must be explicit and intentional**.
+Contract changes are allowed —
+but they must be **explicit, intentional, and versioned**.
 
 ---
 

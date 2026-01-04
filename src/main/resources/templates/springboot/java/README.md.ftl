@@ -86,8 +86,8 @@ ${projectDescription}
 > ```
 
 > If Maven is installed globally, you may also use `mvn` instead of the wrapper.
-
 <#if features?has_content && ((features.h2)!false || (features.actuator)!false || (features.security)!false)>
+
 ---
 
 ## ⚙️ Auto Configuration Notes
@@ -99,8 +99,8 @@ This project includes an **in-memory H2 database** configuration because `spring
 
 * JDBC URL: `jdbc:h2:mem:${artifactId}`
 * Console: `/h2-console` (if enabled)
-</#if>
 
+</#if>
 <#if (features.actuator)!false>
 ### Actuator
 
@@ -170,7 +170,7 @@ src
    └─ java/${packageName?replace('.', '/')}
 ```
 
-> This project follows a **Standard Layered Architecture**.
+> This project follows a **Standard (Layered) Architecture**.
 >
 > * `controller` handles HTTP/API requests (including `controller/dto` boundary models)
 > * `service` contains orchestration / application services
@@ -203,7 +203,11 @@ src
 > The generated layout is **part of the architecture contract**.
 >
 > Refactors that rename canonical package families, move code outside detected bounded contexts,
-> or introduce unexpected top-level families may be detected as **architecture drift** and fail the build.
+> or introduce rename-based escapes at the base package level
+> are treated as **schema integrity violations** and will fail the build.
+>
+> These checks exist to prevent guardrails from being silently disabled
+> through package refactoring or anchor masking.
 
 ---
 
@@ -268,9 +272,11 @@ Protect the **meaning and scope** of guardrails by validating the package schema
 
 </#if>
 <#if guardrails == "none">
-### Guardrails status: disabled (`none`)
+## 🧩 Architecture Guardrails
 
-Architecture guardrails are **disabled** for this project.
+> ⚠️ **Guardrails disabled for this project**
+
+This project was generated with `--guardrails none`.
 
 * No architecture tests are generated
 * The build will not fail due to architectural violations
@@ -282,6 +288,9 @@ To enable guardrails, regenerate the project with:
 --guardrails basic   # adoption-friendly baseline
 --guardrails strict  # contract-first, fail-fast enforcement
 ```
+
+---
+
 </#if>
 <#if guardrails == "basic">
 ### Guardrails status: enabled (`basic`)
@@ -292,7 +301,7 @@ It is designed to:
 
 * Prevent **obvious architectural violations**
 * Preserve **minimal structural sanity**
-* Detect **early architecture drift**
+* Detect **early structural and schema drift**
 * Avoid over-constraining internal design
 
 #### What basic guardrails enforce
@@ -300,9 +309,10 @@ It is designed to:
 Basic guardrails enforce a **baseline contract** that is intentionally adoption-friendly.
 
 **Across both layouts (core guarantees):**
-  * **Schema & scope sanity**
-    * Guardrails must not be evaluated against an empty or misdetected scope (prevents “silent green builds”).
-    * Detected bounded contexts must satisfy minimal schema expectations.
+  * **Schema & contract sanity**
+    * Guardrails scope must not be empty (prevents “silent green builds”).
+    * Base-level anchor drift is detected to prevent rename-based guardrails escape.
+    * Detected bounded contexts must satisfy minimal schema completeness requirements.
 
 * **Bounded-context cycle prevention**
   * For each detected bounded context root, cyclic dependencies are forbidden across its **first-segment slices**.
@@ -329,7 +339,7 @@ Basic guardrails enforce a **baseline contract** that is intentionally adoption-
 </#if>
 <#if layout == "standard">
 
-#### Standard — Basic (Layered)
+#### Standard (Layered) — Basic
 
 **Dependency guardrails**
   * `controller` must **not depend on** `repository`
@@ -339,7 +349,10 @@ Basic guardrails enforce a **baseline contract** that is intentionally adoption-
     * `repository`
 
 **Schema guarantees (per detected bounded context):**
-  * If a `controller` package exists, the context must also contain:
+  * If **any required canonical family evidence** exists under a context root
+  (`controller`, `service`, or `domain`),
+  then the **full required family set must be present**:
+    * `controller`
     * `service`
     * `domain`
 
@@ -362,7 +375,6 @@ To regenerate with strict guardrails:
 --guardrails strict
 ```
 </#if>
-
 <#if guardrails == "strict">
 
 ### Guardrails status: enabled (`strict`)
@@ -391,7 +403,8 @@ Strict mode enforces:
   * REST controllers must not expose domain types in method signatures
   * Boundary DTOs must not depend on domain types
 * **Schema & rename enforcement**
-  * Within each detected bounded context, classes must reside under the **canonical families**
+  * Within each detected bounded context, schema integrity and canonical family discovery
+  are strictly enforced to prevent rename-based or structural bypass.
   * This prevents silent bypass via package renaming or “unknown family” drift
 * **Family-local cycle prevention**
   * Cycles are forbidden **inside each canonical family** (and adapter sub-families where applicable)
@@ -427,7 +440,8 @@ Strict mode enforces:
   * other domain types
 
 **Schema & rename enforcement (contract integrity)**
-  * Within each detected bounded context, classes must reside under the canonical families
+  * Within each detected bounded context, schema integrity and canonical family discovery
+  are strictly enforced to prevent rename-based or structural bypass.
 
 * Within each detected bounded context, every class must reside under one of:
   * `adapter`
@@ -451,7 +465,7 @@ Strict mode enforces:
 * Inbound DTOs (`adapter.in..dto..`) must not depend on domain
 </#if>
 <#if layout == "standard">
-#### Standard — Strict (Layered)
+#### Standard (Layered) — Strict
 
 **Layer dependency enforcement**
   * `controller` must **not depend on**:
@@ -496,8 +510,8 @@ Strict mode enforces:
 
 Strict mode is intentionally fail-fast.
 If you want adoption-first enforcement with fewer constraints, use **Basic** instead.
-</#if>
 
+</#if>
 <#if sampleCode != "none">
 <#--
 Sample isolation contract (GA):
@@ -510,7 +524,6 @@ to be removed as a single, isolated subtree without affecting
 production code.
 -->
 </#if>
-
 <#if layout == "hexagonal" && sampleCode == "basic">
 
 ---

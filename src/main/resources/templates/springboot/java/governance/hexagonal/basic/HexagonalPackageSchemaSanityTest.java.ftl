@@ -3,43 +3,33 @@ package ${projectPackageName}.architecture.archunit;
 import static ${projectPackageName}.architecture.archunit.HexagonalGuardrailsScope.BASE_PACKAGE;
 import static ${projectPackageName}.architecture.archunit.HexagonalGuardrailsScope.FAMILY_ADAPTER;
 import static ${projectPackageName}.architecture.archunit.HexagonalGuardrailsScope.FAMILY_APPLICATION;
+import static ${projectPackageName}.architecture.archunit.HexagonalGuardrailsScope.FAMILY_BOOTSTRAP;
 import static ${projectPackageName}.architecture.archunit.HexagonalGuardrailsScope.FAMILY_DOMAIN;
 
 import com.tngtech.archunit.core.domain.JavaClasses;
-import com.tngtech.archunit.core.domain.PackageMatcher;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Assertions;
 
 /**
  * Hexagonal package schema sanity check (bounded context completeness).
- * <h2>Purpose</h2>
- * <ul>
- *   <li>Prevent silent architectural drift when teams introduce or modify bounded contexts.</li>
- *   <li>Ensure that every detected HEXAGONAL bounded context explicitly declares the canonical families.</li>
- * </ul>
- * <h2>Bounded Context Detection</h2>
- * <ul>
- *   <li>A bounded context is inferred by the presence of an {@code application} package.</li>
- *   <li>The context root is derived from the package prefix preceding {@code .application}.</li>
- *   <li>Multiple bounded contexts (nested or sibling) are supported.</li>
- * </ul>
- * <h2>Schema Contract (STRICT)</h2>
- * For every detected bounded context root, these canonical families must exist:
+ * <h2>Single responsibility</h2>
+ * For every detected HEXAGONAL bounded context, require the canonical families to exist:
  * {@code adapter}, {@code application}, {@code domain}.
- * <h2>Notes</h2>
+ * <h2>Bounded Context Detection</h2>
+ * A bounded context is inferred by finding any canonical family token as a <b>package segment</b>
+ * under the base package. The context root is the package prefix preceding the first detected family segment.
+ * <h2>What this does NOT do</h2>
  * <ul>
- *   <li>This is a schema integrity guardrail, not a dependency rule.</li>
- *   <li>Packages outside detected bounded contexts are not restricted.</li>
+ *   <li>It does NOT attempt rename/near-miss drift detection. That belongs to the anchor drift test.</li>
+ *   <li>It does NOT enforce dependency rules (those live in dedicated ArchUnit rule tests).</li>
  * </ul>
  */
 @AnalyzeClasses(
@@ -48,60 +38,55 @@ import org.junit.jupiter.api.Assertions;
 )
 class HexagonalPackageSchemaSanityTest {
 
-    private static final PackageMatcher APPLICATION_MATCHER = PackageMatcher.of(familyPattern(FAMILY_APPLICATION));
-    private static final PackageMatcher ADAPTER_MATCHER = PackageMatcher.of(familyPattern(FAMILY_ADAPTER));
-    private static final PackageMatcher DOMAIN_MATCHER = PackageMatcher.of(familyPattern(FAMILY_DOMAIN));
+    private static final List<String> CANONICAL_FAMILIES = List.of(
+            FAMILY_ADAPTER,
+            FAMILY_APPLICATION,
+            FAMILY_DOMAIN,
+            FAMILY_BOOTSTRAP
+    );
 
-    // Implementation details for robust slicing/detection (NOT contract).
-    private static final String APPLICATION_DOTTED_TOKEN = "." + FAMILY_APPLICATION + ".";
-    private static final String APPLICATION_END_TOKEN = "." + FAMILY_APPLICATION;
-
-    private static final int MAX_NEAR_MISS_EXAMPLES = 3;
+    private static final List<String> REQUIRED_FAMILIES_PER_CONTEXT = List.of(
+            FAMILY_ADAPTER,
+            FAMILY_APPLICATION,
+            FAMILY_DOMAIN
+    );
 
     @ArchTest
     static void each_hexagonal_bounded_context_must_contain_canonical_families(JavaClasses classes) {
         var contexts = detectContexts(classes);
 
+        // No detected bounded contexts => nothing to validate here.
+        // Base-level rename drift is handled by HexagonalGuardrailsAnchorDriftTest.
         if (contexts.isEmpty()) {
-            Assertions.fail(
-                    "No HEXAGONAL bounded context was detected under scope '" + BASE_PACKAGE + "'. "
-                            + "A bounded context is inferred by presence of an '" + FAMILY_APPLICATION + "' package. "
-                            + "This may indicate that the root package or canonical family names were changed."
-            );
+            return;
         }
 
-        var allContexts = contexts.stream().collect(Collectors.toMap(c -> c, c -> Boolean.TRUE));
+        var allContexts = contexts.stream().collect(java.util.stream.Collectors.toMap(c -> c, c -> Boolean.TRUE));
         var violations = new ArrayList<ContextViolation>();
 
         for (var contextRoot : contexts) {
-            boolean hasApplication = containsFamilyInExactContext(classes, contextRoot, APPLICATION_MATCHER, allContexts);
-            boolean hasAdapter = containsFamilyInExactContext(classes, contextRoot, ADAPTER_MATCHER, allContexts);
-            boolean hasDomain = containsFamilyInExactContext(classes, contextRoot, DOMAIN_MATCHER, allContexts);
+            boolean hasAdapter = hasCanonicalFamilyRootInExactContext(classes, contextRoot, FAMILY_ADAPTER, allContexts);
+            boolean hasApplication = hasCanonicalFamilyRootInExactContext(classes, contextRoot, FAMILY_APPLICATION, allContexts);
+            boolean hasDomain = hasCanonicalFamilyRootInExactContext(classes, contextRoot, FAMILY_DOMAIN, allContexts);
 
             if (hasAdapter && hasApplication && hasDomain) {
                 continue;
             }
 
-            var evidence = applicationEvidenceUnderContext(classes, contextRoot);
+            var evidence = bestEvidenceUnderContext(classes, contextRoot, allContexts);
 
-            var missingDetails = new LinkedHashMap<String, MissingFamilyDetail>();
-            if (!hasAdapter) {
-                missingDetails.put(FAMILY_ADAPTER, missingFamilyDetail(classes, contextRoot, FAMILY_ADAPTER));
-            }
-            if (!hasApplication) {
-                missingDetails.put(FAMILY_APPLICATION, missingFamilyDetail(classes, contextRoot, FAMILY_APPLICATION));
-            }
-            if (!hasDomain) {
-                missingDetails.put(FAMILY_DOMAIN, missingFamilyDetail(classes, contextRoot, FAMILY_DOMAIN));
-            }
+            var missing = new ArrayList<String>();
+            if (!hasAdapter) missing.add(FAMILY_ADAPTER);
+            if (!hasApplication) missing.add(FAMILY_APPLICATION);
+            if (!hasDomain) missing.add(FAMILY_DOMAIN);
 
             violations.add(new ContextViolation(
                     contextRoot,
+                    evidence,
                     hasAdapter,
                     hasApplication,
                     hasDomain,
-                    evidence,
-                    missingDetails
+                    List.copyOf(missing)
             ));
         }
 
@@ -112,71 +97,6 @@ class HexagonalPackageSchemaSanityTest {
         Assertions.fail(buildViolationMessage(violations));
     }
 
-    private static String buildViolationMessage(List<ContextViolation> violations) {
-        var sb = new StringBuilder()
-                .append("HEXAGONAL package schema integrity failure under base scope '")
-                .append(BASE_PACKAGE)
-                .append("'.\n\n")
-                .append("Bounded contexts are inferred by presence of '")
-                .append(FAMILY_APPLICATION)
-                .append("'. For each detected context root, the canonical families must exist: ")
-                .append("[")
-                .append(FAMILY_ADAPTER).append(", ")
-                .append(FAMILY_APPLICATION).append(", ")
-                .append(FAMILY_DOMAIN)
-                .append("].\n\n")
-                .append("Violations:\n");
-
-        for (var v : violations) {
-            sb.append(" - context: ").append(v.contextRoot()).append("\n");
-            sb.append("     context evidence: ").append(v.applicationEvidence() == null ? "<unknown>" : v.applicationEvidence()).append("\n");
-
-            sb.append("     present: ")
-                    .append(FAMILY_ADAPTER).append(v.hasAdapter() ? " ✅" : " ❌").append(", ")
-                    .append(FAMILY_APPLICATION).append(v.hasApplication() ? " ✅" : " ❌").append(", ")
-                    .append(FAMILY_DOMAIN).append(v.hasDomain() ? " ✅" : " ❌")
-                    .append("\n");
-
-            sb.append("     missing: ");
-            var missing = new ArrayList<String>();
-            if (!v.hasAdapter()) missing.add(FAMILY_ADAPTER);
-            if (!v.hasApplication()) missing.add(FAMILY_APPLICATION);
-            if (!v.hasDomain()) missing.add(FAMILY_DOMAIN);
-            sb.append(String.join(", ", missing)).append("\n");
-
-            if (!v.missingFamilyDetails().isEmpty()) {
-                sb.append("     cause:\n");
-                for (var e : v.missingFamilyDetails().entrySet()) {
-                    var detail = e.getValue();
-
-                    sb.append("         - missing family root: ").append(detail.expectedRoot()).append("\n");
-
-                    if (detail.nearMissExamples().isEmpty()) {
-                        sb.append("           near-miss candidates: <none>\n");
-                    } else {
-                        sb.append("           near-miss candidates:\n");
-                        for (var ex : detail.nearMissExamples()) {
-                            sb.append("             - ").append(ex).append("\n");
-                        }
-                    }
-
-                    if (detail.likelyCause() != null && !detail.likelyCause().isBlank()) {
-                        sb.append("           likely cause: ").append(detail.likelyCause()).append("\n");
-                    }
-                }
-            }
-        }
-
-        sb.append("\nRemediation:\n")
-                .append(" - If you introduced a sub-root (bounded context), ensure it contains ")
-                .append(FAMILY_ADAPTER).append("/").append(FAMILY_APPLICATION).append("/").append(FAMILY_DOMAIN).append(" families.\n")
-                .append(" - If you renamed a canonical family (e.g., '").append(FAMILY_ADAPTER).append("' -> 'adapters'), revert the rename ")
-                .append("or update the guardrails contract intentionally.\n")
-                .append(" - If you refactored the root package name, ensure BASE_PACKAGE matches the new root.\n");
-
-        return sb.toString();
-    }
-
     private static Set<String> detectContexts(JavaClasses classes) {
         var contexts = new TreeSet<String>();
 
@@ -185,42 +105,69 @@ class HexagonalPackageSchemaSanityTest {
             if (pkg == null || pkg.isBlank()) {
                 continue;
             }
-            if (!APPLICATION_MATCHER.matches(pkg)) {
+            if (!pkg.equals(BASE_PACKAGE) && !pkg.startsWith(BASE_PACKAGE + ".")) {
                 continue;
             }
-            contexts.add(contextRootForApplicationPackage(pkg));
+
+            var segments = splitSegments(pkg);
+
+            // find first occurrence of any canonical family segment, after BASE_PACKAGE segments
+            int baseSegCount = splitSegments(BASE_PACKAGE).length;
+            int familyIndex = indexOfFirstCanonicalFamilySegment(segments, baseSegCount);
+
+            if (familyIndex < 0) {
+                continue;
+            }
+
+            var contextRoot = joinSegments(segments, 0, familyIndex);
+            if (contextRoot == null || contextRoot.isBlank()) {
+                contextRoot = BASE_PACKAGE;
+            }
+
+            // Defensive: only accept roots under BASE_PACKAGE.
+            if (!contextRoot.equals(BASE_PACKAGE) && !contextRoot.startsWith(BASE_PACKAGE + ".")) {
+                continue;
+            }
+
+            contexts.add(contextRoot);
         }
 
         return contexts;
     }
 
-    private static boolean containsFamilyInExactContext(
+    private static int indexOfFirstCanonicalFamilySegment(String[] segments, int startAt) {
+        for (int i = Math.max(0, startAt); i < segments.length; i++) {
+            if (CANONICAL_FAMILIES.contains(segments[i])) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private static boolean hasCanonicalFamilyRootInExactContext(
             JavaClasses classes,
             String contextRoot,
-            PackageMatcher familyMatcher,
+            String family,
             Map<String, Boolean> allContexts
     ) {
-        var prefix = contextRoot + ".";
-
         for (var c : classes) {
             var pkg = c.getPackageName();
             if (pkg == null || pkg.isBlank()) {
                 continue;
             }
-
-            if (!(pkg.equals(contextRoot) || pkg.startsWith(prefix))) {
+            if (!isUnderContext(pkg, contextRoot)) {
                 continue;
             }
-
             if (belongsToMoreSpecificContext(pkg, contextRoot, allContexts)) {
                 continue;
             }
 
-            if (familyMatcher.matches(pkg)) {
+            // Canonical family must be the FIRST segment after the context root.
+            var first = firstSegmentAfterContext(pkg, contextRoot);
+            if (family.equals(first)) {
                 return true;
             }
         }
-
         return false;
     }
 
@@ -248,108 +195,9 @@ class HexagonalPackageSchemaSanityTest {
         return packageName.equals(contextRoot) || packageName.startsWith(contextRoot + ".");
     }
 
-    private static String contextRootForApplicationPackage(String packageName) {
-        var basePrefix = BASE_PACKAGE + ".";
-        if (!packageName.startsWith(basePrefix)) {
-            return BASE_PACKAGE;
-        }
-
-        int idx = indexOfFamilyToken(packageName, familyToken(FAMILY_APPLICATION), familyNameAtEnd(FAMILY_APPLICATION));
-        if (idx < 0) {
-            return BASE_PACKAGE;
-        }
-
-        var root = packageName.substring(0, idx);
-        return root.isBlank() ? BASE_PACKAGE : root;
-    }
-
-    private static int indexOfFamilyToken(String packageName, String dottedToken, String endToken) {
-        int idx = packageName.indexOf(dottedToken);
-        if (idx >= 0) {
-            return idx;
-        }
-
-        idx = packageName.lastIndexOf(endToken);
-        if (idx >= 0 && idx + endToken.length() == packageName.length()) {
-            return idx;
-        }
-
-        idx = packageName.indexOf(familyToken(FAMILY_ADAPTER));
-        if (idx >= 0) {
-            return idx;
-        }
-        idx = packageName.indexOf(familyToken(FAMILY_DOMAIN));
-        if (idx >= 0) {
-            return idx;
-        }
-
-        idx = packageName.lastIndexOf(familyNameAtEnd(FAMILY_ADAPTER));
-        if (idx >= 0 && idx + familyNameAtEnd(FAMILY_ADAPTER).length() == packageName.length()) {
-            return idx;
-        }
-        idx = packageName.lastIndexOf(familyNameAtEnd(FAMILY_DOMAIN));
-        if (idx >= 0 && idx + familyNameAtEnd(FAMILY_DOMAIN).length() == packageName.length()) {
-            return idx;
-        }
-
-        return -1;
-    }
-
-    private static String applicationEvidenceUnderContext(JavaClasses classes, String contextRoot) {
-        var prefix = contextRoot + ".";
+    private static String bestEvidenceUnderContext(JavaClasses classes, String contextRoot, Map<String, Boolean> allContexts) {
         String best = null;
         int bestDepth = Integer.MAX_VALUE;
-
-        for (var c : classes) {
-            var pkg = c.getPackageName();
-            if (pkg == null || pkg.isBlank()) {
-                continue;
-            }
-            if (!(pkg.equals(contextRoot) || pkg.startsWith(prefix))) {
-                continue;
-            }
-            if (!APPLICATION_MATCHER.matches(pkg)) {
-                continue;
-            }
-
-            var normalized = normalizeToApplicationRoot(pkg);
-            if (normalized == null) {
-                continue;
-            }
-
-            int depth = segmentCount(normalized);
-
-            if (depth < bestDepth) {
-                best = normalized;
-                bestDepth = depth;
-            } else if (depth == bestDepth && best != null && normalized.compareTo(best) < 0) {
-                best = normalized;
-            } else if (depth == bestDepth && best == null) {
-                best = normalized;
-            }
-        }
-
-        return best;
-    }
-
-    private static String normalizeToApplicationRoot(String packageName) {
-        int idx = packageName.indexOf(APPLICATION_DOTTED_TOKEN);
-        if (idx >= 0) {
-            return packageName.substring(0, idx + APPLICATION_END_TOKEN.length());
-        }
-
-        idx = packageName.lastIndexOf(APPLICATION_END_TOKEN);
-        if (idx >= 0 && idx + APPLICATION_END_TOKEN.length() == packageName.length()) {
-            return packageName;
-        }
-
-        return null;
-    }
-
-    private static MissingFamilyDetail missingFamilyDetail(JavaClasses classes, String contextRoot, String missingFamily) {
-        var expectedRoot = contextRoot + "." + missingFamily;
-
-        var examples = new LinkedHashSet<String>();
 
         for (var c : classes) {
             var pkg = c.getPackageName();
@@ -359,45 +207,81 @@ class HexagonalPackageSchemaSanityTest {
             if (!isUnderContext(pkg, contextRoot)) {
                 continue;
             }
-
-            var first = firstSegmentAfterContext(pkg, contextRoot);
-            if (first == null) {
+            if (belongsToMoreSpecificContext(pkg, contextRoot, allContexts)) {
                 continue;
             }
 
-            if (isNearMissFamily(first, missingFamily)) {
-                examples.add(first + " (e.g. " + c.getFullName() + ")");
-                if (examples.size() >= MAX_NEAR_MISS_EXAMPLES) {
-                    break;
-                }
+            // Evidence: the shallowest package under this context (stable and deterministic)
+            int depth = segmentCount(pkg);
+            if (depth < bestDepth) {
+                best = pkg;
+                bestDepth = depth;
+            } else if (depth == bestDepth && best != null && pkg.compareTo(best) < 0) {
+                best = pkg;
+            } else if (depth == bestDepth && best == null) {
+                best = pkg;
             }
         }
 
-        var likelyCause = examples.isEmpty()
-                ? "context is incomplete (canonical family missing)"
-                : "likely rename-escape (non-canonical family name present)";
-
-        return new MissingFamilyDetail(
-                expectedRoot,
-                List.copyOf(examples),
-                likelyCause
-        );
+        return best;
     }
 
-    private static boolean isNearMissFamily(String firstSegment, String canonicalFamily) {
-        if (firstSegment == null || firstSegment.isBlank()) {
-            return false;
+    private static String buildViolationMessage(List<ContextViolation> violations) {
+        var sb = new StringBuilder()
+                .append("HEXAGONAL package schema integrity failure under base scope '")
+                .append(BASE_PACKAGE)
+                .append("'.\n\n")
+                .append("Bounded contexts are inferred by evidence of canonical family segments: ")
+                .append(CANONICAL_FAMILIES)
+                .append(". For each detected context root, the required canonical families must exist: ")
+                .append(REQUIRED_FAMILIES_PER_CONTEXT)
+                .append(".\n\n")
+                .append("Violations:\n");
+
+        for (var v : violations) {
+            sb.append(" - context: ").append(v.contextRoot()).append("\n");
+            sb.append("     context evidence: ").append(v.contextEvidence() == null ? "<unknown>" : v.contextEvidence()).append("\n");
+
+            sb.append("     present: ")
+                    .append(FAMILY_ADAPTER).append(v.hasAdapter() ? " ✅" : " ❌").append(", ")
+                    .append(FAMILY_APPLICATION).append(v.hasApplication() ? " ✅" : " ❌").append(", ")
+                    .append(FAMILY_DOMAIN).append(v.hasDomain() ? " ✅" : " ❌")
+                    .append("\n");
+
+            sb.append("     missing: ").append(String.join(", ", v.missingFamilies())).append("\n");
         }
-        if (firstSegment.equals(canonicalFamily + "s")) {
-            return true;
+
+        sb.append("\nRemediation:\n")
+                .append(" - If you introduced a bounded context root, ensure it contains ")
+                .append(FAMILY_ADAPTER).append("/").append(FAMILY_APPLICATION).append("/").append(FAMILY_DOMAIN).append(" families.\n")
+                .append(" - If a canonical family was renamed, revert the rename or update the guardrails contract intentionally.\n")
+                .append(" - If you refactored the root package name, ensure BASE_PACKAGE matches the new root.\n");
+
+        return sb.toString();
+    }
+
+    private static String[] splitSegments(String packageName) {
+        if (packageName == null || packageName.isBlank()) {
+            return new String[0];
         }
-        if (firstSegment.startsWith(canonicalFamily)) {
-            return true;
+        return packageName.split("\\.");
+    }
+
+    private static String joinSegments(String[] segments, int fromInclusive, int toExclusive) {
+        if (segments == null || segments.length == 0) {
+            return null;
         }
-        if (canonicalFamily.equals(FAMILY_ADAPTER) && firstSegment.startsWith("adapt")) {
-            return true;
+        if (fromInclusive < 0 || toExclusive > segments.length || fromInclusive >= toExclusive) {
+            return null;
         }
-        return false;
+        var sb = new StringBuilder();
+        for (int i = fromInclusive; i < toExclusive; i++) {
+            if (i > fromInclusive) {
+                sb.append('.');
+            }
+            sb.append(segments[i]);
+        }
+        return sb.toString();
     }
 
     private static String firstSegmentAfterContext(String packageName, String contextRoot) {
@@ -421,6 +305,9 @@ class HexagonalPackageSchemaSanityTest {
     }
 
     private static int segmentCount(String packageName) {
+        if (packageName == null || packageName.isBlank()) {
+            return 0;
+        }
         int segments = 1;
         for (int i = 0; i < packageName.length(); i++) {
             if (packageName.charAt(i) == '.') {
@@ -430,30 +317,12 @@ class HexagonalPackageSchemaSanityTest {
         return segments;
     }
 
-    private static String familyToken(String family) {
-        return "." + family + ".";
-    }
-
-    private static String familyNameAtEnd(String family) {
-        return "." + family;
-    }
-
-    private static String familyPattern(String family) {
-        return BASE_PACKAGE + ".." + family + "..";
-    }
-
     private record ContextViolation(
             String contextRoot,
+            String contextEvidence,
             boolean hasAdapter,
             boolean hasApplication,
             boolean hasDomain,
-            String applicationEvidence,
-            Map<String, MissingFamilyDetail> missingFamilyDetails
-    ) {}
-
-    private record MissingFamilyDetail(
-            String expectedRoot,
-            List<String> nearMissExamples,
-            String likelyCause
+            List<String> missingFamilies
     ) {}
 }

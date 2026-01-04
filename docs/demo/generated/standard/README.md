@@ -80,7 +80,6 @@ Greeting sample built with standard layered architecture
 
 > If Maven is installed globally, you may also use `mvn` instead of the wrapper.
 
-
 ---
 
 ## 📁 Project Layout
@@ -101,7 +100,7 @@ src
    └─ java/io/github/blueprintplatform/greeting
 ```
 
-> This project follows a **Standard Layered Architecture**.
+> This project follows a **Standard (Layered) Architecture**.
 >
 > * `controller` handles HTTP/API requests (including `controller/dto` boundary models)
 > * `service` contains orchestration / application services
@@ -127,7 +126,11 @@ src
 > The generated layout is **part of the architecture contract**.
 >
 > Refactors that rename canonical package families, move code outside detected bounded contexts,
-> or introduce unexpected top-level families may be detected as **architecture drift** and fail the build.
+> or introduce rename-based escapes at the base package level
+> are treated as **schema integrity violations** and will fail the build.
+>
+> These checks exist to prevent guardrails from being silently disabled
+> through package refactoring or anchor masking.
 
 ---
 
@@ -191,7 +194,6 @@ Protect the **meaning and scope** of guardrails by validating the package schema
 ---
 
 
-
 ### Guardrails status: enabled (`strict`)
 
 **Strict** mode treats architecture as a **non-negotiable contract**.
@@ -213,14 +215,15 @@ Strict mode enforces:
   * REST controllers must not expose domain types in method signatures
   * Boundary DTOs must not depend on domain types
 * **Schema & rename enforcement**
-  * Within each detected bounded context, classes must reside under the **canonical families**
+  * Within each detected bounded context, schema integrity and canonical family discovery
+  are strictly enforced to prevent rename-based or structural bypass.
   * This prevents silent bypass via package renaming or “unknown family” drift
 * **Family-local cycle prevention**
   * Cycles are forbidden **inside each canonical family** (and adapter sub-families where applicable)
 
 ---
 
-#### Standard — Strict (Layered)
+#### Standard (Layered) — Strict
 
 **Layer dependency enforcement**
   * `controller` must **not depend on**:
@@ -264,7 +267,6 @@ Strict mode enforces:
 
 Strict mode is intentionally fail-fast.
 If you want adoption-first enforcement with fewer constraints, use **Basic** instead.
-
 
 
 ---

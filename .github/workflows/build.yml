@@ -23,6 +23,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Make scripts executable
+        run: |
+          chmod +x ci/*.sh
+          chmod +x docs/demo/proof/proof-runner.sh
+          chmod +x docs/demo/proof/lib/*.sh
+
+      - name: ShellCheck (bash scripts) [JDK 21 only]
+        if: matrix.java == '21'
+        uses: ludeeus/action-shellcheck@00cae500b08a931fb5698e11e79bfbd38e612a38
+        with:
+          scandir: |
+            ci
+            docs/demo/proof
+
       - name: Set up JDK ${{ matrix.java }}
         uses: actions/setup-java@v4
         with:
@@ -45,9 +59,6 @@ jobs:
         if: matrix.java == '25'
         run: mvn -B -q -ntp -DskipTests clean package
 
-      - name: Make CI scripts executable
-        run: chmod +x ci/*.sh
-
       # -------------------------------------------------
       # JDK 21 → full verification set (default + proof + minimal no-sample)
       # -------------------------------------------------
@@ -55,12 +66,6 @@ jobs:
       - name: Verify generated project (hex, guardrails basic, sample basic) [default]
         if: matrix.java == '21'
         env:
-          JAVA_VERSION: '21'
-          BOOT_VERSION: '3.5'
-          LAYOUT: hexagonal
-          GUARDRAILS: basic
-          SAMPLE_CODE: basic
-          DEPENDENCIES: web
           ARTIFACT_ID: gen-j21-b35-hex-grbasic-sbasic
           PACKAGE_NAME: io.github.blueprintplatform.genj21b35hexgrbasicsbasic
           DESCRIPTION: "CI verify (default): hexagonal, guardrails=basic, sample=basic"
@@ -69,12 +74,6 @@ jobs:
       - name: Verify generated project (std, guardrails basic, sample basic) [default]
         if: matrix.java == '21'
         env:
-          JAVA_VERSION: '21'
-          BOOT_VERSION: '3.5'
-          LAYOUT: standard
-          GUARDRAILS: basic
-          SAMPLE_CODE: basic
-          DEPENDENCIES: web
           ARTIFACT_ID: gen-j21-b35-std-grbasic-sbasic
           PACKAGE_NAME: io.github.blueprintplatform.genj21b35stdgrbasicsbasic
           DESCRIPTION: "CI verify (default): standard, guardrails=basic, sample=basic"
@@ -83,11 +82,6 @@ jobs:
       - name: Verify generated project (hex, guardrails strict, sample none) [no-sample]
         if: matrix.java == '21'
         env:
-          JAVA_VERSION: '21'
-          BOOT_VERSION: '3.5'
-          LAYOUT: hexagonal
-          GUARDRAILS: strict
-          SAMPLE_CODE: none
           ARTIFACT_ID: gen-j21-b35-hex-grstrict-snone
           PACKAGE_NAME: io.github.blueprintplatform.genj21b35hexgrstrictsnone
           DESCRIPTION: "CI verify (no-sample): hexagonal, guardrails=strict, sample=none"
@@ -96,11 +90,6 @@ jobs:
       - name: Verify generated project (std, guardrails strict, sample none) [no-sample]
         if: matrix.java == '21'
         env:
-          JAVA_VERSION: '21'
-          BOOT_VERSION: '3.5'
-          LAYOUT: standard
-          GUARDRAILS: strict
-          SAMPLE_CODE: none
           ARTIFACT_ID: gen-j21-b35-std-grstrict-snone
           PACKAGE_NAME: io.github.blueprintplatform.genj21b35stdgrstrictsnone
           DESCRIPTION: "CI verify (no-sample): standard, guardrails=strict, sample=none"
@@ -109,12 +98,6 @@ jobs:
       - name: Verify generated project (hex, guardrails strict, sample basic) [proof]
         if: matrix.java == '21'
         env:
-          JAVA_VERSION: '21'
-          BOOT_VERSION: '3.5'
-          LAYOUT: hexagonal
-          GUARDRAILS: strict
-          SAMPLE_CODE: basic
-          DEPENDENCIES: web
           ARTIFACT_ID: gen-j21-b35-hex-grstrict-sbasic
           PACKAGE_NAME: io.github.blueprintplatform.genj21b35hexgrstrictsbasic
           DESCRIPTION: "CI verify (proof): hexagonal, guardrails=strict, sample=basic"
@@ -123,12 +106,6 @@ jobs:
       - name: Verify generated project (std, guardrails strict, sample basic) [proof]
         if: matrix.java == '21'
         env:
-          JAVA_VERSION: '21'
-          BOOT_VERSION: '3.5'
-          LAYOUT: standard
-          GUARDRAILS: strict
-          SAMPLE_CODE: basic
-          DEPENDENCIES: web
           ARTIFACT_ID: gen-j21-b35-std-grstrict-sbasic
           PACKAGE_NAME: io.github.blueprintplatform.genj21b35stdgrstrictsbasic
           DESCRIPTION: "CI verify (proof): standard, guardrails=strict, sample=basic"
@@ -142,11 +119,6 @@ jobs:
         if: matrix.java == '25'
         env:
           JAVA_VERSION: '25'
-          BOOT_VERSION: '3.5'
-          LAYOUT: hexagonal
-          GUARDRAILS: strict
-          SAMPLE_CODE: basic
-          DEPENDENCIES: web
           ARTIFACT_ID: gen-j25-b35-hex-grstrict-sbasic
           PACKAGE_NAME: io.github.blueprintplatform.genj25b35hexgrstrictsbasic
           DESCRIPTION: "CI verify (forward smoke): hexagonal, guardrails=strict, sample=basic (JDK 25)"

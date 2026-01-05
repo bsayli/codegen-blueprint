@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-LAYOUT="standard"
-GUARDRAILS="strict"
-SAMPLE_CODE="basic"
-DESCRIPTION="Verify generated project: standard (layered) layout, strict guardrails, basic sample"
-DEPENDENCIES="web"
+export LAYOUT="standard"
+export GUARDRAILS="strict"
+export SAMPLE_CODE="basic"
+export DESCRIPTION="Verify generated project: standard (layered) layout, strict guardrails, basic sample"
+export DEPENDENCIES="web"
 
+# shellcheck source=ci/common-verify-generated.sh
 source "$(dirname "$0")/common-verify-generated.sh"

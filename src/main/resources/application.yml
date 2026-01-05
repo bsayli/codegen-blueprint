@@ -70,7 +70,7 @@ codegen:
           templates: [ ]
 
         project-documentation:
-          template-base-path: springboot/java/
+          template-base-path: springboot/java/readme/
           templates:
             - template: README.md.ftl
               output-path: README.md

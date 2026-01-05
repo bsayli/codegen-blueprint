@@ -23,8 +23,16 @@ trap cleanup EXIT
 
 mkdir -p "$TARGET_DIR"
 
-JAR_PATH="$(ls -1 "$ROOT_DIR"/target/codegen-blueprint-*.jar 2>/dev/null | head -n 1)"
-if [ -z "${JAR_PATH:-}" ] || [ ! -f "$JAR_PATH" ]; then
+# Prefer glob directly; avoids SC2012 and handles "no match" safely.
+JAR_PATH=""
+for f in "$ROOT_DIR"/target/codegen-blueprint-*.jar; do
+  if [[ -f "$f" ]]; then
+    JAR_PATH="$f"
+    break
+  fi
+done
+
+if [[ -z "${JAR_PATH:-}" ]] || [[ ! -f "$JAR_PATH" ]]; then
   echo "Jar not found under: $ROOT_DIR/target"
   ls -la "$ROOT_DIR/target" || true
   exit 1
@@ -46,7 +54,8 @@ CLI_ARGS=(
   --target-dir "$TARGET_DIR"
 )
 
-if [ -n "${DEPENDENCIES:-}" ]; then
+if [[ -n "${DEPENDENCIES:-}" ]]; then
+  # shellcheck disable=SC2206
   for dep in $DEPENDENCIES; do
     CLI_ARGS+=(--dependency "$dep")
   done
@@ -55,7 +64,7 @@ fi
 java -jar "$JAR_PATH" "${CLI_ARGS[@]}"
 
 ZIP="$TARGET_DIR/$ARTIFACT_ID.zip"
-if [ ! -f "$ZIP" ]; then
+if [[ ! -f "$ZIP" ]]; then
   echo "Expected zip not found: $ZIP"
   find "$TARGET_DIR" -maxdepth 3 -type f -print || true
   exit 1
@@ -64,7 +73,7 @@ fi
 unzip -q "$ZIP" -d "$TARGET_DIR/unzipped"
 
 GEN_DIR="$TARGET_DIR/unzipped/$ARTIFACT_ID"
-if [ ! -d "$GEN_DIR" ]; then
+if [[ ! -d "$GEN_DIR" ]]; then
   echo "Expected generated project dir not found: $GEN_DIR"
   find "$TARGET_DIR/unzipped" -maxdepth 4 -type d -print || true
   exit 1
@@ -74,19 +83,27 @@ cd "$GEN_DIR"
 
 find_mockito_agent() {
   local repo="${HOME}/.m2/repository"
-  if [ -d "$repo/org/mockito/mockito-core" ]; then
-    ls -1 "$repo/org/mockito/mockito-core"/*/mockito-core-*.jar 2>/dev/null | sort -V | tail -n 1 || true
-  fi
+  [[ -d "$repo/org/mockito/mockito-core" ]] || return 0
+
+  # Pick latest version directory (lexicographically sorted works for semver-ish dirs)
+  local latest_dir=""
+  latest_dir="$(find "$repo/org/mockito/mockito-core" -mindepth 1 -maxdepth 1 -type d -print \
+    | sort -V | tail -n 1 || true)"
+
+  [[ -n "$latest_dir" ]] || return 0
+
+  find "$latest_dir" -maxdepth 1 -type f -name 'mockito-core-*.jar' -print \
+    | sort -V | tail -n 1 || true
 }
 
 MOCKITO_AGENT="$(find_mockito_agent)"
 MVN_ARGS=(-q -ntp verify)
 
-if [ -n "${MOCKITO_AGENT:-}" ] && [ -f "${MOCKITO_AGENT:-}" ]; then
+if [[ -n "${MOCKITO_AGENT:-}" ]] && [[ -f "${MOCKITO_AGENT:-}" ]]; then
   MVN_ARGS=(-q -ntp -DargLine="-javaagent:${MOCKITO_AGENT}" verify)
 fi
 
-if [ -f "./mvnw" ]; then
+if [[ -f "./mvnw" ]]; then
   chmod +x ./mvnw
   ./mvnw "${MVN_ARGS[@]}"
 else

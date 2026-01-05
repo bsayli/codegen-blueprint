@@ -1,5 +1,51 @@
 # Executable Architecture Proof — Guardrails Enforcement Walkthrough
 
+This document provides an end-to-end **GREEN → RED → GREEN** proof that Codegen Blueprint guardrails are **generated and enforced at build time**.
+
+* If you want the fastest, deterministic proof: start with **Fast Proof (Console-First)**.
+* If you want human-readable evidence (screenshots + rule + failure output): continue with the **High-Resolution Walkthrough**.
+
+---
+
+## Table of Contents
+
+- [Fast Proof (Console-First)](#fast-proof-consolefirst)
+- [What this proves](#what-this-proves)
+- [Proof Flow (High-Level)](#proof-flow-highlevel)
+- [Proof Output (Persistent, Inspectable Artifacts)](#proof-output-persistent-inspectable-artifacts)
+  - [Per-run directory structure](#perrun-directory-structure)
+- [What each artifact means](#what-each-artifact-means)
+  - [`logs/`](#logs)
+  - [`excerpts/`](#excerpts)
+  - [`env.txt`](#envtxt)
+  - [`proof-summary.txt`](#proof-summarytxt)
+- [Why this matters](#why-this-matters)
+- [Notes](#notes)
+- [High-Resolution Walkthrough (Manual Proof)](#high-resolution-walkthrough-manual-proof)
+  - [Purpose](#purpose)
+  - [What this is (and is not)](#what-this-is-and-is-not)
+  - [Preconditions](#preconditions)
+  - [Walkthrough Structure (Applies to Every Case)](#walkthrough-structure-applies-to-every-case)
+- [Part I — Hexagonal Architecture (Ports & Adapters)](#part-i--hexagonal-architecture-ports--adapters)
+  - [Case 1 — Hexagonal Strict: Adapter → Application Implementation (Port Bypass)](#case-1--hexagonal-strict-adapter--application-implementation-port-bypass)
+    - [1) Generation — Hexagonal + Strict](#1-generation--hexagonal--strict)
+    - [2) Baseline — Clean Hexagonal Flow (GREEN)](#2-baseline--clean-hexagonal-flow-green)
+    - [3) Intentional Violation — Break Ports Isolation (RED trigger)](#3-intentional-violation--break-ports-isolation-red-trigger)
+    - [4) Result — Hexagonal Build Failure (RED evidence)](#4-result--hexagonal-build-failure-red-evidence)
+- [Part II — Standard (Layered) Architecture](#part-ii--standard-layered-architecture)
+  - [Case 2 — Standard Strict: Controller → Repository (Repository Bypass)](#case-2--standard-strict-controller--repository-repository-bypass)
+    - [5) Generation — Standard + Strict](#5-generation--standard--strict)
+    - [6) Baseline — Controller Does Not Depend on Repository (GREEN)](#6-baseline--controller-does-not-depend-on-repository-green)
+    - [7) Intentional Violation — Controller Depends on Repository (RED trigger)](#7-intentional-violation--controller-depends-on-repository-red-trigger)
+    - [8) Result — Standard Build Failure (RED evidence)](#8-result--standard-build-failure-red-evidence)
+  - [Case 3 — Standard Schema Sanity: Missing Canonical Family (controller renamed)](#case-3--standard-schema-sanity-missing-canonical-family-controller-renamed)
+    - [9) Baseline — Standard Schema Intact (GREEN)](#9-baseline--standard-schema-intact-green)
+    - [10) Intentional Violation — Break Canonical Schema (RED trigger)](#10-intentional-violation--break-canonical-schema-red-trigger)
+    - [11) Result — Schema Sanity Failure (RED evidence)](#11-result--schema-sanity-failure-red-evidence)
+- [What this proves](#what-this-proves-1)
+- [Why this matters](#why-this-matters-1)
+
+
 ## Fast Proof (Console‑First)
 
 If you want to see the **GREEN → RED → GREEN** proof **purely via the console** —
@@ -8,8 +54,8 @@ no screenshots, no explanations, just deterministic build output — run:
 ```bash
 # From the repository root
 cd docs/demo
-chmod +x proof-runner.sh
-CODEGEN_JAR=../../target/codegen-blueprint-1.0.0.jar ./proof-runner.sh
+chmod +x ./proof/proof-runner.sh
+CODEGEN_JAR="$(ls -1 ../../target/codegen-blueprint-*.jar | head -n 1)" ./proof/proof-runner.sh
 ```
 
 The command exits with a **non‑zero code on any unexpected behavior** and prints a concise, step‑by‑step status to the console.
@@ -163,16 +209,20 @@ KEEP_WORK_DIR=1 ./proof-runner.sh
 
 ## Why there is a detailed walkthrough below
 
-The remainder of this document is the **high-resolution proof**:
+The remainder of this document is the **high-resolution proof** —
+the **human-readable version of the console-first proof**:
 
 * screenshots of the generated structure
-* the exact code change that introduces the violation
-* the precise ArchUnit rule that fails
-* the build output showing **why** it failed
+* the exact minimal code change that introduces the violation *(same as the script injects)*
+* the precise generated ArchUnit rule that fails
+* the proof artifacts showing **why** it failed:
+
+  * console output
+  * `proof-output/` logs and excerpts
 
 This is intentional.
 
-> Executable architecture is only convincing when **failure is observable and explainable** —
+> Executable architecture is only convincing when failure is **observable and explainable** —
 > not just asserted.
 
 ---
@@ -183,27 +233,9 @@ This is intentional.
 
 ---
 
-## Table of Contents
+## High-Resolution Walkthrough (Manual Proof)
 
-- [Purpose](#purpose)
-- [What this is (and is not)](#what-this-is-and-is-not)
-- [Preconditions](#preconditions)
-- [Part I — Hexagonal Architecture (Ports & Adapters)](#part-i--hexagonal-architecture-ports--adapters)
-  - [Generation — Hexagonal + Strict](#1-generation--hexagonal--strict)
-  - [Baseline — Clean Hexagonal Flow](#2-baseline--clean-hexagonal-flow)
-  - [Intentional Violation — Breaking Hexagonal Isolation](#3-intentional-violation--breaking-hexagonal-isolation)
-  - [Result — Hexagonal Build Failure](#4-result--hexagonal-build-failure)
-- [Part II — Standard (Layered) Architecture](#part-ii--standard-layered-architecture)
-  - [Generation — Standard + Strict](#5-generation--standard--strict)
-  - [Baseline — Clean Layered Flow](#6-baseline--clean-layered-flow)
-  - [Intentional Violation — Controller → Domain Service Dependency (Illegal)](#7-intentional-violation--controller--domain-service-dependency-illegal)
-  - [Result — Standard Build Failure](#8-result--standard-build-failure)
-- [What this proves](#what-this-proves)
-- [Why this matters](#why-this-matters)
-
----
-
-## Purpose
+### Purpose
 
 This walkthrough proves a single, concrete claim:
 
@@ -213,31 +245,32 @@ Specifically, it demonstrates that:
 
 1. Codegen Blueprint generates projects with **explicit architectural models** (Hexagonal or Standard / Layered).
 2. With `--guardrails strict`, those models are translated into **generated ArchUnit rules**.
-3. Any architectural violation causes **`mvn verify` to fail immediately** — without starting the application.
+3. Any architectural violation causes **`mvn verify` to fail immediately** — with deterministic evidence.
 
 ---
 
-## What this is (and is not)
+### What this is (and is not)
 
-### ✅ This is
+#### ✅ This is
 
 * A **build-time architecture proof**
 * A demonstration of **guardrails rules produced by the generator**
-* A deterministic failure when architectural boundaries are violated
+* Deterministic failures when architectural boundaries are violated
 * A comparison across **two different architectural models**
 
-### ❌ This is NOT
+#### ❌ This is NOT
 
 * A runtime demo
 * A Spring Boot feature showcase
 * An ArchUnit tutorial
 * A style guide
 
-Nothing is started. Nothing is deployed.
+No manual app server is started.
+The proof is driven by **`mvn verify`** (tests may start a Spring test context as part of the build — that is still build-time evaluation).
 
 ---
 
-## Preconditions
+### Preconditions
 
 To reproduce this walkthrough, you need:
 
@@ -246,24 +279,54 @@ To reproduce this walkthrough, you need:
 * Architecture guardrails enabled in **`strict`** mode
 * The generated guardrails rules left **unchanged** (no manual edits)
 
-No application startup, runtime configuration, or external infrastructure is required.  
+No runtime configuration or external infrastructure is required.
 All validations happen **at build time** via `mvn verify`.
 
 ---
 
-# Part I — Hexagonal Architecture (Ports & Adapters)
+### Walkthrough Structure (Applies to Every Case)
 
-## 1) Generation — Hexagonal + Strict
+Every case follows the **same proof protocol**:
 
-The project is generated using the following command:
+```
+Generate project
+→ mvn verify (GREEN)
+→ inject boundary violation
+→ mvn verify (RED)
+→ revert violation
+→ mvn verify (GREEN)
+```
+
+Each case uses **three screenshots** to make the proof observable:
+
+1. **Baseline (GREEN)** — clean dependency direction
+2. **Violation (RED trigger)** — the exact forbidden dependency introduced
+3. **Failure (RED evidence)** — the ArchUnit rule and failure output
+
+> **You will end up with 3 cases × 3 images = 9 images.**
+
+---
+
+## Part I — Hexagonal Architecture (Ports & Adapters)
+
+### Case 1 — Hexagonal Strict: Adapter → Application Implementation (Port Bypass)
+
+This case matches the proof-runner failure:
+
+* **Test:** `HexagonalStrictPortsIsolationTest.adapters_must_not_depend_on_application_implementation`
+* **Violation:** `adapter..` depends on an application implementation (`application.usecase..`) instead of `application.port..`
+
+#### 1) Generation — Hexagonal + Strict
+
+Generate the project:
 
 ```bash
 java -jar codegen-blueprint-1.0.0.jar \
   --cli springboot \
   --group-id io.github.blueprintplatform \
-  --artifact-id greeting \
+  --artifact-id greeting-hex \
   --name "Greeting" \
-  --description "Greeting sample built with hexagonal architecture" \
+  --description "Proof: hexagonal strict guardrails" \
   --package-name io.github.blueprintplatform.greeting \
   --layout hexagonal \
   --guardrails strict \
@@ -276,22 +339,16 @@ All architectural rules are **generated from profiles**, not handwritten.
 
 ---
 
-## 2) Baseline — Clean Hexagonal Flow
-
-At this point:
-
-* No code has been modified
-* No shortcuts exist
-* All dependencies follow the intended hexagonal direction
+#### 2) Baseline — Clean Hexagonal Flow (GREEN)
 
 Inbound adapters depend **only on application ports**.
 
 **Adapter → Port → Use Case → Domain**
 
 <p align="center">
-  <img src="./images/01-hexagonal-clean-controller.png" width="900" alt="Hexagonal clean controller using application port"/>
+  <img src="./images/case-01-hex/01-hex-baseline-green.png" width="900" alt="Case 1 (Hex) baseline: controller depends only on application port"/>
   <br/>
-  <em>Hexagonal controller depending only on an application port</em>
+  <em>Case 1 — Baseline (GREEN): inbound adapter depends only on an application port</em>
 </p>
 
 Run the build:
@@ -300,149 +357,30 @@ Run the build:
 mvn verify
 ```
 
-**Result:**
-
-* ✅ Build passes
-* ✅ All ArchUnit rules are satisfied
-* ✅ Architecture satisfies the generated guardrails
-
-This establishes the **baseline contract**.
+**Result:** ✅ Build passes.
 
 ---
 
-## 3) Intentional Violation — Breaking Hexagonal Isolation
+#### 3) Intentional Violation — Break Ports Isolation (RED trigger)
 
-To prove that guardrails are **not theoretical**, introduce a deliberate violation.
+Introduce a deliberate violation by making the controller depend on an **application implementation**
+(e.g., `...application.usecase.GetGreetingHandler`) instead of the port.
 
-The controller is modified to depend directly on an **application implementation or domain service**, bypassing the port.
+This is illegal in strict hex guardrails:
 
-Important observations:
-
-* The code still **compiles**
-* The change looks harmless
-* A code review could miss it
-
-But architecturally, it is illegal.
+> **Adapters may depend only on `application.port..`** — not application implementations.
 
 <p align="center">
-  <img src="./images/02-hexagonal-controller-domain-violation.png" width="900" alt="Hexagonal controller violating ports isolation"/>
+  <img src="./images/case-01-hex/02-hex-violation.png" width="900" alt="Case 1 (Hex) violation: controller depends on application implementation"/>
   <br/>
-  <em>Inbound adapter directly depending on an implementation (violation)</em>
+  <em>Case 1 — Violation: inbound adapter depends on an application implementation (port bypass)</em>
 </p>
-
-Nothing is started. No runtime behavior exists.
-Only the dependency direction changed.
 
 ---
 
-## 4) Result — Hexagonal Build Failure
+#### 4) Result — Hexagonal Build Failure (RED evidence)
 
 Run the exact same build again:
-
-```bash
-mvn verify
-```
-
-The build fails immediately.
-
-<p align="center">
-  <img src="./images/03-hexagonal-archunit-failure.png" width="900" alt="Hexagonal ArchUnit failure"/>
-  <br/>
-  <em>Generated ArchUnit rule failing the build</em>
-</p>
-
-Key facts:
-
-* ❌ No application startup
-* ❌ No runtime checks
-* ❌ No manual enforcement
-
-The architecture failed **by construction**.
-
----
-
-# Part II — Standard (Layered) Architecture
-
-## 5) Generation — Standard + Strict
-
-A second project is generated using the **standard layered model**:
-
-```bash
-java -jar codegen-blueprint-1.0.0.jar \
-  --cli springboot \
-  --group-id io.github.blueprintplatform \
-  --artifact-id greeting-standard \
-  --name "Greeting" \
-  --description "Greeting sample built with standard layered architecture" \
-  --package-name io.github.blueprintplatform.greeting \
-  --layout standard \
-  --guardrails strict \
-  --sample-code basic \
-  --dependency web
-```
-
-The same guardrails mode is used, but **different architectural rules apply**.
-
----
-
-## 6) Baseline — Clean Layered Flow
-
-In the standard model:
-
-**Controller → Service → Domain**
-
-Controllers are allowed to depend on services,
-but **must never depend directly on domain services**.
-
-<p align="center">
-  <img src="./images/01-standard-clean-controller.png" width="900" alt="Standard layered clean controller"/>
-  <br/>
-  <em>Standard controller respecting layered boundaries</em>
-</p>
-
-Run the build:
-
-```bash
-mvn verify
-```
-
-**Result:**
-
-* ✅ Build passes
-* ✅ All layered rules are satisfied
-* ✅ Architecture is valid
-
----
-
-## 7) Intentional Violation — Controller → Domain Service Dependency (Illegal)
-
-Now introduce a deliberate boundary violation by injecting and calling a **domain service**
-directly from the controller.
-
-Important observations:
-
-* The code still **compiles**
-* The application would **still run**
-* The change looks harmless — and reviewers may miss it
-
-But architecturally it is illegal in **strict standard layered guardrails**:
-
-> **Controllers must not depend on domain services.**
->
-> Domain models may be used internally (e.g., in mappers),
-> but orchestration and behavior must be reached via the service layer.
-
-<p align="center">
-  <img src="./images/02-standard-domain-violation.png" width="900" alt="Standard controller directly depending on a domain service (violation)"/>
-  <br/>
-  <em>Controller directly depending on a domain service (intentional violation)</em>
-</p>
-
----
-
-## 8) Result — Standard Build Failure
-
-Run the build again:
 
 ```bash
 mvn verify
@@ -451,10 +389,193 @@ mvn verify
 The build fails deterministically.
 
 <p align="center">
-  <img src="./images/03-standard-archunit-failure.png" width="900" alt="Standard ArchUnit failure"/>
+  <img src="./images/case-01-hex/03-hex-failure.png" width="900" alt="Case 1 (Hex) failure: generated ArchUnit rule fails the build"/>
   <br/>
-  <em>Layered architecture violation detected at build time</em>
+  <em>Case 1 — Failure: generated ArchUnit rule detects adapter → application implementation dependency</em>
 </p>
+
+Console evidence (proof-runner aligned):
+
+```
+Rule: no classes in ..adapter.. should depend on classes in application but not ports (outside '.port.')
+Violation:
+  Field <...GreetingController.__archViolation> has type <...GetGreetingHandler>
+Test:
+  HexagonalStrictPortsIsolationTest.adapters_must_not_depend_on_application_implementation
+```
+
+---
+
+## Part II — Standard (Layered) Architecture
+
+### Case 2 — Standard Strict: Controller → Repository (Repository Bypass)
+
+This case matches the proof-runner failure:
+
+* **Test:** `StandardStrictLayerDependencyRulesTest.controllers_must_not_depend_on_repositories`
+* **Violation:** `controller..` depends on `repository..`
+
+#### 5) Generation — Standard + Strict
+
+Generate the project:
+
+```bash
+java -jar codegen-blueprint-1.0.0.jar \
+  --cli springboot \
+  --group-id io.github.blueprintplatform \
+  --artifact-id greeting-standard \
+  --name "Greeting" \
+  --description "Proof: standard strict guardrails" \
+  --package-name io.github.blueprintplatform.greeting \
+  --layout standard \
+  --guardrails strict \
+  --sample-code basic \
+  --dependency web
+```
+
+---
+
+#### 6) Baseline — Controller Does Not Depend on Repository (GREEN)
+
+In the standard model, controllers must remain delivery-only and must **not** depend on repositories.
+
+<p align="center">
+  <img src="./images/case-02-std-repo/01-std-baseline-green.png" width="900" alt="Case 2 (Standard) baseline: controller not depending on repository"/>
+  <br/>
+  <em>Case 2 — Baseline (GREEN): controller does not depend on repository</em>
+</p>
+
+Run:
+
+```bash
+mvn verify
+```
+
+**Result:** ✅ Build passes.
+
+---
+
+#### 7) Intentional Violation — Controller Depends on Repository (RED trigger)
+
+Introduce a deliberate violation by injecting/calling a repository from a controller.
+
+But architecturally it is illegal:
+
+> **Controllers must not depend on repositories.**
+
+<p align="center">
+  <img src="./images/case-02-std-repo/02-std-violation.png" width="900" alt="Case 2 (Standard) violation: controller depends on repository"/>
+  <br/>
+  <em>Case 2 — Violation: controller directly depends on repository (repository bypass)</em>
+</p>
+
+---
+
+#### 8) Result — Standard Build Failure (RED evidence)
+
+Run:
+
+```bash
+mvn verify
+```
+
+The build fails deterministically.
+
+<p align="center">
+  <img src="./images/case-02-std-repo/03-std-failure.png" width="900" alt="Case 2 (Standard) failure: ArchUnit rule fails for controller->repository"/>
+  <br/>
+  <em>Case 2 — Failure: generated ArchUnit rule detects controller → repository dependency</em>
+</p>
+
+Console evidence (proof-runner aligned):
+
+```
+Rule: no classes in ..controller.. should depend on classes in ..repository..
+Violation:
+  Field <...GreetingController.__archViolation> has type <...LoggingGreetingAuditRepository>
+Test:
+  StandardStrictLayerDependencyRulesTest.controllers_must_not_depend_on_repositories
+```
+
+---
+
+### Case 3 — Standard Schema Sanity: Missing Canonical Family (controller renamed)
+
+This case matches your schema experiment:
+
+* **Test:** `StandardPackageSchemaSanityTest.each_standard_bounded_context_must_contain_required_canonical_families`
+* **Violation:** canonical family **`controller`** is missing because you renamed it (e.g., `controller` → `controllerx`).
+
+#### 9) Baseline — Standard Schema Intact (GREEN)
+
+A detected bounded context root must contain all required canonical families:
+
+* `controller`
+* `service`
+* `domain`
+
+<p align="center">
+  <img src="./images/case-03-std-schema/01-std-schema-baseline-green.png" width="900" alt="Case 3 (Standard schema) baseline: controller/service/domain present"/>
+  <br/>
+  <em>Case 3 — Baseline (GREEN): standard schema contains controller/service/domain</em>
+</p>
+
+Run:
+
+```bash
+mvn verify
+```
+
+**Result:** ✅ Build passes.
+
+---
+
+#### 10) Intentional Violation — Break Canonical Schema (RED trigger)
+
+Introduce the deliberate schema violation by renaming the canonical package family:
+
+* `...controller...` → `...controllerx...`
+
+This is illegal because the guardrails schema sanity test requires the canonical families to exist.
+
+<p align="center">
+  <img src="./images/case-03-std-schema/02-std-schema-violation.png" width="900" alt="Case 3 (Standard schema) violation: controller family renamed/missing"/>
+  <br/>
+  <em>Case 3 — Violation: canonical family 'controller' is missing due to rename</em>
+</p>
+
+---
+
+#### 11) Result — Schema Sanity Failure (RED evidence)
+
+Run:
+
+```bash
+mvn verify
+```
+
+The build fails deterministically.
+
+<p align="center">
+  <img src="./images/case-03-std-schema/03-std-schema-failure.png" width="900" alt="Case 3 (Standard schema) failure: schema sanity test fails"/>
+  <br/>
+  <em>Case 3 — Failure: schema sanity test fails (required canonical families missing)</em>
+</p>
+
+Console evidence (aligned to your output):
+
+```
+STANDARD package schema integrity failure under base scope 'io.github.blueprintplatform.greeting'.
+
+Required canonical families: [controller, service, domain]
+Violations:
+ - context: io.github.blueprintplatform.greeting
+     present: controller ❌, service ✅, domain ✅
+     missing: controller
+
+Test:
+  StandardPackageSchemaSanityTest.each_standard_bounded_context_must_contain_required_canonical_families
+```
 
 ---
 
@@ -464,10 +585,11 @@ The build fails deterministically.
 
 * Hexagonal validates **ports & adapter isolation**
 * Standard validates **layered dependency direction**
-* Both are evaluated **automatically at build time**
-* Both surface **boundary drift** by breaking the build deterministically
+* Standard also validates **schema integrity** (canonical families)
+* All are evaluated **automatically at build time**
+* All surface drift by breaking the build **deterministically** with explicit evidence
 
-No documentation is consulted at evaluation time.  
+No documentation is consulted at evaluation time.
 No conventions are trusted.
 
 ---
@@ -488,13 +610,10 @@ With Codegen Blueprint:
 > **If a rule is violated, the build fails fast with explicit feedback.**
 
 No assumptions.
-
 No hidden conventions.
-
 No silent drift.
 
-That is **Architecture as a Product** —
-observable, repeatable, and evaluated at build time.
+That is **Architecture as a Product** — observable, repeatable, and evaluated at build time.
 
 ---
 
@@ -510,7 +629,7 @@ If you want to see what **actual projects generated by Codegen Blueprint look li
 
 see:
 
-→ **Generated Project README Previews**  
+→ **Generated Project README Previews**
 [Generated Readmes](./generated-readmes.md)
 
 These READMEs are **real generator output**, not examples.

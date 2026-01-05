@@ -63,22 +63,13 @@ This section explicitly distinguishes between:
 
 ---
 
-### ✔ 3.1 Deterministic Layout
+### ✔ 3.1 Deterministic Output (Structure)
 
-The engine always produces a **single‑module**, buildable project:
+For the active GA profile, the engine deterministically produces a **single-module**, buildable project with a **contracted output file set**.
 
-```
-<artifactId>/
- ├─ pom.xml
- ├─ src/main/java/<basePackage>/
- ├─ src/test/java/<basePackage>/
- ├─ src/main/resources/application.yml
- ├─ .gitignore
- └─ README.md
-```
+The authoritative list of generated files and paths is defined in **Section 4: Generated Project Scope (Output Contract)**.
 
-No hidden modules. No conditional directories.
-
+> Same inputs → same output (structure + rendered content): no ordering randomness, no environment-dependent behavior.
 ---
 
 ### ✔ 3.2 Identity & Naming Validation
@@ -177,21 +168,31 @@ The engine can optionally generate **architecture guardrails tests** into produc
 
 ### Active Stack (GA)
 
-```
+```text
 springboot-maven-java
 ```
 
-Every generated project includes:
+### Baseline output (always generated)
 
-```
+**Naming:** `<MainApplicationClass> = PascalCase(<artifactId>) + "Application"`
+
+Every generated project is **single-module** and includes:
+
+```text
 <artifactId>/
- ├─ pom.xml
- ├─ src/main/java/<basePackage>/Application.java
- ├─ src/test/java/<basePackage>/ApplicationTests.java
+ ├─ pom.xml (with Maven Wrapper)
+ ├─ .mvn/wrapper/maven-wrapper.properties
+ ├─ mvnw
+ ├─ mvnw.cmd
+ ├─ src/main/java/<basePackage>/<MainApplicationClass>.java
+ ├─ src/test/java/<basePackage>/<MainApplicationClass>Tests.java
  ├─ src/main/resources/application.yml
  ├─ .gitignore
  └─ README.md
 ```
+
+> `README.md` and generated ArchUnit tests (when enabled via --guardrails) are part of the **delivered contract surface**.
+
 
 ---
 
@@ -199,18 +200,22 @@ Every generated project includes:
 
 Enabled via:
 
-```
+```text
 --layout hexagonal
 ```
 
-Enforced structural boundaries:
+Generated package families (Ports & Adapters) under:
 
+src/main/java/<basePackage>/
+
+```text
+adapter/      # technology surfaces
+application/  # orchestration (use cases, ports)
+domain/       # business rules (framework-free)
+bootstrap/    # wiring
 ```
-adapter/    # technology surfaces
-application/ # orchestration
-domain/      # business rules
-bootstrap/   # wiring
-```
+
+> When `--guardrails` is enabled, the generated ArchUnit guardrails validate these package boundaries at build time (`mvn verify`).
 
 ---
 

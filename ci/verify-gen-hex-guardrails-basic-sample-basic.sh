@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-LAYOUT="hexagonal"
-GUARDRAILS="basic"
-SAMPLE_CODE="basic"
-DESCRIPTION="Verify generated project: hexagonal layout, basic guardrails, basic sample"
-DEPENDENCIES="web"
+export LAYOUT="hexagonal"
+export GUARDRAILS="basic"
+export SAMPLE_CODE="basic"
+export DESCRIPTION="Verify generated project: hexagonal layout, basic guardrails, basic sample"
+export DEPENDENCIES="web"
 
+# shellcheck source=ci/common-verify-generated.sh
 source "$(dirname "$0")/common-verify-generated.sh"

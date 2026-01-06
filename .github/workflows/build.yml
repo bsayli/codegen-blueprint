@@ -45,6 +45,18 @@ jobs:
           cache: maven
 
       # -------------------------------------------------
+      # Cache Maven Wrapper distributions (prevents flaky downloads)
+      # -------------------------------------------------
+      - name: Cache Maven Wrapper dists
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.m2/wrapper/dists
+          key: ${{ runner.os }}-mvnw-dists-${{ hashFiles('**/.mvn/wrapper/maven-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-mvnw-dists-
+
+      # -------------------------------------------------
       # Core generator (GA contract) → JDK 21 only
       # -------------------------------------------------
       - name: Build generator (tests + coverage) [JDK 21 only]

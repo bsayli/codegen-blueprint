@@ -72,9 +72,11 @@ This single command demonstrates — end to end — that Codegen Blueprint can:
 * fail the build **deterministically** when a boundary is violated
 * return to green immediately once the violation is removed
 
-No application run (no `spring-boot:run`, no `java -jar`).
-No runtime enforcement — guardrails are evaluated at build time.
-No custom test framework beyond standard JUnit + ArchUnit.
+### Proof characteristics
+
+* No application run (no `spring-boot:run`, no `java -jar`)
+* No runtime enforcement — guardrails are evaluated at build time
+* No custom test framework beyond standard JUnit + ArchUnit
 
 > **Architecture is evaluated by the build itself.**
 

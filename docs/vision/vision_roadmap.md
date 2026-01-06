@@ -1,4 +1,4 @@
-## 🚀 Vision & Roadmap
+## 🚀 Vision & Roadmap — Engine Scope
 
 > Architecture should **execute**, not merely be drawn.
 > And it must remain **observable and verifiable** — even 6, 12, or 24 months later.
@@ -7,33 +7,35 @@
 
 ## 🌟 The Vision
 
-**Blueprint Platform** exists to make architecture a **first‑class, executable product** — not a diagram, not a convention, not a guideline.
+**codegen‑blueprint** is the **executable engine** of the **Blueprint Platform**.
 
-It stands on three pillars:
+Its responsibility is to **prove architectural intent as a concrete, build‑time outcome** — not as documentation, convention, or best‑effort review.
 
-* **Architecture as a Product**
-  Structure + guardrails delivered as a concrete, testable outcome
-* **Capabilities via libraries + governance**
-  Behavior is standardized and upgraded centrally — not copy‑pasted
-* **Consistency that survives time and teams**
-  Onboarding, upgrades, and standards remain intact despite churn
+The engine focuses on three core guarantees:
 
-From **Day Zero to Production**, architecture stays **intentional**, **testable**, and **continuously evaluated**.
+* **Architecture as an Executable Product**
+  Structural intent and guardrails delivered as **testable, build‑breaking artifacts**
+* **Deterministic Foundations**
+  Generated projects behave the same across machines, teams, and time
+* **Zero‑Drift Day‑Zero Baseline**
+  Architecture is explicit from the first commit and stays observable
+
+From **Day Zero to CI**, architecture remains **intentional**, **testable**, and **continuously evaluated**.
 
 ---
 
 ## 🧭 Roadmap Principles (Order Matters)
 
-Blueprint evolves in **intentional layers** to protect its core promise and avoid premature surface expansion.
+codegen‑blueprint evolves in **intentional layers** to protect its core promise and avoid premature surface expansion.
 
 Each phase builds on **proven contracts and executable proof**, not assumptions.
 
 1. **Strengthen the contract & proof**
-   Determinism, architecture guardrails, reproducible evidence
+   Determinism, executable guardrails, reproducible evidence
 2. **Add new delivery surfaces**
    CLI today → REST tomorrow — **without changing the core engine**
-3. **Introduce capabilities via libraries + governance**
-   Standardize behavior, don’t generate boilerplate
+3. **Integrate platform capabilities**
+   Select, wire, and govern behavior — **not generate it**
 4. **Expand profiles cautiously**
    More stacks = more surface area → only after proof maturity
 
@@ -53,7 +55,7 @@ This phase establishes the **executable architectural foundation**.
   (`none | basic | strict`)
 * CLI‑driven, profile‑based generation
   (Spring Boot · Maven · Java 21)
-* Framework‑free domain core by construction
+* Framework‑free domain core **by construction**
 * End‑to‑end **buildable output** evaluated in CI
   (generated projects verified with `mvn verify`)
 
@@ -83,14 +85,20 @@ The **core engine and domain surface remain unchanged**.
 
 ---
 
-### 🔹 Phase 3 — Capability‑Driven Architecture (Planned)
+### 🔹 Phase 3 — Capability Integration (Platform‑Level, Planned)
 
-This phase operates at the **Blueprint Platform level**, not inside the generator.
+> **Platform‑level concern — not implemented in this repository**
+
+This phase operates at the **Blueprint Platform level**, not inside the engine.
 
 Cross‑cutting concerns are **not generated as code**.
 They are delivered as **versioned capabilities**, governed centrally.
 
-`codegen‑blueprint` acts as the **entry point and wiring engine** — enabling adoption, configuration, and governance.
+**codegen‑blueprint acts as the entry point and wiring engine**, enabling:
+
+* Capability selection
+* Dependency and configuration wiring
+* Governance and compatibility validation
 
 Planned capability areas:
 
@@ -98,9 +106,9 @@ Planned capability areas:
 * 🔍 Observability (tracing, logs, metrics)
 * 📡 Resilience (timeouts, retries, policies)
 * 🏛️ Architecture policy packs
-  (versioned guardrails applied consistently)
+  *(initially delivered as versioned ArchUnit rule sets)*
 * 🔁 Generics‑aware OpenAPI clients
-  (separate Blueprint module)
+  *(separate Blueprint module)*
 
 📌 Goal → consistent behavior and upgrades **in one place**, not per service
 
@@ -124,6 +132,8 @@ They are introduced only after contracts and governance mature.
 
 ## 🧩 Why This Matters
 
+**codegen‑blueprint provides the executable foundation for these outcomes:**
+
 | Without Blueprint            | With Blueprint                     |
 | ---------------------------- | ---------------------------------- |
 | Architecture drifts silently | Guardrails make drift visible      |
@@ -131,9 +141,9 @@ They are introduced only after contracts and governance mature.
 | Onboarding takes weeks       | Day‑zero structure + contracts     |
 | Standards rely on discipline | Standards enforced by construction |
 
-> 📌 Platform grows → projects stay clean → organizations remain consistent
-
 ---
 
-**Blueprint Platform is not just code generation.**
-It is **strategic architectural continuity** — explicit, observable, and executable.
+## 🏁 Closing
+
+**codegen‑blueprint is not a template generator.**
+It is the **executable engine** that proves architecture can be treated as a **first‑class product** — explicit, observable, and verifiable at build time.

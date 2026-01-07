@@ -172,29 +172,40 @@ It delivers:
 
 📘 **Canonical platform specification**
 
-The canonical definition of **Architecture as a Product** is specified at the platform level.
+The canonical definition of **Architecture as a Product** is defined at the **platform level**.
 
 → [Architecture as a Product — Platform Specification](https://github.com/blueprint-platform/blueprint-platform-spec/blob/main/specs/architecture-as-a-product.md)
 
-This repository provides **executable proof** of that specification
+This repository provides **executable proof** of that specification  
 for the **Spring Boot · Maven · Java** profile.
 
-Architecture isn’t only drawn — it **executes** here.
+Architecture here is not merely described — it is **generated, evaluated, and verified**.
 
-Codegen Blueprint (the generator itself) is built with **Hexagonal Architecture** — not as a stylistic preference,
-but as a **structural foundation** that keeps the core engine isolated from technology choices
-and stable as delivery surfaces evolve.
+---
+
+### Generator Architecture (Engine)
+
+Codegen Blueprint (the generator itself) is built using **Hexagonal Architecture** —  
+not as a stylistic choice, but as a **structural foundation**.
+
+This design keeps the core engine:
+
+* isolated from technology choices,
+* stable under delivery-surface changes, and
+* evolvable without architectural rewrites.
 
 > Generate once.  
 > Evolve across frameworks, runtimes, and languages — **without rewriting the core**.
 
-This separation allows the engine to preserve its architectural contract
-while enabling future stack expansion through replaceable adapters.
+The separation between core and adapters allows the engine to preserve its **architectural contract**
+while enabling future expansion through **replaceable delivery adapters**.
 
-> This section covers the generator’s architecture (the engine itself).  
-> For generated project layouts (`standard` / `hexagonal`), see the CLI documentation.
+> This section describes the generator architecture itself.  
+> For generated project layouts (`standard` / `hexagonal`), refer to the CLI documentation.
 
 Spring Boot is the **first delivery adapter** — not the foundation.
+
+---
 
 ### Architecture docs (from capability → GA contract → guide → collaboration)
 

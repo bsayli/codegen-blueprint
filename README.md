@@ -95,7 +95,6 @@ CODEGEN_JAR="$(ls -1 ../../target/codegen-blueprint-*.jar | head -n 1)" ./proof/
 * 🧪 [Executable Architecture — proof](#-executable-architecture--proof)
 * 📦 [Release & compatibility discipline](#-release--compatibility-discipline)
 * 🚫 [What we explicitly do NOT guarantee](#-what-we-explicitly-do-not-guarantee)
-* 🧾 [Project history (short)](#-project-history-short)
 * 🧩 [Generate vs deliver capabilities (cross-cutting concerns)](#-generate-vs-deliver-capabilities-cross-cutting-concerns)
 * 🧩 [Part of the Blueprint Platform](#-part-of-the-blueprint-platform)
 * 🧭 [1.0.0 Release Scope](#-100-release-scope)
@@ -311,17 +310,6 @@ Codegen Blueprint is intentionally **constrained by design**.
 Some things are out of scope — not by accident, but to protect architectural integrity.
 
 👉 [What We Do NOT Guarantee](docs/policies/what-we-do-not-guarantee.md)
-
----
-
-## 🧾 Project history (short)
-
-Codegen Blueprint started as an early experiment in Spring Boot bootstrapping (`codegen-springboot-initializr`).
-As it evolved, the focus shifted from “scaffolding” to **Executable Architecture** — guardrails that can fail the build.
-
-* `main` reflects the architecture‑first direction.
-* Earlier `0.x` tags remain for historical context.
-* **The compatibility and guarantee contract begins with 1.0.0 GA.**
 
 ---
 

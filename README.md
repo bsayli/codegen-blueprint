@@ -170,6 +170,15 @@ It delivers:
 
 ## 🧱 Architecture Overview
 
+📘 **Canonical platform specification**
+
+The canonical definition of **Architecture as a Product** is specified at the platform level.
+
+→ [Architecture as a Product — Platform Specification](https://github.com/blueprint-platform/blueprint-platform-spec/blob/main/specs/architecture-as-a-product.md)
+
+This repository provides **executable proof** of that specification
+for the **Spring Boot · Maven · Java** profile.
+
 Architecture isn’t only drawn — it **executes** here.
 
 Codegen Blueprint (the generator itself) is built with **Hexagonal Architecture** — not as a stylistic preference,
@@ -257,8 +266,6 @@ Codegen Blueprint targets what happens **after** generation:
 * Drift becomes **observable** (guardrails evaluated during `mvn verify`)
 * The domain stays **framework‑free by construction** (especially in hexagonal)
 * Early decisions stay **consistent** across teams and projects
-
-> **Executable Architecture — delivered from day zero, sustained over time.**
 
 ---
 

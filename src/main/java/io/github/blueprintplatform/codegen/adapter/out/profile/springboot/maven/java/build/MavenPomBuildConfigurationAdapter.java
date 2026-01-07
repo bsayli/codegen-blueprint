@@ -63,6 +63,10 @@ public class MavenPomBuildConfigurationAdapter extends AbstractSingleTemplateArt
     deps.add(MavenPomBuildModel.CORE_STARTER);
     deps.addAll(buildDependencyMapper.from(bp.getDependencies()));
 
+    if (isSampleEnabled(bp) && !isWebSelected(bp)) {
+      deps.add(MavenPomBuildModel.WEB_STARTER);
+    }
+
     if (isJpaSelected(bp)) {
       deps.add(MavenPomBuildModel.H2_DB);
     }
@@ -74,6 +78,18 @@ public class MavenPomBuildConfigurationAdapter extends AbstractSingleTemplateArt
     deps.add(MavenPomBuildModel.TEST_STARTER);
 
     return List.copyOf(deps);
+  }
+
+  private boolean isSampleEnabled(ProjectBlueprint bp) {
+    var arch = bp.getArchitecture();
+    return arch != null && arch.sampleCodeOptions() != null && arch.sampleCodeOptions().isEnabled();
+  }
+
+  private boolean isWebSelected(ProjectBlueprint bp) {
+    var deps = bp.getDependencies();
+    return deps != null
+        && !deps.isEmpty()
+        && deps.asList().stream().anyMatch(MavenPomBuildModel.WEB_STARTER_FEATURE.matches());
   }
 
   private boolean isJpaSelected(ProjectBlueprint bp) {

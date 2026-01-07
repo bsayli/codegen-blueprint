@@ -13,6 +13,7 @@ final class MavenPomBuildModel {
   static final String KEY_PROJECT_NAME = "projectName";
   static final String KEY_PROJECT_DESCRIPTION = "projectDescription";
   static final String KEY_POM_PROPERTIES = "pomProperties";
+
   static final String ARCH_UNIT_VERSION_KEY = "archunit.version";
   static final String ARCH_UNIT_VERSION = "1.4.1";
   static final BuildDependency H2_DB = BuildDependency.of("com.h2database", "h2", null, null);
@@ -22,10 +23,18 @@ final class MavenPomBuildModel {
   private static final String SPRING_BOOT_GROUP_ID = "org.springframework.boot";
   static final DependencyFeature JPA_STARTER =
       new DependencyFeature("jpa", SPRING_BOOT_GROUP_ID, "spring-boot-starter-data-jpa");
+
+  static final DependencyFeature WEB_STARTER_FEATURE =
+      new DependencyFeature("web", SPRING_BOOT_GROUP_ID, "spring-boot-starter-web");
+
   static final BuildDependency CORE_STARTER =
       BuildDependency.of(SPRING_BOOT_GROUP_ID, "spring-boot-starter");
+
   static final BuildDependency TEST_STARTER =
       BuildDependency.of(SPRING_BOOT_GROUP_ID, "spring-boot-starter-test", null, "test");
+
+  static final BuildDependency WEB_STARTER =
+      BuildDependency.of(SPRING_BOOT_GROUP_ID, "spring-boot-starter-web");
 
   private MavenPomBuildModel() {}
 }

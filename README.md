@@ -229,7 +229,7 @@ Spring Boot is the **first delivery adapter**, not the foundation.
 The engine itself remains **framework-agnostic by construction**.
 
 > This section describes the **generator architecture (engine)**.  
-> For generated project layouts (`standard` / `hexagonal`), see the CLI documentation.
+> Generated project layouts (`standard` / `hexagonal`) are explained in the **CLI Usage (Spring Boot)** section below.
 
 ---
 

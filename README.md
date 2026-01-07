@@ -234,19 +234,18 @@ The engine itself remains **framework-agnostic by construction**.
 ---
 
 ### Architecture documentation
+*(GA contract → rulebook → guide → collaboration)*
 
-*(from GA contract → rulebook → guide → collaboration)*
-
-- 🔒 **Executable Architecture Contract — 1.0.0 GA** — *GA contract (source of truth)*  
+- 🔒 **Executable Architecture Contract — 1.0.0 GA** — source of truth for all GA guarantees  
   [Executable Architecture Contract — 1.0.0 GA](docs/architecture/executable-architecture-contract.md)
 
-- 📜 **Architecture Guardrails Rulebook** — *Full guardrails semantics and rule vocabulary (descriptive reference; not a GA guarantee)*  
+- 📜 **Architecture Guardrails Rulebook** — guardrails semantics and rule vocabulary *(not a GA guarantee)*  
   [Architecture Guardrails Rulebook](docs/architecture/architecture-guardrails-rulebook.md)
 
-- 🧭 **How to Explore This Codebase (Hexagonal Guide)** — *Practical guide to ports/adapters, boundaries, and profile-driven execution*  
+- 🧭 **Hexagonal Architecture Guide** — ports, adapters, and boundary navigation  
   [Hexagonal Architecture Guide](docs/guides/how-to-explore-hexagonal-architecture.md)
 
-- 🧠 **Architecture Governance & AI Collaboration Protocol** — *How decisions stay visible and consistent in multi-contributor / AI-assisted work*  
+- 🧠 **Architecture Governance & AI Protocol** — decision-making & AI collaboration rules  
   [Architecture Governance & AI Protocol](docs/architecture/architecture-governance-and-ai-protocol.md)
 
 ---

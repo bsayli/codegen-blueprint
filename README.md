@@ -176,8 +176,7 @@ The canonical definition of **Architecture as a Product** is defined at the **pl
 
 → [Architecture as a Product — Platform Specification](https://github.com/blueprint-platform/blueprint-platform-spec/blob/main/specs/architecture-as-a-product.md)
 
-This repository provides **executable proof** of that specification  
-for the **Spring Boot · Maven · Java** profile.
+This repository provides **executable proof** of that specification, with the **Spring Boot · Maven · Java** profile as its current implementation.
 
 Architecture here is not merely described — it is **generated, evaluated, and verified**.
 
@@ -200,10 +199,10 @@ This design keeps the core engine:
 The separation between core and adapters allows the engine to preserve its **architectural contract**
 while enabling future expansion through **replaceable delivery adapters**.
 
+Spring Boot is the **first delivery adapter** — not the foundation.
+
 > This section describes the generator architecture itself.  
 > For generated project layouts (`standard` / `hexagonal`), refer to the CLI documentation.
-
-Spring Boot is the **first delivery adapter** — not the foundation.
 
 ---
 
@@ -302,7 +301,7 @@ as systems evolve over time.
 
 | Focus area                   | Traditional project generators | Codegen Blueprint |
 | ---------------------------- | ------------------------------ | ----------------- |
-| Primary goal                 | Fast project start             | Architectural continuity |
+| Primary goal                 | Fast project start             | **Architectural continuity** |
 | Architecture boundaries      | Implicit or documented         | **Executable & verified** |
 | Drift detection              | Manual (reviews, discipline)   | **Build-time feedback** |
 | Domain isolation             | Optional / framework-led       | **By construction** |
@@ -322,7 +321,7 @@ Codegen Blueprint makes a deliberate distinction:
 
 | Approach                | What happens                                                 | Long-term effect                              |
 | ----------------------- | ------------------------------------------------------------ | --------------------------------------------- |
-| Generate code           | Copies security/logging/error handling into each service     | ❌ Drift, copy-paste, painful upgrades         |
+| Generate code           | Copies security/logging/error handling into each service     | ❌ **Drift, copy-paste, painful upgrades**     |
 | Deliver as capabilities | Centralized, versioned, opt-in behavior via shared libraries | **✔ Consistency, easier upgrades, alignment** |
 
 > Not everything should be generated.

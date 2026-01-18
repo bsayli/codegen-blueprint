@@ -48,6 +48,16 @@ This document provides an end-to-end **GREEN → RED → GREEN** proof that Code
 
 ## Fast Proof (Console-First)
 
+> 🔎 Prefer visuals instead of running the build?  
+> → Jump to the **[High-Resolution Walkthrough (Manual Proof)](#high-resolution-walkthrough-manual-proof)**  
+> → Back to **[Table of Contents](#table-of-contents)**
+
+> **Execution precondition**
+>
+> This proof assumes you are running from a local clone of the
+> `codegen-blueprint` repository and have already built the generator JAR.
+> This section documents the **verification protocol**, not initial setup.
+
 If you want to see the **GREEN → RED → GREEN** proof (**strict architecture guardrails**)  
 **purely via the console** — no screenshots, no explanations, just deterministic build output — run:
 
@@ -238,6 +248,10 @@ This is intentional.
 ---
 
 ## High-Resolution Walkthrough (Manual Proof)
+
+> ⚡ Want the fastest possible proof?  
+> → Jump to **[Fast Proof (Console-First)](#fast-proof-console-first)**  
+> → Back to **[Table of Contents](#table-of-contents)**
 
 ### Purpose
 

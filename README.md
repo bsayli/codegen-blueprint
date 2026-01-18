@@ -30,62 +30,74 @@ It is designed for teams who care about **architectural integrity over time**, a
 
 ---
 
-> **Context (Medium):**  
+> **Background:** Why build-time architecture guardrails matter (especially under AI-speed refactoring) is explained here:  
 > [Why Architecture Drift Is Faster Than Ever — And Why AI Makes Guardrails Mandatory](https://medium.com/@baris.sayli/why-architecture-drift-is-faster-than-ever-and-why-ai-makes-guardrails-mandatory-4854e13309c4)
 
 ---
 
-## Try it in 5 minutes
+## Proof (what you’ll actually see)
 
-### Prerequisites
+Before you run a single command, here is the **irreducible proof**:
 
-* Java 21
-* Maven 3.9+
-* macOS / Linux / WSL (the proof runner is a shell script)
+* a real architectural boundary is violated
+* the build evaluates that intent
+* the build **fails deterministically**
 
-> **Goal:** see **GREEN → RED → GREEN** using **build-time architecture guardrails (strict mode)**.
+No application startup. No runtime checks. No conventions to trust.
+
+> **Visual proof — build-time failure (inspectable without cloning):**
+
+![Build-time architecture guardrails — controller → repository violation](docs/demo/images/mini-standard-controller-repository-failure.png)
+
+*This failure is produced by a **generated ArchUnit rule** and evaluated during `mvn verify`.
+Nothing runs. The build itself enforces the architecture.*
+
+---
+
+### What this single image already proves
+
+* Architectural rules are **generated**, not documented
+* Violations are detected **at build time**
+* The feedback is **deterministic and explicit**
+* Architecture cannot silently drift
+
+If this is all you look at, you already understand the core value.
+
+---
+
+### Want to inspect the exact failures and screenshots?
+
+For a human‑readable, step‑by‑step walkthrough (screenshots, rule names, and failure output):
+
+👉 **[Executable Architecture Proof — High‑Resolution Walkthrough](docs/demo/executable-architecture-proof.md#high-resolution-walkthrough-manual-proof)**
+
+This shows:
+
+* the generated structure
+* the exact forbidden change
+* the precise ArchUnit rule that fails
+* the corresponding build output
+
+---
+
+### Want to reproduce it yourself (console‑first)?
+
+If you want to **run the proof locally** and watch **GREEN → RED → GREEN** via the build:
+
+👉 **[Fast Proof — Console‑First](docs/demo/executable-architecture-proof.md#fast-proof-console-first)**
+
+This path is for readers who want **hands‑on verification** using `mvn verify`.
+
+---
+
+> **Order is intentional:**
 >
-> No app startup required. Guardrails run during `mvn verify` and fail the build deterministically on boundary violations.
-
----
-
-### 1) Clone the repository
-
-```bash
-git clone https://github.com/blueprint-platform/codegen-blueprint.git && cd codegen-blueprint
-```
-
----
-
-### 2) Build the generator JAR
-
-```bash
-mvn -q clean package
-```
-
----
-
-### 3) Run the executable architecture proof
-
-```bash
-cd docs/demo
-chmod +x ./proof/proof-runner.sh
-CODEGEN_JAR="$(ls -1 ../../target/codegen-blueprint-*.jar | head -n 1)" ./proof/proof-runner.sh
-```
-
----
-
-### What you should see
-
-* ✅ A project is generated with **strict** guardrails
-* ✅ `mvn verify` passes (baseline)
-* ❌ An intentional architectural boundary violation is introduced
-* ❌ `mvn verify` fails **deterministically** with a generated ArchUnit rule
-* ✅ The violation is reverted and the build returns to green
-
-**Executable evidence bundle (screenshots, exact failures, and proof artifacts):**
-
-👉 [Executable Architecture Proof](docs/demo/executable-architecture-proof.md)
+> * First: **see** the failure (observable)
+> * Then: **inspect** the evidence (explainable)
+> * Finally: **run** it yourself (executable)
+>
+> This is not documentation.
+> This is **architecture proven by the build**.
 
 ---
 

@@ -69,7 +69,7 @@ If this is all you look at, you already understand the core value.
 
 For a human‑readable, step‑by‑step walkthrough (screenshots, rule names, and failure output):
 
-👉 **[Executable Architecture Proof — High‑Resolution Walkthrough](docs/demo/executable-architecture-proof.md#high-resolution-walkthrough-manual-proof)**
+👉 **[Proof — Explained Walkthrough](docs/demo/executable-architecture-proof.md#high-resolution-walkthrough-manual-proof)**
 
 This shows:
 
@@ -84,7 +84,7 @@ This shows:
 
 If you want to **run the proof locally** and watch **GREEN → RED → GREEN** via the build:
 
-👉 **[Fast Proof — Console‑First](docs/demo/executable-architecture-proof.md#fast-proof-console-first)**
+👉 **[Proof — Console Execution (GREEN → RED → GREEN)](docs/demo/executable-architecture-proof.md#fast-proof-console-first)**
 
 This path is for readers who want **hands‑on verification** using `mvn verify`.
 

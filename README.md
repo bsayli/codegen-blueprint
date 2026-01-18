@@ -30,7 +30,7 @@ It is designed for teams who care about **architectural integrity over time**, a
 
 ---
 
-> **Context (Medium):**
+> **Background:** Why build-time architecture guardrails matter (especially under AI-speed refactoring) is explained here:  
 > [Why Architecture Drift Is Faster Than Ever — And Why AI Makes Guardrails Mandatory](https://medium.com/@baris.sayli/why-architecture-drift-is-faster-than-ever-and-why-ai-makes-guardrails-mandatory-4854e13309c4)
 
 ---
